@@ -7,6 +7,7 @@ namespace Logger.Tests;
 [TestClass]
 public class BaseLoggerMixinsTests
 {
+    #region Extention Methods : Exception
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
     public void Error_WithNullLogger_ThrowsException()
@@ -14,10 +15,56 @@ public class BaseLoggerMixinsTests
         // Arrange
 
         // Act
-        //BaseLoggerMixins.Error(null, "");
-
+        FileLogger fileLogger = null;
+        fileLogger.Error("Message");
         // Assert
     }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void Debug_WithNullLogger_ThrowsException()
+    {
+        // Arrange
+
+        // Act
+        FileLogger fileLogger = null;
+        fileLogger.Debug("Message");
+        // Assert
+    }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void Warning_WithNullLogger_ThrowsException()
+    {
+        // Arrange
+
+        // Act
+        FileLogger fileLogger = null;
+        fileLogger.Warning("Message");
+        // Assert
+    }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void Information_WithNullLogger_ThrowsException()
+    {
+        // Arrange
+
+        // Act
+        FileLogger fileLogger = null;
+        fileLogger.Information("Message");
+        // Assert
+    }
+    #endregion
+    #region Extention Methods : Valid
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void Error_WithValidLoggerPoop_Success()
+    {
+        // Arrange
+
+        // Act
+        BaseLoggerMixins.Information(null, "Test message");
+        // Assert
+    }
+    #endregion
 
     [TestMethod]
     public void Error_WithData_LogsMessage()
@@ -33,7 +80,6 @@ public class BaseLoggerMixinsTests
         Assert.AreEqual(LogLevel.Error, logger.LoggedMessages[0].LogLevel);
         Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
     }
-
 }
 
 public class TestLogger : BaseLogger
