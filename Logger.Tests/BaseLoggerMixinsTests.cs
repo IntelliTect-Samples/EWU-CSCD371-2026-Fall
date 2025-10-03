@@ -9,60 +9,90 @@ public class BaseLoggerMixinsTests
 {
     #region Extention Methods : Exception
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
     public void Error_WithNullLogger_ThrowsException()
     {
         // Arrange
 
         // Act
-        FileLogger fileLogger = null;
-        fileLogger.Error("Message");
+        FileLogger fileLogger = null!;
+        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Error("Message"));
         // Assert
     }
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
     public void Debug_WithNullLogger_ThrowsException()
     {
         // Arrange
 
         // Act
-        FileLogger fileLogger = null;
-        fileLogger.Debug("Message");
+        FileLogger fileLogger = null!;
+        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Debug("Message"));
         // Assert
     }
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
     public void Warning_WithNullLogger_ThrowsException()
     {
         // Arrange
 
         // Act
-        FileLogger fileLogger = null;
-        fileLogger.Warning("Message");
+        FileLogger fileLogger = null!;
+        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Warning("Message"));
         // Assert
     }
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
     public void Information_WithNullLogger_ThrowsException()
     {
         // Arrange
 
         // Act
-        FileLogger fileLogger = null;
-        fileLogger.Information("Message");
+        FileLogger fileLogger = null!;
+        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Information("Message"));
         // Assert
     }
     #endregion
     #region Extention Methods : Valid
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
-    public void Error_WithValidLoggerPoop_Success()
+    public void Error_WithValidLogger_Success()
     {
         // Arrange
+        TestLogger logger = new TestLogger();
 
         // Act
-        BaseLoggerMixins.Information(null, "Test message");
+        logger.Error("test");
         // Assert
+        Assert.AreEqual((LogLevel.Error, "test"), logger.LoggedMessages[0]);
+    }
+    [TestMethod]
+    public void Debug_WithValidLogger_Success()
+    {
+        // Arrange
+        TestLogger logger = new TestLogger();
+
+        // Act
+        logger.Debug("test");
+        // Assert
+        Assert.AreEqual((LogLevel.Debug, "test"), logger.LoggedMessages[0]);
+    }
+    [TestMethod]
+    public void Warning_WithValidLogger_Success()
+    {
+        // Arrange
+        TestLogger logger = new TestLogger();
+
+        // Act
+        logger.Warning("test");
+        // Assert
+        Assert.AreEqual((LogLevel.Warning, "test"), logger.LoggedMessages[0]);
+    }
+    [TestMethod]
+    public void Information_WithValidLogger_Success()
+    {
+        // Arrange
+        TestLogger logger = new TestLogger();
+
+        // Act
+        logger.Information("test");
+        // Assert
+        Assert.AreEqual((LogLevel.Information, "test"), logger.LoggedMessages[0]);
     }
     #endregion
 
@@ -70,7 +100,7 @@ public class BaseLoggerMixinsTests
     public void Error_WithData_LogsMessage()
     {
         // Arrange
-        var logger = new TestLogger();
+        TestLogger logger = new TestLogger();
 
         // Act
         //logger.Error("Message {0}", 42);
