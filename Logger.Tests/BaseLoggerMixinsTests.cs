@@ -12,41 +12,41 @@ public class BaseLoggerMixinsTests
     public void Error_WithNullLogger_ThrowsException()
     {
         // Arrange
-
-        // Act
         FileLogger fileLogger = null!;
-        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Error("Message"));
+        // Act
         // Assert
+        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Error("Message"));
+
     }
     [TestMethod]
     public void Debug_WithNullLogger_ThrowsException()
     {
         // Arrange
-
-        // Act
         FileLogger fileLogger = null!;
-        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Debug("Message"));
+        // Act
         // Assert
+        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Debug("Message"));
+
     }
     [TestMethod]
     public void Warning_WithNullLogger_ThrowsException()
     {
         // Arrange
-
-        // Act
         FileLogger fileLogger = null!;
-        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Warning("Message"));
+        // Act
         // Assert
+        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Warning("Message"));
+
     }
     [TestMethod]
     public void Information_WithNullLogger_ThrowsException()
     {
         // Arrange
-
-        // Act
         FileLogger fileLogger = null!;
-        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Information("Message"));
+        // Act
         // Assert
+        Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Information("Message"));
+
     }
     #endregion
     #region Extention Methods : Valid
@@ -66,7 +66,6 @@ public class BaseLoggerMixinsTests
     {
         // Arrange
         TestLogger logger = new TestLogger();
-
         // Act
         logger.Debug("test");
         // Assert
@@ -77,7 +76,6 @@ public class BaseLoggerMixinsTests
     {
         // Arrange
         TestLogger logger = new TestLogger();
-
         // Act
         logger.Warning("test");
         // Assert
@@ -88,7 +86,6 @@ public class BaseLoggerMixinsTests
     {
         // Arrange
         TestLogger logger = new TestLogger();
-
         // Act
         logger.Information("test");
         // Assert
