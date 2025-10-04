@@ -12,10 +12,10 @@ public class FileLoggerTests
     public void Log_WritesToFile_Success()
     {
         // Arrange
-        LogFactory logFactory = new LogFactory();
+        LogFactory logFactory = new();
         string loggerFilePath = "out.txt";
         logFactory.ConfigureFileLogger(loggerFilePath);
-        FileLogger logger = (FileLogger)logFactory.CreateLogger("MyTestApp")!;
+        FileLogger logger = (FileLogger)logFactory.CreateLogger("MyTestApp", LogFormat.File)!;
         string testString = "TEST";
         // Act
         logger.Log(LogLevel.Debug, testString);
@@ -35,9 +35,9 @@ public class FileLoggerTests
     public void CreateLogger_CreatedWithoutLogFactory_IsNull()
     {
         // Arrange
-        LogFactory logFactory = new LogFactory();
+        LogFactory logFactory = new();
         // Act
-        BaseLogger logger = logFactory.CreateLogger("MyTestApp")!;
+        BaseLogger logger = logFactory.CreateLogger("MyTestApp", LogFormat.File)!;
         // Assert
         Assert.IsNull(logger);
     }
