@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -9,13 +10,44 @@ namespace Logger.Tests;
 public class LogFactoryTests
 {
     [TestMethod]
-    public void LogFactory_ConsoleCreation_Successful()
+    public void LogFactory_BaseLogger_ThrowsNotImplementedException()
     {
         // Arrange
         LogFactory logFactory = new();
         // Act
-        //ConsoleLogger logger = logFactory.CreateLogger<ConsoleLogger>("MyApp")!;
+        TargetInvocationException ex = Assert.Throws<TargetInvocationException>(() => logFactory.CreateLogger<BaseLogger>("Test"));
         // Assert
-        //Assert.IsNotNull(logger);
+        //The exception gets wrapped and has to be unwinded. That is why a second assert exists within this test.
+        Assert.IsInstanceOfType(ex.InnerException, typeof(NotImplementedException));
+    }
+    [TestMethod]
+    public void LogFactory_ChangeFileOutput_Successful()
+    {
+        // Arrange
+        LogFactory logFactory = new();
+        // Act
+        logFactory.ConfigureFileLogger("out.txt");
+        FileLogger logger = logFactory.CreateLogger<FileLogger>("MyApp")!;
+        logFactory.ConfigureFileLogger("betterOut.txt");
+        FileLogger logger2 = logFactory.CreateLogger<FileLogger>("MyApp")!;
+
+        // Assert
+        Assert.AreNotEqual(logger.Path, logger2.Path);
+    }
+    [TestMethod]
+    public void LogFactory_FileOutputUnique_Successful()
+    {
+        // Arrange
+        LogFactory logFactory = new();
+        LogFactory logFactory2 = new();
+        // Act
+        logFactory.ConfigureFileLogger("out.txt");
+        logFactory2.ConfigureFileLogger("betterOut.txt");
+
+        FileLogger logger = logFactory.CreateLogger<FileLogger>("MyApp")!;
+        FileLogger logger2 = logFactory2.CreateLogger<FileLogger>("MyApp")!;
+
+        // Assert
+        Assert.AreNotEqual(logger.Path, logger2.Path);
     }
 }

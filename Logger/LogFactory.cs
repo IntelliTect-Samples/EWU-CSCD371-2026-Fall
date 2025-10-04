@@ -2,25 +2,25 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Net;
+using System.Reflection;
 
 namespace Logger;
 
 public class LogFactory
 {
-    private readonly Dictionary<LogFormat, Type> loggers = new Dictionary<LogFormat, Type>(){ 
-        {LogFormat.File, typeof(FileLogger)},
-        {LogFormat.Console, typeof(FileLogger)}};
-    private static string? FilePath { get; set; }
+    private string? FilePath { get; set; }
     public void ConfigureFileLogger(string loggerFilePath)
     {
         FilePath = loggerFilePath;
     }
 
-    public BaseLogger? CreateLogger(string className, LogFormat format = LogFormat.Console)
+    public T? CreateLogger<T>(string className)
+    where T : BaseLogger
     {
-        var method = loggers[format].GetMethod("Create", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
-        BaseLogger? newLogger = (BaseLogger?)method.Invoke(null, [className, FilePath!]);
+        MethodInfo method = typeof(T).GetMethod("Create", BindingFlags.Static | BindingFlags.Public);
+        if (method == null)
+            throw new InvalidOperationException($"{typeof(T).Name} must have a public static Create method.");
 
-        return newLogger;
+        return (T?)method.Invoke(null, [className, FilePath]);
     }
 }
