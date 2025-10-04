@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.IO;
 
 namespace Logger;
 
@@ -8,7 +9,7 @@ public class FileLogger : BaseLogger
     public string? Path { get; set; }
     public override void Log(LogLevel logLevel, string message)
     {
-        Console.WriteLine($"{DateTime.Now} {nameof(this.Name)} {logLevel} {message}");
+        File.AppendAllText(Path, $"{DateTime.Now} {nameof(this.Name)} {logLevel} {message}");
     }
 
     public new static BaseLogger? Create(string className, string? filePath = null)

@@ -7,8 +7,9 @@ namespace Logger;
 
 public class LogFactory
 {
-    private readonly Dictionary<LogFormat, Type> loggers = new Dictionary<LogFormat, Type>(){ {
-        LogFormat.File, typeof(FileLogger) }};
+    private readonly Dictionary<LogFormat, Type> loggers = new Dictionary<LogFormat, Type>(){ 
+        {LogFormat.File, typeof(FileLogger)},
+        {LogFormat.Console, typeof(FileLogger)}};
     private static string? FilePath { get; set; }
     public void ConfigureFileLogger(string loggerFilePath)
     {
