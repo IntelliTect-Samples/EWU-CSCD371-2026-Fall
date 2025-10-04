@@ -15,7 +15,7 @@ public class LogFactoryTests
         // Arrange
         LogFactory logFactory = new();
         // Act
-        TargetInvocationException ex = Assert.Throws<TargetInvocationException>(() => logFactory.CreateLogger<BaseLogger>("Test"));
+        TargetInvocationException ex = Assert.Throws<TargetInvocationException>(() => logFactory.CreateLogger<BaseLogger>(nameof(LogFactoryTests)));
         // Assert
         //The exception gets wrapped and has to be unwinded. That is why a second assert exists within this test.
         Assert.IsInstanceOfType(ex.InnerException, typeof(NotImplementedException));
@@ -27,9 +27,9 @@ public class LogFactoryTests
         LogFactory logFactory = new();
         // Act
         logFactory.ConfigureFileLogger("out.txt");
-        FileLogger logger = logFactory.CreateLogger<FileLogger>("MyApp")!;
+        FileLogger logger = logFactory.CreateLogger<FileLogger>(nameof(LogFactoryTests))!;
         logFactory.ConfigureFileLogger("betterOut.txt");
-        FileLogger logger2 = logFactory.CreateLogger<FileLogger>("MyApp")!;
+        FileLogger logger2 = logFactory.CreateLogger<FileLogger>(nameof(LogFactoryTests))!;
 
         // Assert
         Assert.AreNotEqual(logger.Path, logger2.Path);
@@ -44,8 +44,8 @@ public class LogFactoryTests
         logFactory.ConfigureFileLogger("out.txt");
         logFactory2.ConfigureFileLogger("betterOut.txt");
 
-        FileLogger logger = logFactory.CreateLogger<FileLogger>("MyApp")!;
-        FileLogger logger2 = logFactory2.CreateLogger<FileLogger>("MyApp")!;
+        FileLogger logger = logFactory.CreateLogger<FileLogger>(nameof(LogFactoryTests))!;
+        FileLogger logger2 = logFactory2.CreateLogger<FileLogger>(nameof(LogFactoryTests))!;
 
         // Assert
         Assert.AreNotEqual(logger.Path, logger2.Path);

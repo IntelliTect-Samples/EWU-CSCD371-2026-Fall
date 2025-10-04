@@ -15,7 +15,7 @@ public class FileLoggerTests
         LogFactory logFactory = new();
         string loggerFilePath = "out.txt";
         logFactory.ConfigureFileLogger(loggerFilePath);
-        FileLogger logger = logFactory.CreateLogger<FileLogger>("MyTestApp")!;
+        FileLogger logger = logFactory.CreateLogger<FileLogger>(nameof(FileLoggerTests))!;
         string testString = "TEST";
         // Act
         logger.Log(LogLevel.Debug, testString);
@@ -37,7 +37,7 @@ public class FileLoggerTests
         // Arrange
         LogFactory logFactory = new();
         // Act
-        FileLogger logger = logFactory.CreateLogger<FileLogger>("MyTestApp")!;
+        FileLogger logger = logFactory.CreateLogger<FileLogger>(nameof(FileLoggerTests))!;
         // Assert
         Assert.IsNull(logger);
     }
@@ -48,7 +48,7 @@ public class FileLoggerTests
         LogFactory logFactory = new();
         logFactory.ConfigureFileLogger("fakeFile.txt");
         // Act
-        FileLogger logger = logFactory.CreateLogger<FileLogger>("MyTestApp")!;
+        FileLogger logger = logFactory.CreateLogger<FileLogger>(nameof(FileLoggerTests))!;
         // Assert
         Assert.IsNotNull(logger);
     }
