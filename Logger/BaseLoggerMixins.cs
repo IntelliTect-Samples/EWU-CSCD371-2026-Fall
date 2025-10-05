@@ -6,26 +6,26 @@ public static class BaseLoggerMixins
 {
     public static void Error(this BaseLogger logger, string message, params object[] arguments)
     {
-        if (logger == null) throw new ArgumentNullException();
+        if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-        logger.Log(LogLevel.Error, arguments?.Length == 0 ? message : string.Format(message,arguments));
+        logger.Log(LogLevel.Error, arguments?.Length == 0 ? message : string.Format(System.Globalization.CultureInfo.InvariantCulture, message, arguments));
     }
     public static void Warning(this BaseLogger logger, string message, params object[] arguments)
     {
-        if (logger == null) throw new ArgumentNullException();
+        if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-        logger.Log(LogLevel.Warning, arguments?.Length == 0 ? message : string.Format(message, arguments));
+        logger.Log(LogLevel.Warning, arguments?.Length == 0 ? message : string.Format(System.Globalization.CultureInfo.InvariantCulture, message, arguments));
     }
     public static void Information(this BaseLogger logger, string message, params object[] arguments)
     {
-        if (logger == null) throw new ArgumentNullException();
+        if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-        logger.Log(LogLevel.Information, arguments?.Length == 0 ? message : string.Format(message, arguments));
+        logger.Log(LogLevel.Information, arguments?.Length == 0 ? message : string.Format(System.Globalization.CultureInfo.InvariantCulture, message, arguments));
     }
     public static void Debug(this BaseLogger logger, string message, params object[] arguments)
     {
-        if (logger == null) throw new ArgumentNullException();
+        if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-        logger.Log(LogLevel.Debug, arguments?.Length == 0 ? message : string.Format(message, arguments));
+        logger.Log(LogLevel.Debug, arguments?.Length == 0 ? message : string.Format(System.Globalization.CultureInfo.InvariantCulture, message, arguments));
     }
 }
