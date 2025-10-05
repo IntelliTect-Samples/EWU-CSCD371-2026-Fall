@@ -24,17 +24,17 @@ public class ConsoleLoggerTests
     public void Log_ValidLog_MessageLoggedInStandardOutput()
     {
         // Arrange
-        var logFactory = new LogFactory();
-        var newLogger = logFactory.CreateLogger<ConsoleLogger>(nameof(ConsoleLoggerTests))!;
-        var message = "Log Message";
-        using var sw = new StringWriter();
-        var originalOut = Console.Out;
+        LogFactory logFactory = new ();
+        ConsoleLogger newLogger = logFactory.CreateLogger<ConsoleLogger>(nameof(ConsoleLoggerTests))!;
+        string message = "Log Message";
+        using StringWriter sw = new ();
+        TextWriter originalOut = Console.Out;
         Console.SetOut(sw);
 
         // Act
         newLogger.Information(message);
         Console.SetOut(originalOut);
-        var output = sw.ToString();
+        string output = sw.ToString();
 
         // Assert
         Assert.IsTrue(output.Contains(message));
@@ -43,11 +43,11 @@ public class ConsoleLoggerTests
     public void Log_MultipleLogs_Success()
     {
         // Arrange
-        var logFactory = new LogFactory();
-        var newLogger = logFactory.CreateLogger<ConsoleLogger>(nameof(ConsoleLoggerTests))!;
-        var message = "Log Message";
-        using var sw = new StringWriter();
-        var originalOut = Console.Out;
+        LogFactory logFactory = new ();
+        ConsoleLogger newLogger = logFactory.CreateLogger<ConsoleLogger>(nameof(ConsoleLoggerTests))!;
+        string message = "Log Message";
+        using StringWriter sw = new ();
+        TextWriter originalOut = Console.Out;
         Console.SetOut(sw);
 
         // Act
@@ -55,7 +55,7 @@ public class ConsoleLoggerTests
         newLogger.Debug(message);
         newLogger.Error(message);
         Console.SetOut(originalOut);
-        var output = sw.ToString();
+        string output = sw.ToString();
 
         // Assert
         Assert.IsTrue(output.Contains("Information"));
