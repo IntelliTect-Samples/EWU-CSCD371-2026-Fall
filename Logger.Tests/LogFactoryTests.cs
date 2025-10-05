@@ -17,7 +17,7 @@ public class LogFactoryTests
         TargetInvocationException ex = Assert.Throws<TargetInvocationException>(() => logFactory.CreateLogger<BaseLogger>(nameof(LogFactoryTests)));
         // Assert
         //The exception gets wrapped and has to be unwinded. That is why a second assert exists within this test.
-        Assert.IsInstanceOfType(ex.InnerException, typeof(NotImplementedException));
+        Assert.IsInstanceOfType<NotImplementedException>(ex.InnerException);
     }
     [TestMethod]
     public void LogFactory_ChangeFileOutput_Successful()

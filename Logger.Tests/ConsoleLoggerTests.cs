@@ -20,7 +20,7 @@ public class ConsoleLoggerTests
         // Act
 
         // Assert
-        Assert.IsInstanceOfType(newLogger, typeof(ConsoleLogger));
+        Assert.IsInstanceOfType<ConsoleLogger>(newLogger);
     }
 
     [TestMethod]
@@ -59,7 +59,7 @@ public class ConsoleLoggerTests
         newLogger.Error(message);
         Console.SetOut(originalOut);
         string output = sw.ToString();
-        int lineCount = output.Split(new[] { Environment.NewLine, "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Count();
+        int lineCount = output.Split(new[] { Environment.NewLine, "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Length;
 
         // Assert
         Assert.Contains("Information", output);

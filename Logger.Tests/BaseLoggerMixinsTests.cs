@@ -137,7 +137,7 @@ public class TestLogger : BaseLogger
         LoggedMessages.Add((logLevel, message));
     }
 
-    public new BaseLogger? Create(string className, string? filePath = null)
+    public new static BaseLogger? Create(string className, string? filePath = null)
     {
         return new TestLogger
         {
