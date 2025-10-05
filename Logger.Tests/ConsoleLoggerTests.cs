@@ -1,7 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Logger.Tests;
 
@@ -37,7 +40,7 @@ public class ConsoleLoggerTests
         string output = sw.ToString();
 
         // Assert
-        Assert.IsTrue(output.Contains(message));
+        Assert.Contains(message, output);
     }
     [TestMethod]
     public void Log_MultipleLogs_Success()
@@ -56,10 +59,12 @@ public class ConsoleLoggerTests
         newLogger.Error(message);
         Console.SetOut(originalOut);
         string output = sw.ToString();
+        int lineCount = output.Split(new[] { Environment.NewLine, "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Count();
 
         // Assert
-        Assert.IsTrue(output.Contains("Information"));
-        Assert.IsTrue(output.Contains("Debug"));
-        Assert.IsTrue(output.Contains("Error"));
+        Assert.Contains("Information", output);
+        Assert.Contains("Debug", output);
+        Assert.Contains("Error", output);
+        Assert.AreEqual(3, lineCount);
     }
 }
