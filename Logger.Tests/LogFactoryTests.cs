@@ -5,5 +5,35 @@ namespace Logger.Tests;
 [TestClass]
 public class LogFactoryTests
 {
+    [TestMethod]
+    public void CreateLogger_WithoutBeingConfigured_ReturnsNull()
+    {
+        // Testing for: If the file logger has not be configured in the LogFactory, its CreateLogger method should return null
+        // Arrange
+        LogFactory factory = new();
+        // Act
+        var logger = factory.CreateLogger(nameof(LogFactoryTests));
+        // Assert
+        Assert.IsNull(logger);
+    }
 
+    [TestMethod]
+    public void CreateLogger_ProperConfiguration_ReturnsLogger()
+    {
+        // Arrange
+        LogFactory factory = new();
+        string expectedPath = "log/output.txt";
+        factory.ConfigureFileLogger(expectedPath);
+
+        // Act
+        var logger = factory.CreateLogger(nameof(LogFactoryTests));
+
+        // Assert
+        Assert.IsNotNull(logger);
+        Assert.IsInstanceOfType<FileLogger>(logger);
+        Assert.AreEqual(nameof(LogFactoryTests), logger.ClassName);
+
+        var fileLogger = logger as FileLogger;
+        Assert.AreEqual(expectedPath, fileLogger?.FilePath);
+    }
 }

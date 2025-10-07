@@ -6,4 +6,4 @@ public enum LogLevel
     Warning,
     Information,
     Debug
-}
+} 
