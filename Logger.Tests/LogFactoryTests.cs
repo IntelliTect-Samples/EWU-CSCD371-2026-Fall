@@ -21,13 +21,11 @@ public class LogFactoryTests
     [TestMethod]
     public void CreateLogger_ProperConfiguration_ReturnsLogger()
     {
-        // Testing for: The LogFactory should be updated with a new method ConfigureFileLogger.
-        // This should take in a file path and store it in a private member.
-        // It should use this when instantiating a new FileLogger in its CreateLogger method
         // Arrange
         LogFactory factory = new();
         string expectedPath = "log/output.txt";
         factory.ConfigureFileLogger(expectedPath);
+
         // Act
         BaseLogger? logger = factory.CreateLogger(nameof(LogFactoryTests));
         // Assert

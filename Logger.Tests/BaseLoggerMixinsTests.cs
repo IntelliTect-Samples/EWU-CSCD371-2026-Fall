@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using Logger; // Add this to use Logger.BaseLogger and Logger.LogLevel
 
 namespace Logger.Tests;
 
@@ -111,8 +112,12 @@ public class TestLogger : BaseLogger
 {
     public List<(LogLevel LogLevel, string Message)> LoggedMessages { get; } = new List<(LogLevel, string)>();
 
-    public override void Log(LogLevel logLevel, string message)
+    public string ClassName => throw new NotImplementedException();
+
+
+    public void Log(LogLevel logLevel, string message)
     {
         LoggedMessages.Add((logLevel, message));
     }
 }
+// Remove the duplicate BaseLogger and LogLevel definitions
