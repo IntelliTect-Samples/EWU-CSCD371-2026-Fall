@@ -8,29 +8,100 @@ namespace Logger.Tests;
 public class BaseLoggerMixinsTests
 {
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
     public void Error_WithNullLogger_ThrowsException()
     {
         // Arrange
+        BaseLogger? logger = null;
+        string message = "";
 
         // Act
-        //BaseLoggerMixins.Error(null, "");
+        void Act() => BaseLoggerMixins.Error(logger, message);
 
         // Assert
+        Assert.ThrowsExactly<ArgumentNullException>(Act);
+    }
+
+    [TestMethod]
+    public void EnsureLogger_WithNullLogger_ThrowsException()
+    {
+        // Arrange
+        BaseLogger? logger = null;
+        // Act
+        void Act() => BaseLoggerMixins.EnsureLogger(logger);
+        // Assert
+        Assert.ThrowsExactly<ArgumentNullException>(Act);
     }
 
     [TestMethod]
     public void Error_WithData_LogsMessage()
     {
         // Arrange
-        var logger = new TestLogger();
+        TestLogger logger = new();
 
         // Act
-        //logger.Error("Message {0}", 42);
+        logger.Error("Message {0}", 42);
 
         // Assert
         Assert.AreEqual(1, logger.LoggedMessages.Count);
         Assert.AreEqual(LogLevel.Error, logger.LoggedMessages[0].LogLevel);
+        Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
+    }
+
+    [TestMethod]
+    public void Error_WithMultipleArguments_FormatsCorrectly()
+    {
+        // Arrange
+        TestLogger logger = new();
+        // Act
+        logger.Error("Values: {0}, {1}", "A", "B");
+        // Assert
+        Assert.AreEqual(1, logger.LoggedMessages.Count);
+        Assert.AreEqual(LogLevel.Error, logger.LoggedMessages[0].LogLevel);
+        Assert.AreEqual("Values: A, B", logger.LoggedMessages[0].Message);
+    }
+
+    [TestMethod]
+    public void Warning_WithData_LogsMessage()
+    {
+        // Arrange
+        TestLogger logger = new();
+
+        // Act
+        logger.Warning("Message {0}", 42);
+
+        // Assert
+        Assert.AreEqual(1, logger.LoggedMessages.Count);
+        Assert.AreEqual(LogLevel.Warning, logger.LoggedMessages[0].LogLevel);
+        Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
+    }
+
+    [TestMethod]
+    public void Information_WithData_LogsMessage()
+    {
+        // Arrange
+        TestLogger logger = new();
+
+        // Act
+        logger.Information("Message {0}", 42);
+
+        // Assert
+        Assert.AreEqual(1, logger.LoggedMessages.Count);
+        Assert.AreEqual(LogLevel.Information, logger.LoggedMessages[0].LogLevel);
+        Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
+    }
+
+    [TestMethod]
+    public void Debug_WithData_LogsMessage()
+    {
+        // Arrange
+        TestLogger logger = new();
+
+        // Act
+        logger.Debug("Message {0}", 42);
+
+        // Assert
+        Assert.AreEqual(1, logger.LoggedMessages.Count);
+        Assert.AreEqual(LogLevel.Debug, logger.LoggedMessages[0].LogLevel);
         Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
     }
 
