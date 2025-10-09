@@ -22,7 +22,7 @@ public static class BaseLoggerMixins
         if (logger == null)
             throw new ArgumentNullException(nameof(logger));
 
-        var formattedMessage = (arguments == null || arguments.Length == 0) ? message: string.Format(message, arguments);
+        var formattedMessage = (arguments == null || arguments.Length == 0) ? message: string.Format(CultureInfo.InvariantCulture, message, arguments);
 
         logger.Log(level, formattedMessage);
     }
