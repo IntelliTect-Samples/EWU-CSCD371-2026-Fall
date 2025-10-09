@@ -19,8 +19,7 @@ public static class BaseLoggerMixins
 
     private static void LogInternal(BaseLogger logger, LogLevel level, string message, object[] arguments)
     {
-        if (logger == null)
-            throw new ArgumentNullException(nameof(logger));
+        ArgumentNullException.ThrowIfNull(logger);
 
         var formattedMessage = (arguments == null || arguments.Length == 0) ? message: string.Format(CultureInfo.InvariantCulture, message, arguments);
 
