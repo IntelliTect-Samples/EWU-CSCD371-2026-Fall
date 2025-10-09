@@ -100,7 +100,7 @@ public class TestLogger : BaseLogger
     {
         return new TestLogger
         {
-            Name = className
+            SourceClassName = className
         };
     }
 

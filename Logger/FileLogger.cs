@@ -8,7 +8,7 @@ public class FileLogger : BaseLogger
     public string? FilePath { get; set; }
     public override void Log(LogLevel logLevel, string message)
     {
-        File.AppendAllLines(FilePath!, new[] { $"{DateTime.Now} {this.Name} {logLevel}: {message}" });
+        File.AppendAllLines(FilePath!, new[] { $"{DateTime.Now} {this.SourceClassName} {logLevel}: {message}" });
     }
 
     public new static BaseLogger? Create(string className, string? filePath = null)
@@ -20,7 +20,7 @@ public class FileLogger : BaseLogger
 
         FileLogger newLogger = new FileLogger
         {
-            Name = className,
+            SourceClassName = className,
             FilePath = filePath
         };
         return newLogger;
