@@ -6,7 +6,7 @@ public class ConsoleLogger : BaseLogger
 {
     public override void Log(LogLevel logLevel, string message)
     {
-        Console.WriteLine($"{DateTime.Now} {nameof(this.Name)} {logLevel} {message}");
+        Console.WriteLine($"{DateTime.Now} {this.Name} {logLevel} {message}");
     }
 
     public new static BaseLogger Create(string className, string? filePath = null)

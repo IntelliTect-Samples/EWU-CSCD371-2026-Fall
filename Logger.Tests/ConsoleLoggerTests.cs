@@ -4,7 +4,6 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Logger.Tests;
 

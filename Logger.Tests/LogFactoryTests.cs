@@ -31,7 +31,7 @@ public class LogFactoryTests
         FileLogger logger2 = logFactory.CreateLogger<FileLogger>(nameof(LogFactoryTests))!;
 
         // Assert
-        Assert.AreNotEqual(logger.Path, logger2.Path);
+        Assert.AreNotEqual(logger.FilePath, logger2.FilePath);
     }
     [TestMethod]
     public void LogFactory_FileOutputUnique_Successful()
@@ -47,6 +47,6 @@ public class LogFactoryTests
         FileLogger logger2 = logFactory2.CreateLogger<FileLogger>(nameof(LogFactoryTests))!;
 
         // Assert
-        Assert.AreNotEqual(logger.Path, logger2.Path);
+        Assert.AreNotEqual(logger.FilePath, logger2.FilePath);
     }
 }

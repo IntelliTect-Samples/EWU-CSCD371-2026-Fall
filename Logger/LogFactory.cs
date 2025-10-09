@@ -5,10 +5,10 @@ namespace Logger;
 
 public class LogFactory
 {
-    private string? FilePath { get; set; }
+    private string? _FilePath { get; set; }
     public void ConfigureFileLogger(string loggerFilePath)
     {
-        FilePath = loggerFilePath;
+        _FilePath = loggerFilePath;
     }
 
     public T? CreateLogger<T>(string className)
@@ -18,6 +18,6 @@ public class LogFactory
         if (method == null)
             throw new InvalidOperationException($"{typeof(T).Name} must have a public static Create method.");
 
-        return (T?)method.Invoke(null, [className, FilePath]);
+        return (T?)method.Invoke(null, [className, _FilePath]);
     }
 }

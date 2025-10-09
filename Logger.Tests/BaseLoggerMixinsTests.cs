@@ -9,87 +9,46 @@ public class BaseLoggerMixinsTests
 {
     #region Extention Methods : Exception
     [TestMethod]
-    public void Error_WithNullLogger_ThrowsException()
+    public void LogType_WithNullLogger_ThrowsException()
     {
         // Arrange
         FileLogger fileLogger = null!;
         // Act
         // Assert
         Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Error("Message"));
-
-    }
-    [TestMethod]
-    public void Debug_WithNullLogger_ThrowsException()
-    {
-        // Arrange
-        FileLogger fileLogger = null!;
-        // Act
-        // Assert
         Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Debug("Message"));
-
-    }
-    [TestMethod]
-    public void Warning_WithNullLogger_ThrowsException()
-    {
-        // Arrange
-        FileLogger fileLogger = null!;
-        // Act
-        // Assert
         Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Warning("Message"));
-
-    }
-    [TestMethod]
-    public void Information_WithNullLogger_ThrowsException()
-    {
-        // Arrange
-        FileLogger fileLogger = null!;
-        // Act
-        // Assert
         Assert.ThrowsExactly<ArgumentNullException>(() => fileLogger.Information("Message"));
-
     }
     #endregion
     #region Extention Methods : Valid
     [TestMethod]
-    public void Error_WithValidLogger_Success()
+    public void AllLevels_WithNoData_LogsMessage()
     {
         // Arrange
         TestLogger logger = new TestLogger();
 
         // Act
-        logger.Error("test");
+        logger.Error("Message");
+        logger.Warning("Message");
+        logger.Information("Message");
+        logger.Debug("Message");
+
         // Assert
-        Assert.AreEqual((LogLevel.Error, "test"), logger.LoggedMessages[0]);
-    }
-    [TestMethod]
-    public void Debug_WithValidLogger_Success()
-    {
-        // Arrange
-        TestLogger logger = new TestLogger();
-        // Act
-        logger.Debug("test");
-        // Assert
-        Assert.AreEqual((LogLevel.Debug, "test"), logger.LoggedMessages[0]);
-    }
-    [TestMethod]
-    public void Warning_WithValidLogger_Success()
-    {
-        // Arrange
-        TestLogger logger = new TestLogger();
-        // Act
-        logger.Warning("test");
-        // Assert
-        Assert.AreEqual((LogLevel.Warning, "test"), logger.LoggedMessages[0]);
-    }
-    [TestMethod]
-    public void Information_WithValidLogger_Success()
-    {
-        // Arrange
-        TestLogger logger = new TestLogger();
-        // Act
-        logger.Information("test");
-        // Assert
-        Assert.AreEqual((LogLevel.Information, "test"), logger.LoggedMessages[0]);
+        Assert.AreEqual(4, logger.LoggedMessages.Count);
+
+        Assert.AreEqual(LogLevel.Error, logger.LoggedMessages[0].LogLevel);
+        Assert.AreEqual("Message", logger.LoggedMessages[0].Message);
+
+        Assert.AreEqual(LogLevel.Warning, logger.LoggedMessages[1].LogLevel);
+        Assert.AreEqual("Message", logger.LoggedMessages[1].Message);
+
+        Assert.AreEqual(LogLevel.Information, logger.LoggedMessages[2].LogLevel);
+        Assert.AreEqual("Message", logger.LoggedMessages[2].Message);
+
+        Assert.AreEqual(LogLevel.Debug, logger.LoggedMessages[3].LogLevel);
+        Assert.AreEqual("Message", logger.LoggedMessages[3].Message);
+
     }
     #endregion
     #region With Params : Valid
