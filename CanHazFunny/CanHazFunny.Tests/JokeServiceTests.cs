@@ -1,21 +1,20 @@
 ﻿using System;
 using Xunit;
 
-namespace CanHazFunny.Tests
+namespace CanHazFunny.Tests;
+
+public class JokeServiceTests
 {
-    public class JokeServiceTests
+    [Fact]
+    public void GetJoke_ReturnsNonEmptyString()
     {
-        [Fact]
-        public void GetJoke_ReturnsNonEmptyString()
-        {
-            // Arrange
-            var jokeService = new JokeService();
+        // Arrange
+        var jokeService = new JokeService();
 
-            // Act
-            string joke = jokeService.GetJoke();
+        // Act
+        string joke = jokeService.GetJoke();
 
-            // Assert
-            Assert.False(string.IsNullOrWhiteSpace(joke), "The joke should not be null or empty.");
-        }
+        // Assert
+        Assert.False(string.IsNullOrWhiteSpace(joke), "The joke should not be null or empty.");
     }
 }
