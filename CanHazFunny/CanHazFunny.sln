@@ -1,36 +1,42 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.9.34407.89
+VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CanHazFunny", "CanHazFunny\CanHazFunny.csproj", "{6E0846AC-5763-4EA1-AD60-7967B1D666DC}"
+// Solution Folder - Corrected to avoid MSB5004
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CanHazFunny", "CanHazFunny\", "{A3CB5C5C-68E2-8756-F7F6-E1E3A9700F37}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CCBDB7C6-C156-4D43-BE79-B420FF988951}"
-	ProjectSection(SolutionItems) = preProject
-		..\README.md = ..\README.md
-	EndProjectSection
+
+// FIX: Path should point to the immediate subfolder.
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanHazFunny", "CanHazFunny\CanHazFunny.csproj", "{AA923700-E509-F050-3C50-534CC1885EE8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CanHazFunny.Tests", "CanHazFunny.Tests\CanHazFunny.Tests.csproj", "{713AEBB1-BEE0-451E-8744-17EDC1282165}"
+
+// FIX: Path should point to the immediate subfolder.
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanHazFunny.Tests", "CanHazFunny.Tests\CanHazFunny.Tests.csproj", "{3E11ABAC-F183-13E2-4BDA-4D50C2500F34}"
 EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6E0846AC-5763-4EA1-AD60-7967B1D666DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E0846AC-5763-4EA1-AD60-7967B1D666DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E0846AC-5763-4EA1-AD60-7967B1D666DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E0846AC-5763-4EA1-AD60-7967B1D666DC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{713AEBB1-BEE0-451E-8744-17EDC1282165}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{713AEBB1-BEE0-451E-8744-17EDC1282165}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{713AEBB1-BEE0-451E-8744-17EDC1282165}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{713AEBB1-BEE0-451E-8744-17EDC1282165}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA923700-E509-F050-3C50-534CC1885EE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA923700-E509-F050-3C50-534CC1885EE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA923700-E509-F050-3C50-534CC1885EE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA923700-E509-F050-3C50-534CC1885EE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E11ABAC-F183-13E2-4BDA-4D50C2500F34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E11ABAC-F183-13E2-4BDA-4D50C2500F34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E11ABAC-F183-13E2-4BDA-4D50C2500F34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E11ABAC-F183-13E2-4BDA-4D50C2500F34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AA923700-E509-F050-3C50-534CC1885EE8} = {A3CB5C5C-68E2-8756-F7F6-E1E3A9700F37}
+		{3E11ABAC-F183-13E2-4BDA-4D50C2500F34} = {A3CB5C5C-68E2-8756-F7F6-E1E3A9700F37}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3B0D9224-6A46-4418-BC2C-F85C6AE8EC44}
+		SolutionGuid = {61C08FD7-50ED-4267-BE92-E1A6212F60CB}
 	EndGlobalSection
 EndGlobal

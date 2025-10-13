@@ -8,6 +8,7 @@ jobs:
     name: Run Shared Build and Test Workflow
     uses: IntelliTect-Samples/EWU-CSCD371-2025-Fall/.github/workflows/build-and-test.yml@main
     with:
-      working-directory: './CanHazFunny/'
+      # CRITICAL FIX: Sets the working directory to the inner folder where CanHazFunny.sln is located.
+      working-directory: './CanHazFunny/' 
       check-formatting: false
       add-analyzers: false
