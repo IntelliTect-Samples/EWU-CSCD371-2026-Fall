@@ -39,4 +39,42 @@ public class JesterTests
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => new Jester(outputServiceMock.Object, null!));
     }
+
+    [Fact]
+    public void TellJoke_JokeDoesNotContainChuckNorris_WritesJokeToOutput()
+    {
+        // Arrange
+        string expectedJoke = "Why did the scarecrow win an award? Because he was outstanding in his field!";
+        Mock<IJokeService> jokeServiceMock = new();
+        jokeServiceMock.Setup(js => js.GetJoke()).Returns(expectedJoke);
+        Mock<IOutputService> outputServiceMock = new();
+        Jester jester = new(outputServiceMock.Object, jokeServiceMock.Object);
+
+        // Act
+        jester.TellJoke();
+
+        // Assert
+        outputServiceMock.Verify(os => os.Write(expectedJoke), Times.Once);
+    }
+
+    [Fact]
+    public void TellJoke_JokeContainsChuckNorris_GetsNewJokeAndWritesToOutput()
+    {
+        // Arrange
+        string chuckNorrisJoke = "Chuck Norris can divide by zero.";
+        string validJoke = "Why don't scientists trust atoms? Because they make up everything!";
+        Mock<IJokeService> jokeServiceMock = new();
+        jokeServiceMock.SetupSequence(js => js.GetJoke())
+                       .Returns(chuckNorrisJoke)
+                       .Returns(validJoke);
+        Mock<IOutputService> outputServiceMock = new();
+        Jester jester = new(outputServiceMock.Object, jokeServiceMock.Object);
+
+        // Act
+        jester.TellJoke();
+
+        // Assert
+        outputServiceMock.Verify(os => os.Write(validJoke), Times.Once);
+        outputServiceMock.Verify(os => os.Write(It.Is<string>(j => j.Contains("Chuck Norris"))), Times.Never);
+    }
 }
