@@ -1,5 +1,7 @@
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Moq;
 using System;
+using System.IO;
 using Xunit;
 
 namespace CanHazFunny.Tests;
@@ -77,4 +79,28 @@ public class JesterTests
         outputServiceMock.Verify(os => os.Write(validJoke), Times.Once);
         outputServiceMock.Verify(os => os.Write(It.Is<string>(j => j.Contains("Chuck Norris"))), Times.Never);
     }
+
+    // Extra Credit Test:
+    [Fact]
+    public void Jester_TellJoke_PrintsToConsole()
+    {
+        // Arrange
+        using StringWriter stringWriter = new();
+        Console.SetOut(stringWriter);
+
+        string expectedJoke = "Why don't programmers like nature? It has too many bugs.";
+        IJokeService jokeService = Mock.Of<IJokeService>(js => js.GetJoke() == expectedJoke);
+        IOutputService outputService = new ConsoleOutputService();
+        Jester jester = new(outputService, jokeService);
+
+        // Act
+        jester.TellJoke();
+
+        // Assert
+        string consoleOutput = stringWriter.ToString().Trim();
+        Assert.Equal(expectedJoke, consoleOutput);
+    }
+
+
+
 }
