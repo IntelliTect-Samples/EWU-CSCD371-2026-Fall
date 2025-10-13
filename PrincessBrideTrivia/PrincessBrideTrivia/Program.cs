@@ -6,7 +6,7 @@ public class Program
     {
         string filePath = GetFilePath();
         Question[] questions = LoadQuestions(filePath);
-
+        Console.WriteLine("Type HINT for a hint");
         int numberCorrect = 0;
         for (int i = 0; i < questions.Length; i++)
         {
@@ -15,21 +15,35 @@ public class Program
             {
                 numberCorrect++;
             }
+
         }
         Console.WriteLine("You got " + GetPercentCorrect(numberCorrect, questions.Length) + " correct");
     }
 
     public static string GetPercentCorrect(int numberCorrectAnswers, int numberOfQuestions)
     {
-        return (numberCorrectAnswers / numberOfQuestions * 100) + "%";
+        double result = (double)numberCorrectAnswers / numberOfQuestions * 100;
+        return (int)result + "%";
     }
 
     public static bool AskQuestion(Question question)
     {
-        DisplayQuestion(question);
 
+        DisplayQuestion(question);
         string userGuess = GetGuessFromUser();
+        if (userGuess.ToUpper() == "HINT")
+        {
+            Console.WriteLine(DisplayHint(question));
+            userGuess = GetGuessFromUser();
+        }
+
         return DisplayResult(userGuess, question);
+    }
+
+    public static string DisplayHint(Question question)
+    {
+        int correctIndex = int.Parse(question.CorrectAnswerIndex) - 1;
+        return "The correct answer is: " + question.Answers[correctIndex];
     }
 
     public static string GetGuessFromUser()
@@ -56,6 +70,8 @@ public class Program
         {
             Console.WriteLine((i + 1) + ": " + question.Answers[i]);
         }
+
+
     }
 
     public static string GetFilePath()
@@ -86,6 +102,7 @@ public class Program
             question.Answers[1] = answer2;
             question.Answers[2] = answer3;
             question.CorrectAnswerIndex = correctAnswerIndex;
+            questions[i] = question;
         }
         return questions;
     }

@@ -1,8 +1,26 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace PrincessBrideTrivia.Tests;
 
 [TestClass]
 public class ProgramTests
 {
+
+    [TestMethod]
+    public void DisplayHint_ReturnsStringAnswerIndex_CorrectAnswer1()
+    {
+        //Arrange
+        Question question = new();
+        question.CorrectAnswerIndex = "1";
+        question.Answers = new string[] { "Red", "Orange", "Yellow" };
+
+        //Act
+        string hintResult = Program.DisplayHint(question);
+
+        //Assert
+        Assert.AreEqual("The correct answer is: Red", hintResult);
+    }
+
     [TestMethod]
     public void LoadQuestions_ValidFilePath_ReturnsCorrectNumberOfQuestions()
     {
