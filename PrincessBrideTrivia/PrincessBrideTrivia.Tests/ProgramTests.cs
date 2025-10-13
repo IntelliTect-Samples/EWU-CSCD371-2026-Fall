@@ -4,7 +4,7 @@ namespace PrincessBrideTrivia.Tests;
 public class ProgramTests
 {
     [TestMethod]
-    public void LoadQuestions_RetrievesQuestionsFromFile()
+    public void LoadQuestions_ValidFilePath_ReturnsCorrectNumberOfQuestions()
     {
         string filePath = Path.GetRandomFileName();
         try
@@ -27,7 +27,7 @@ public class ProgramTests
     [TestMethod]
     [DataRow("1", true)]
     [DataRow("2", false)]
-    public void DisplayResult_ReturnsTrueIfCorrect(string userGuess, bool expectedResult)
+    public void DisplayResult_ValidUserGuess_ReturnsExpectedBoolean(string userGuess, bool expectedResult)
     {
         // Arrange
         Question question = new();
@@ -41,7 +41,7 @@ public class ProgramTests
     }
 
     [TestMethod]
-    public void GetFilePath_ReturnsFileThatExists()
+    public void GetFilePath_WhenCalled_ReturnsExistingFilePath()
     {
         // Arrange
 
@@ -57,7 +57,7 @@ public class ProgramTests
     [DataRow(5, 10, "50%")]
     [DataRow(1, 10, "10%")]
     [DataRow(0, 10, "0%")]
-    public void GetPercentCorrect_ReturnsExpectedPercentage(int numberOfCorrectGuesses,
+    public void GetPercentCorrect_ValidCorrectAndTotalCounts_ReturnsFormattedPercentageString(int numberOfCorrectGuesses,
         int numberOfQuestions, string expectedString)
     {
         // Arrange
