@@ -4,7 +4,7 @@ namespace CanHazFunny;
 
 public class Jester
 {
-    /*
+    
     private readonly IOutputService _outputService;
     private readonly IJokeService _jokeService;
 
@@ -25,5 +25,5 @@ public class Jester
 
         _outputService.Write(joke);
     }
-    */
+    
 }
