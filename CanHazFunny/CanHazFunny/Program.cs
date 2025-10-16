@@ -1,6 +1,8 @@
-﻿namespace CanHazFunny;
+﻿using System;
 
-class Program
+namespace CanHazFunny;
+
+sealed class Program
 {
     static void Main(string[] args)
     {
