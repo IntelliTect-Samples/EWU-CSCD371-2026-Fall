@@ -2,13 +2,17 @@
 
 namespace CanHazFunny;
 
-public class JokeService
+public class JokeService : IJokeService
 {
-    private HttpClient HttpClient { get; } = new();
+    private readonly HttpClient _httpClient;
+    private readonly string _endpoint;
 
-    public string GetJoke()
+
+    public JokeService(HttpClient? httpClient = null, string? endpoint = null)
     {
-        string joke = HttpClient.GetStringAsync("https://geek-jokes.sameerkumar.website/api").Result;
-        return joke;
+        _httpClient = httpClient ?? new HttpClient();
+        _endpoint = endpoint ?? "https://geek-jokes.sameerkumar.website/api";
     }
+    public string GetJoke() => _httpClient.GetStringAsync(_endpoint).Result;
+   
 }
