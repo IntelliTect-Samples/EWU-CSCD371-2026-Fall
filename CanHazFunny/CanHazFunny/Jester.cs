@@ -4,14 +4,17 @@ namespace CanHazFunny;
 
 public class Jester
 {
-    
-    private readonly IOutputService _outputService;
-    private readonly IJokeService _jokeService;
+
+    public IOutputService OutputService { get; }
+    public IJokeService JokeService { get; }
 
     public Jester(IOutputService outputService, IJokeService jokeService)
     {
-        _outputService = outputService ?? throw new ArgumentNullException(nameof(outputService));
-        _jokeService = jokeService ?? throw new ArgumentNullException(nameof(jokeService));
+         ArgumentNullException.ThrowIfNull(outputService);
+         ArgumentNullException.ThrowIfNull(jokeService);
+
+           OutputService = outputService;
+           JokeService = jokeService;
     }
 
     public void TellJoke()
@@ -19,11 +22,11 @@ public class Jester
         string joke;
 
         do { 
-            joke = _jokeService.GetJoke();
+            joke = JokeService.GetJoke();
 
         } while (joke.Contains("Chuck Norris", StringComparison.OrdinalIgnoreCase));
 
-        _outputService.Write(joke);
+        OutputService.Write(joke);
     }
     
 }
