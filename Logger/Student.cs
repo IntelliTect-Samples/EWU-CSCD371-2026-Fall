@@ -1,38 +1,26 @@
 ﻿using Logger;
 using System;
 
-public record Student(Guid Id, FullName FullName, string studentNumber) : IEntity 
+public record Student : IEntity 
 {
     /// <summary>
-    /// Implemented implicitly as Student must expose Id as part of its public API.
-	/// Being a record, immutability is preserved through the constructor.
+    /// Id is exposed implicitly to be part of the public API. 
+    /// used to represent the students uniquely within the system.
+    /// Immutable to ensure consistency.
+    /// 
+    /// Name is calculated based on FullName, exposed implicitly as part of the public API.
+    /// Ensures consistency if FullName changes.
+    /// 
+    /// StudentNumber is implicit and immutable, representing a unique identifier for each student.
+    /// 
+    /// FullName is used to calculate Name, encapsulating the student's full name details.
     /// </summary>
+    public Guid Id { get; init; }
+    public string? studentNumber { get; init; }
+    public FullName FullName { get; init; }
 
-    public Guid Id { get; init; } = Id;
-
-    /// <summary>
-    /// Implemented implicity as a calculated property based on full name
-    /// This ensures consistency if Full Name changes
-    /// Name should be derived from FullName
-    ///</summary>
-    public string Name => FullName.Middle is null ? 
-		$"{FullName.First} {FullName.Last}" 
-		: $"{FullName.First} {FullName.Middle} {FullName.Last}";
-
-    /// <summary>
-    /// This is implemented Explicity to honor the interface contract
-    /// preversing from mutating Name directly
-    /// </summary>
-
-    string IEntity.Name {
-		get => Name;
-		set  { }
-	}
-
-    ///<summary>
-    /// StudentNumber is stored as a property with init-only setter so its part of the record
-    /// </summary>
-    public string StudentNumber { get; init; } = studentNumber;
-
+    public string Name => FullName.Middle is null ?
+        $"{FullName.First} {FullName.Last}"
+        : $"{FullName.First} {FullName.Middle} {FullName.Last}";
 
 }
