@@ -1,16 +1,34 @@
 ﻿namespace Logger;
 
-// Change Book from a record to a class, since records cannot inherit from non-record classes.
-// Implement the required properties and constructor.
-public class Book : EntityBase
+public record Book(Guid Id, string Title, string Author) : IEntity
 {
-    public string Title { get; init; }
-    public string Author { get; init; }
+    ///<summary>
+    ///Implemented implicitly because Id is part of public API
+    ///As this is a record, immutability is conserved through the constructor
+    ///</summary>
 
-    
-    public override string Name
+    public Guid Id { get; init; } = Id;
+
+    /// <summary>
+    /// Implemented implicitly as a calculated property as books name is derived
+    /// from title + author
+    /// With no backing field, the getter computes the value
+    /// </summary>
+    public string Name => $"{Title} by {Author }";
+    /// <summary>
+    /// book must not logically allow renaming manually
+    /// Therefore the setter is implemented explicity so that
+    /// the interface is honored
+    /// the public API still is immutable
+    /// </summary>
+
+    string IEntity.Name 
     {
-        get => $"{Title} by {Author}";
-        set => throw new InvalidOperationException();
+        get => Name;
+        set { }
     }
-}
+    ///<summary>
+    ///setter ignored to preserve immutability
+    /// </summary>
+} 
+
