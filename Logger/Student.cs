@@ -1,4 +1,4 @@
-﻿using Logger;
+﻿namespace Logger;
 using System;
 
 public record Student : IEntity 
