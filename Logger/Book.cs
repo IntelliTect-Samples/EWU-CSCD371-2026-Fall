@@ -13,6 +13,7 @@ public record Book : IEntity
     ///
     /// Name is calculated based on Title and Author, being exposed implicitly
     /// as part of the public API and should be able to be seen publicly.
+    /// Usually we refer to books by their title and author together. Usually..
     /// </summary>
 
     public Book(Guid id, string title, string? author = null)

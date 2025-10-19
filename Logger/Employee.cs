@@ -1,33 +1,37 @@
 ﻿using System;
 namespace Logger;
-public record Employee(Guid Id, FullName FullName, string Position) : IEntity
+public record Employee : IEntity
 {
-	/// <summary>
-	/// Implemented implicitly as Employee must expose Id as part of its public API.
-	/// Being a record, immutability is preserved through the constructor.
-	/// </summary>
-	public Guid Id { get; init; } = Id;
-	/// <summary>
-	/// Implemented implicity as a calculated property based on full name
-	/// This ensures consistency if Full Name changes
-	/// Name should be derived from FullName
-	///</summary>
-	public string Name => FullName.Middle is null ?
-		$"{FullName.First} {FullName.Last}"
-		: $"{FullName.First} {FullName.Middle} {FullName.Last}";
-	/// <summary>
-	/// This is implemented Explicity to honor the interface contract
-	/// preversing from mutating Name directly
-	/// </summary>
-	string IEntity.Name
-	{
-		get => Name;
-		set { }
+    /// <summary>
+    /// Id Implemented implicitly as Employee must expose Id as part of its public API.
+    /// Immutable to ensure consistency.
+    /// Unique identifier for each employee within the system.
+    /// 
+    /// FullName is used to calculate Name, encapsulating the employee's full name details.
+    /// 
+    /// Name is calculated from FullName, implicitly defined so that it can be accessed directly
+    /// 
+    /// Position is Implicit and immutable, representing the job title or role of the employee within the organization.
+    /// 
+    /// </summary>
+	public Guid Id { get; init; }
+	public FullName FullName { get; init; }
+	public string? Position { get; init; }
+
+
+    public Employee(Guid id, FullName fullName, string? position = null) { 
+        
+        Id = id;
+        FullName = fullName;
+        Position = position;
     }
 
-    ///<summary>
-	///position is stored as a property with init-only setter so its part of the record
-	///</summary>
-    public string Position { get; init; } = Position;
+    public string Name => FullName.Middle is null ?
+        $"{FullName.First} {FullName.Last}"
+        : $"{FullName.First} {FullName.Middle} {FullName.Last}";
+
+    //Modifying FullName to incorporate immutability??
+
+
 
 }
