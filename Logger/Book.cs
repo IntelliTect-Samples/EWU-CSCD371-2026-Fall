@@ -1,34 +1,31 @@
 ﻿namespace Logger;
 
-public record Book(Guid Id, string Title, string Author) : IEntity
+public record Book : IEntity
 {
-    ///<summary>
-    ///Implemented implicitly because Id is part of public API
-    ///As this is a record, immutability is conserved through the constructor
-    ///</summary>
 
-    public Guid Id { get; init; } = Id;
+
+    public Guid Id { get; init; }
+    public string Title { get; init; }
+    public string? Author { get; init; }
 
     /// <summary>
-    /// Implemented implicitly as a calculated property as books name is derived
-    /// from title + author
-    /// With no backing field, the getter computes the value
-    /// </summary>
-    public string Name => $"{Title} by {Author }";
-    /// <summary>
-    /// book must not logically allow renaming manually
-    /// Therefore the setter is implemented explicity so that
-    /// the interface is honored
-    /// the public API still is immutable
+    /// Id is used implicitly to expose it as part of the public API.
+    /// bring immutability by using init-only setters. 
+    /// Every Bookstore has a unique identifier, allowing the system to track
+    ///
+    /// Name is calculated based on Title and Author, being exposed implicitly
+    /// as part of the public API and should be able to be seen publicly.
     /// </summary>
 
-    string IEntity.Name 
+    public Book(Guid id, string title, string? author = null)
     {
-        get => Name;
-        set { }
+        Id = id;
+        Title = title;
+        Author = author;
     }
-    ///<summary>
-    ///setter ignored to preserve immutability
-    /// </summary>
+    
+    public string Name => Author is null ? Title : $"{Title} by {Author}";
+
+    
 } 
 
