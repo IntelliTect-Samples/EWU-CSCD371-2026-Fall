@@ -18,8 +18,15 @@ public record Student : IEntity
     /// You wouldnt want to hide a students name.
     /// </summary>
     public Guid Id { get; init; }
-    public string? studentNumber { get; init; }
+    public string? StudentNumber { get; init; }
     public FullName FullName { get; init; }
+
+    public Student(Guid id, FullName fullName, string? studentNumber = null) 
+    { 
+        Id = id;
+        FullName = fullName;
+        StudentNumber = studentNumber;
+    }
 
     public string Name => FullName.Middle is null ?
         $"{FullName.First} {FullName.Last}"
