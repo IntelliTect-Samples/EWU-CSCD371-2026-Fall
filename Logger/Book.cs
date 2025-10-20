@@ -29,7 +29,7 @@ public record Book : IEntity
             : author;
     }
     
-    public string Name => $"{Title} by {Author}";
+    public string Name =>  $"{Title} by {Author}";
 
     
 } 

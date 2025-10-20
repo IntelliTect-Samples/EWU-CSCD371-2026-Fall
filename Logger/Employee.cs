@@ -20,10 +20,9 @@ public record Employee : IEntity
 
 
     public Employee(Guid id, FullName fullName, string? position = null) { 
-        
         Id = id;
         FullName = fullName;
-        Position = position;
+        Position = string.IsNullOrWhiteSpace(position) ? throw new ArgumentException($"'{nameof(position)}' cannot be null or whitespace", nameof(position)) : position;
     }
 
     public string Name => FullName.Middle is null ?

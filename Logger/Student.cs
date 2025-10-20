@@ -24,9 +24,8 @@ public record Student : IEntity
     public Student(Guid id, FullName fullName, string? studentNumber = null) 
     { 
         Id = id;
-
         FullName = fullName;
-        StudentNumber = studentNumber;
+        StudentNumber = string.IsNullOrWhiteSpace(studentNumber) ? throw new ArgumentException($"'nameof(studentNumber)' cannot be null or whitespace", nameof(studentNumber)) : studentNumber;
     }
 
     public string Name => FullName.Middle is null ?
