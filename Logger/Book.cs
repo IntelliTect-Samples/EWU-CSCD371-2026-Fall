@@ -18,12 +18,18 @@ public record Book : IEntity
 
     public Book(Guid id, string title, string? author = null)
     {
+
         Id = id;
-        Title = title;
-        Author = author;
+        Title = string.IsNullOrWhiteSpace(title)
+            ? throw new ArgumentException($"'{nameof(title)}' cannot be null or whitespace.", nameof(title))
+            : title;
+
+        Author = string.IsNullOrWhiteSpace(author)
+            ? throw new ArgumentException($"'{nameof(author)}' cannot be null ot whitespace.", nameof(author))
+            : author;
     }
     
-    public string Name => Author is null ? Title : $"{Title} by {Author}";
+    public string Name => $"{Title} by {Author}";
 
     
 } 

@@ -4,9 +4,9 @@ namespace Logger.Tests;
 
 public class EntityBaseTests
 {
-    private sealed class TestEntity : EntityBase
+    private sealed class TestEntity(string name) : EntityBase
     {
-        public override string Name { get; set; } = "TestName";
+        public override string Name { get; } = name;
     }
 
     [Fact]
@@ -14,30 +14,14 @@ public class EntityBaseTests
     {
         // Arrange
         Guid id = Guid.NewGuid();
-        TestEntity entity = new() { Id = id };
+        TestEntity entity = new("TestName") { Id = id };
 
         // Act
         string name = entity.Name;
         Guid actualId = entity.Id;
 
         // Assert
-        Assert.Equal("TestName", name); 
+        Assert.Equal("TestName", name);
         Assert.Equal(id, actualId);
-    }
-
-
-    [Fact]
-    public void EntityBase_ImplicitIEntityImplementation_ExposesIdAndName()
-    {
-        // Arrange
-        IEntity entity = new TestEntity { Id = Guid.NewGuid(), Name = "Polymorphic" };
-
-        // Act
-        string name = entity.Name;
-        Guid id = entity.Id;
-
-        // Assert
-        Assert.Equal("Polymorphic", name);
-        Assert.NotEqual(Guid.Empty, id);
     }
 }

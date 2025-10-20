@@ -24,6 +24,7 @@ public record Student : IEntity
     public Student(Guid id, FullName fullName, string? studentNumber = null) 
     { 
         Id = id;
+
         FullName = fullName;
         StudentNumber = studentNumber;
     }
