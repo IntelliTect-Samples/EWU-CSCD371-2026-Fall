@@ -11,5 +11,5 @@ public interface IEntity
     /// Implemented implicitly to allow direct access to Name from entity instances.
     /// Mutable to support domain workflows like renaming.
     /// </summary>
-    string Name { get; set; }
+    string Name { get; }
 }

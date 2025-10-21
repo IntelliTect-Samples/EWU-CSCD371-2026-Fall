@@ -17,5 +17,5 @@ public abstract class EntityBase : IEntity
     /// "Do not implement the Name property in this abstract class"
     /// "Do force any derived classes to provide an implementation for Name"
     /// </summary>
-    public abstract string Name { get; set; }
+    public abstract string Name { get; }
 }
