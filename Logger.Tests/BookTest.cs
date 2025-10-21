@@ -18,8 +18,10 @@ public class BookTest
 		Assert.Equal("Expert guid to C#", book.Title);
 		Assert.Equal("Mark Michaelis", book.Author);
     }
+#pragma warning restore CA1707
 
-	[Fact]
+
+    [Fact]
 	public void Name_WhenAuthorIsNull_ReturnsException()
 	{
 
@@ -34,5 +36,4 @@ public class BookTest
 		Assert.Throws<ArgumentException>(() => new Book(id, ""));
 		Assert.Throws<ArgumentException>(() => new Book(id, "   "));
 	}
-	#pragma warning restore CA1707
 }
