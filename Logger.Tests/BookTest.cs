@@ -12,10 +12,10 @@ public class BookTest
 
 		Guid id = Guid.NewGuid();
 
-		Book book = new(id, "Expert guid to C#", "Mark Michaelis");
+		Book book = new(id, "Expert guide to C#", "Mark Michaelis");
 
 		Assert.Equal(id, book.Id);
-		Assert.Equal("Expert guid to C#", book.Title);
+		Assert.Equal("Expert guide to C#", book.Title);
 		Assert.Equal("Mark Michaelis", book.Author);
     }
 
