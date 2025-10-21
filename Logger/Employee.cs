@@ -14,7 +14,7 @@ public record Employee : EntityBase
     /// Position is Implicit and immutable, representing the job title or role of the employee within the organization.
     /// 
     /// </summary>
-	public Guid Id { get; init; }
+	//public new Guid Id { get; init; }
 	public FullName FullName { get; init; }
 	public string? Position { get; init; }
 

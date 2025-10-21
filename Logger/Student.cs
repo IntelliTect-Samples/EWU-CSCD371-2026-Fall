@@ -17,7 +17,7 @@ public record Student : EntityBase
     /// FullName is used to calculate Name, encapsulating the student's full name details.
     /// You wouldnt want to hide a students name.
     /// </summary>
-    public Guid Id { get; init; }
+    //public new Guid Id { get; init; }
     public string? StudentNumber { get; init; }
     public FullName FullName { get; init; }
 
