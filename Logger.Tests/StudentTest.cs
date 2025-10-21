@@ -5,7 +5,9 @@ namespace Logger.Tests;
 
 public class StudentTest
 {
-	[Fact]
+#pragma warning disable CA1707
+
+    [Fact]
 	public void Student_AssignsStudent_Correctly()
 	{
 		Guid id = Guid.NewGuid();
@@ -53,4 +55,5 @@ public class StudentTest
 		string name = student.Name;
 		Assert.Equal("Patrick Star", name);
     }
+#pragma warning restore CA1707
 }
