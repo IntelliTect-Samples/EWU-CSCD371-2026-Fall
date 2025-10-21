@@ -1,7 +1,7 @@
 ﻿namespace Logger;
 using System;
 
-public record Student : IEntity 
+public record Student : EntityBase
 {
     /// <summary>
     /// Id is exposed implicitly to be part of the public API. 
@@ -28,7 +28,7 @@ public record Student : IEntity
         StudentNumber = string.IsNullOrWhiteSpace(studentNumber) ? throw new ArgumentException($"'nameof(studentNumber)' cannot be null or whitespace", nameof(studentNumber)) : studentNumber;
     }
 
-    public string Name => FullName.Middle is null ?
+    public override string Name => FullName.Middle is null ?
         $"{FullName.First} {FullName.Last}"
         : $"{FullName.First} {FullName.Middle} {FullName.Last}";
 

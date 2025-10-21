@@ -5,7 +5,8 @@ namespace Logger.Tests;
 
 public class EmployeeTest
 {
-	[Fact]
+#pragma warning disable CA1707
+    [Fact]
 	public void Constructor_AssignsEmployee_Correctly()
 	{
 		Guid id = Guid.NewGuid();
@@ -61,5 +62,6 @@ public class EmployeeTest
 		
 		Assert.Equal("Bob Johnson", employee2.Name);
     }
+#pragma warning restore CA1707
 
 }

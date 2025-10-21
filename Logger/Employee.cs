@@ -1,6 +1,6 @@
 ﻿using System;
 namespace Logger;
-public record Employee : IEntity
+public record Employee : EntityBase
 {
     /// <summary>
     /// Id Implemented implicitly as Employee must expose Id as part of its public API.
@@ -25,7 +25,7 @@ public record Employee : IEntity
         Position = string.IsNullOrWhiteSpace(position) ? throw new ArgumentException($"'{nameof(position)}' cannot be null or whitespace", nameof(position)) : position;
     }
 
-    public string Name => FullName.Middle is null ?
+    public override string Name => FullName.Middle is null ?
         $"{FullName.First} {FullName.Last}"
         : $"{FullName.First} {FullName.Middle} {FullName.Last}";
 
