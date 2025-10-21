@@ -4,7 +4,7 @@ namespace Logger.Tests;
 
 public class EntityBaseTests
 {
-    private sealed class TestEntity(string name) : EntityBase
+    private sealed record TestEntity(string name) : EntityBase
     {
         public override string Name { get; } = name;
     }

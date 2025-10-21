@@ -1,8 +1,8 @@
 ﻿namespace Logger;
 
-public record Book : IEntity
+public record Book : EntityBase
 {
-    public Guid Id { get; init; }
+   // public new Guid Id { get; init; }
     public string Title { get; init; }
     public string? Author { get; init; }
 
@@ -29,7 +29,7 @@ public record Book : IEntity
             : author;
     }
     
-    public string Name =>  $"{Title} by {Author}";
+    public override string Name =>  $"{Title} by {Author}";
 
     
 } 

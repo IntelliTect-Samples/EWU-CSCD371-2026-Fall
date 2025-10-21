@@ -5,7 +5,7 @@
 /// Does not implement Name — forces derived classes to provide their own logic.
 /// </summary>
 
-public abstract class EntityBase : IEntity
+public abstract record class EntityBase : IEntity
 {
     /// <summary>
     /// Implemented implicitly to expose Id as part of the entity's public API.
