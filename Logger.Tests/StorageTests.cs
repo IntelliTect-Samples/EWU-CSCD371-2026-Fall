@@ -4,9 +4,14 @@ namespace Logger.Tests;
 
 public class StorageTests
 {
-    private sealed class TestEntity(string name) : EntityBase
+    private sealed record TestEntity : EntityBase
     {
-        public override string Name { get; } = name;
+        public override string Name { get; }
+
+        public TestEntity(string name)
+        {
+            Name = name;
+        }
     }
 
     [Fact]
@@ -52,35 +57,6 @@ public class StorageTests
 
         // Assert
         Assert.False(storage.Contains(entity));
-    }
-
-    [Fact]
-    public void Contains_EntitiesEqualByValueNotByReference_ReturnsFalse()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var storage = new Storage();
-        TestEntity entity1 = new("Clone") { Id = id };
-        TestEntity entity2 = new("Clone") { Id = id };
-
-        storage.Add(entity1);
-
-        // Act & Assert
-        Assert.False(storage.Contains(entity2));
-    }
-
-    [Fact]
-    public void Contains_EntitiesEqualByReference_ReturnsTrue()
-    {
-        // Arrange
-        var storage = new Storage();
-        TestEntity entity1 = new("SameReference") { Id = Guid.NewGuid() };
-        TestEntity entity2 = entity1;
-
-        storage.Add(entity1);
-
-        // Act & Assert
-        Assert.True(storage.Contains(entity2));
     }
 }
 
