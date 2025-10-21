@@ -5,6 +5,7 @@ namespace Logger.Tests;
 
 public class BookTest
 {
+	#pragma warning disable CA1707
 	[Fact]
 	public void Constructor_AssignsBook_Correctly()
 	{
@@ -33,4 +34,5 @@ public class BookTest
 		Assert.Throws<ArgumentException>(() => new Book(id, ""));
 		Assert.Throws<ArgumentException>(() => new Book(id, "   "));
 	}
+#pragma warning restore CA1707
 }
