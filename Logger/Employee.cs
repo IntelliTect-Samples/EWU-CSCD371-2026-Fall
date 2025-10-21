@@ -1,6 +1,6 @@
 ﻿using System;
 namespace Logger;
-public record Employee : EntityBase
+public record Employee : PersonBase
 {
     /// <summary>
     /// Id Implemented implicitly as Employee must expose Id as part of its public API.
@@ -14,23 +14,11 @@ public record Employee : EntityBase
     /// Position is Implicit and immutable, representing the job title or role of the employee within the organization.
     /// 
     /// </summary>
-	//public new Guid Id { get; init; }
-	public FullName FullName { get; init; }
 	public string? Position { get; init; }
 
 
-    public Employee(Guid id, FullName fullName, string? position = null) { 
-        Id = id;
-        FullName = fullName;
+    public Employee(Guid id, FullName fullName, string? position = null) : base(id, fullName) { 
+        
         Position = string.IsNullOrWhiteSpace(position) ? throw new ArgumentException($"'{nameof(position)}' cannot be null or whitespace", nameof(position)) : position;
     }
-
-    public override string Name => FullName.Middle is null ?
-        $"{FullName.First} {FullName.Last}"
-        : $"{FullName.First} {FullName.Middle} {FullName.Last}";
-
-    //Modifying FullName to incorporate immutability??
-
-
-
 }

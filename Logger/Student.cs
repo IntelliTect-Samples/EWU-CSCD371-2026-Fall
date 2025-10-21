@@ -1,7 +1,7 @@
 ﻿namespace Logger;
 using System;
 
-public record Student : EntityBase
+public record Student : PersonBase
 {
     /// <summary>
     /// Id is exposed implicitly to be part of the public API. 
@@ -17,19 +17,10 @@ public record Student : EntityBase
     /// FullName is used to calculate Name, encapsulating the student's full name details.
     /// You wouldnt want to hide a students name.
     /// </summary>
-    //public new Guid Id { get; init; }
     public string? StudentNumber { get; init; }
-    public FullName FullName { get; init; }
-
-    public Student(Guid id, FullName fullName, string? studentNumber = null) 
+    public Student(Guid id, FullName fullName, string? studentNumber = null) : base(id, fullName)
     { 
-        Id = id;
-        FullName = fullName;
         StudentNumber = string.IsNullOrWhiteSpace(studentNumber) ? throw new ArgumentException($"'nameof(studentNumber)' cannot be null or whitespace", nameof(studentNumber)) : studentNumber;
     }
-
-    public override string Name => FullName.Middle is null ?
-        $"{FullName.First} {FullName.Last}"
-        : $"{FullName.First} {FullName.Middle} {FullName.Last}";
 
 }
