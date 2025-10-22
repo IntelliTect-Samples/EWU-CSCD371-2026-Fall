@@ -30,9 +30,9 @@ public class BookTest
 	public void Constructor_WhenTitleIsNullorWhiteSpace_ThrowsException()
 	{
 		Guid id = Guid.NewGuid();
-		Assert.Throws<ArgumentException>(() => new Book(id, null!));
-		Assert.Throws<ArgumentException>(() => new Book(id, ""));
-		Assert.Throws<ArgumentException>(() => new Book(id, "   "));
+		Assert.Throws<ArgumentException>(() => new Book(id, null!, "Jack"));
+		Assert.Throws<ArgumentException>(() => new Book(id, "", "Jill"));
+		Assert.Throws<ArgumentException>(() => new Book(id, "   ", "Hill"));
 	}
 #pragma warning restore CA1707
 }

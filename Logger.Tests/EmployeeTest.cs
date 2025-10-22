@@ -25,7 +25,7 @@ public class EmployeeTest
 		Guid id = Guid.NewGuid();
 		FullName fullname = new FullName("Leoniel", "Messi", "A");
 		
-		var exception1 = Assert.Throws<ArgumentException>(() => new Employee(id, fullname, null));
+		var exception1 = Assert.Throws<ArgumentException>(() => new Employee(id, fullname, null!));
 		Assert.Contains("position", exception1.Message);
 		
 		var exception2 = Assert.Throws<ArgumentException>(() => new Employee(id, fullname, ""));
@@ -36,16 +36,23 @@ public class EmployeeTest
     }
 
 	[Fact]
-	public void Constructor_WithoutPosition_AssignsNullPosition()
+	public void Constructor_WithSameValues_IsEqual()
 	{
 		Guid id = Guid.NewGuid();
-		FullName fullname = new FullName("Rudy", "Madrigal", "B");
+		FullName fullname = new FullName("Serena", "Williams", "J");
 		
-		var exception = Assert.Throws<ArgumentException>(() => new Employee(id, fullname));
-		Assert.Contains("position", exception.Message);
+		Employee employee1 = new(id, fullname, "Tennis Player");
+		Employee employee2 = new(id, fullname, "Tennis Player");
+
+		
+		Assert.Equal(employee1, employee2);
+		Assert.Equal(employee1.GetHashCode(), employee2.GetHashCode());
+
+		Employee employee3 = new(id, fullname, "Coach");
+		Assert.NotEqual(employee1, employee3);
     }
 
-	[Fact]
+    [Fact]
 	public void Constructor_WithAndWithoutMiddleName_ReturnsCorrectFormat()
 	{
 		Guid id1 = Guid.NewGuid();
