@@ -3,7 +3,7 @@
 public record Book : EntityBase
 {
     public string Title { get; init; }
-    public string? Author { get; init; }
+    public string Author { get; init; }
 
     /// <summary>
     /// Id is used implicitly to expose it as part of the public API.
@@ -15,7 +15,7 @@ public record Book : EntityBase
     /// Usually we refer to books by their title and author together. Usually..
     /// </summary>
 
-    public Book(Guid id, string title, string? author = null)
+    public Book(Guid id, string title, string author )
     {
 
         Id = id;
@@ -30,6 +30,9 @@ public record Book : EntityBase
     
     public override string Name =>  $"{Title} by {Author}";
 
-    
-} 
+    /* name ?? throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name)); 
+     * do this instead
+     
+     */
+}
 

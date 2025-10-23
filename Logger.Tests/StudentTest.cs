@@ -24,7 +24,7 @@ public class StudentTest
 		Guid id = Guid.NewGuid();
 		FullName Name1 = new("Glitter", "Sparkles", "M");
 
-		var Exception = Assert.Throws<ArgumentException>(() => new Student(id, Name1, null));
+		var Exception = Assert.Throws<ArgumentException>(() => new Student(id, Name1, null!));
 		Assert.Contains("studentNumber", Exception.Message);
 
 	}
