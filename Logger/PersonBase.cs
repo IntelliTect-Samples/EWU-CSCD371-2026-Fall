@@ -4,12 +4,7 @@ namespace Logger;
 
 public abstract record class PersonBase: EntityBase
 {
-    /// <summary>
-    /// Explicitly redefines ID using new keyword to avoid conflicts with EntityBase.Id
-    /// We do this to ensure that PersonBase has its own unique identifier separate from EntityBase
-    /// This ensures person based entities share consistent internal logic
-    /// </summary>
-    public new Guid Id { get; init; }
+   
     /// <summary>
     /// Fullname is exposed as a normal public memeber
     /// </summary>
