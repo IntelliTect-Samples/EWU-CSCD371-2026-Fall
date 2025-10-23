@@ -1,6 +1,6 @@
 ﻿namespace Logger;
 
-public class FileLogger : BaseLogger, ILogger
+public class FileLogger : BaseLogger, ILogger // TODO: remove ILogger because BaseLogger implements it now
 {
     private FileInfo File { get; }
 
@@ -10,6 +10,7 @@ public class FileLogger : BaseLogger, ILogger
 
     public FileLogger(FileLoggerConfiguration configuration) : this(configuration.LogSource, configuration.FilePath) {}
 
+    // TODO: replace `static` with `public override` to match updated BaseLogger class, remove explicit implementation `ILogger.CreateLogger` => `CreateLogger`
     static ILogger ILogger.CreateLogger(in ILoggerConfiguration logggerConfiguration) => 
         logggerConfiguration is FileLoggerConfiguration configuration
             ? CreateLogger(configuration)

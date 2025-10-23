@@ -6,9 +6,11 @@ public class TestLogger : BaseLogger, ILogger
 
     public List<(LogLevel LogLevel, string Message)> LoggedMessages { get; } = [];
 
+    // TODO: replace ILogger with TestLogger so that the method signature is different than ILogger.CreateLogger
     public static ILogger CreateLogger(in TestLoggerConfiguration configuration) =>
         new TestLogger(configuration.LogSource);
 
+    // TODO: replace `static` with `public override` to match updated BaseLogger class, remove explicit implementation `ILogger.CreateLogger` => `CreateLogger`
     static ILogger ILogger.CreateLogger(in ILoggerConfiguration configuration) =>
         configuration is TestLoggerConfiguration testLoggerConfiguration
             ? CreateLogger(testLoggerConfiguration)
