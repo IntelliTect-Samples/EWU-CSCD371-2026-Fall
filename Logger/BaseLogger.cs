@@ -2,6 +2,8 @@
 
 // We do not implement ILogger here because you can
 // only have abstract static methods on interfaces.
+// Todo: consider implementation of Ilogger because
+// you dont have to have just static methods
 public abstract class BaseLogger
 {
     public string LogSource { get; }

@@ -1,6 +1,6 @@
 ﻿namespace Logger;
 
-public class FileLogger : BaseLogger, ILogger
+public class FileLogger : BaseLogger, ILogger //Todo: Remove Ilogger, it is unnecessary
 {
     private FileInfo File { get; }
 
@@ -14,7 +14,7 @@ public class FileLogger : BaseLogger, ILogger
         logggerConfiguration is FileLoggerConfiguration configuration
             ? CreateLogger(configuration)
             : throw new ArgumentException("Invalid configuration type", nameof(logggerConfiguration));
-
+    //Todo: Clean this and choose either explicit or implicit. Only one of these should be implemented
     public static FileLogger CreateLogger(FileLoggerConfiguration configuration) => new(configuration);
 
     public override void Log(LogLevel logLevel, string message)

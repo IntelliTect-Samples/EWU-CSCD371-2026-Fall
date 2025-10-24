@@ -6,6 +6,6 @@ public class LogFactory
 
     public BaseLogger? CreateLogger(string className) => 
         FileName is null ? null : new FileLogger(className, FileName);
-
+    //Todo: change "FileName=fileName" to "FileName = fileName"
     public void ConfigureFileLogger(string fileName) => FileName=fileName;
 }

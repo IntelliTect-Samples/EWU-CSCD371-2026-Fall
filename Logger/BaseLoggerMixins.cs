@@ -2,6 +2,7 @@
 
 public static class BaseLoggerMixins
 {
+    // Todo: Remove repeat code by refactor
     public static void Error(this BaseLogger logger, string message) =>
         (logger??throw new ArgumentNullException(nameof(logger))).Log(LogLevel.Error, message);
     public static void Warning(this BaseLogger logger, string message) =>

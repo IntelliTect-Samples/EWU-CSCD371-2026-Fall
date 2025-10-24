@@ -2,7 +2,8 @@
 public class Storage
 {
     private HashSet<IEntity> Entities { get; } = new();
-    
+    public int Count { get { return Entities.Count; } }
+
     public void Add(IEntity item)
     {
         Entities.Add(item);
