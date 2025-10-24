@@ -6,13 +6,16 @@ public class TestLogger : BaseLogger, ILogger
 
     public List<(LogLevel LogLevel, string Message)> LoggedMessages { get; } = [];
 
-    public static ILogger CreateLogger(in TestLoggerConfiguration configuration) =>
-        new TestLogger(configuration.LogSource);
-
-    static ILogger ILogger.CreateLogger(in ILoggerConfiguration configuration) =>
-        configuration is TestLoggerConfiguration testLoggerConfiguration
-            ? CreateLogger(testLoggerConfiguration)
-            : throw new ArgumentException("Invalid configuration type", nameof(configuration));
+    public static ILogger CreateLogger<TConfig, TLogger>(TConfig configuration)
+        where TConfig : ILoggerConfiguration
+        where TLogger : ILogger
+    {
+        if(configuration is TestLoggerConfiguration testLoggerConfiguration)
+            return new TestLogger(testLoggerConfiguration.LogSource);
+        else
+            throw new ArgumentException("Invalid configuration type", nameof(configuration));
+    }
+        
 
     public override void Log(LogLevel logLevel, string message) => LoggedMessages.Add((logLevel, message));
 }

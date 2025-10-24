@@ -1,4 +1,6 @@
-﻿namespace Logger;
+﻿using System;
+
+namespace Logger;
 
 // We do not implement ILogger here because you can
 // only have abstract static methods on interfaces.
