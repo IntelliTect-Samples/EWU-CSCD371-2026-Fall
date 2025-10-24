@@ -10,6 +10,11 @@ public class FileLogger : BaseLogger, ILogger
 
     public FileLogger(FileLoggerConfiguration configuration) : this(configuration.LogSource, configuration.FilePath) {}
 
+    /**
+     * TODO: C# does not allow explicit implementation of static interface members.
+     * Implementing this method must be public static.
+     * Potential fix: public static ILogger CreateLogger(in ILoggerConfiguration loggerConfiguration)
+     */
     static ILogger ILogger.CreateLogger(in ILoggerConfiguration logggerConfiguration) => 
         logggerConfiguration is FileLoggerConfiguration configuration
             ? CreateLogger(configuration)
