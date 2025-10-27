@@ -41,5 +41,4 @@ public class NodeTests
         Assert.IsFalse(node.Exists(3));
         Assert.IsTrue(node.Exists(1));
     }
-
 }
