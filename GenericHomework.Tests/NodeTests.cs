@@ -50,7 +50,7 @@ public class NodeTests
         // Act
         var result = node.ToString();
         // Assert
-        Assert.AreEqual("null", result);
+        Assert.AreEqual<string>("null", result);
     }
 
     [TestMethod]
@@ -60,7 +60,7 @@ public class NodeTests
         var node = new Node<string>("test");
         // Act
         // Assert
-        Assert.AreEqual(node.Next, node);
+        Assert.AreEqual<Node<string>>(node.Next, node);
     }
 
     [TestMethod]
@@ -72,6 +72,6 @@ public class NodeTests
         // Act
         node.Append(test2);
         // Assert
-        Assert.AreEqual(node.Next.Value, test2);
+        Assert.AreEqual<string>(node.Next.Value, test2);
     }
 }
