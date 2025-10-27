@@ -41,4 +41,37 @@ public class NodeTests
         Assert.IsFalse(node.Exists(3));
         Assert.IsTrue(node.Exists(1));
     }
+
+    [TestMethod]
+    public void Node_Tostring_PrintsNullWhenNull()
+    {
+        // Arrange
+        var node = new Node<string>(null!);
+        // Act
+        var result = node.ToString();
+        // Assert
+        Assert.AreEqual("null", result);
+    }
+
+    [TestMethod]
+    public void Node_Next_SingleNodeIsNext()
+    {
+        // Arrange
+        var node = new Node<string>("test");
+        // Act
+        // Assert
+        Assert.AreEqual(node.Next, node);
+    }
+
+    [TestMethod]
+    public void Node_Append_AppendsNext()
+    {
+        // Arrange
+        var node = new Node<string>("test1");
+        string test2 = "test2";
+        // Act
+        node.Append(test2);
+        // Assert
+        Assert.AreEqual(node.Next.Value, test2);
+    }
 }
