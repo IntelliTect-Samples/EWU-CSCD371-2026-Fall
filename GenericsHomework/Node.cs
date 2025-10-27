@@ -27,6 +27,7 @@ public class Node<T>
         while (cur != this);
         return false;
     }
+
     public void Append(T value)
     {
         if(Exists(value)) throw new ArgumentException("Given value is already included in this list!");
