@@ -21,18 +21,13 @@ public class Node<T>
         Node<T> cur = this;
         do
         {
-            Node<T> cur = this;
-            do
-            {
-                if(Equals(value, cur.Value)) return true;
-                cur = cur.Next;
-            }
-            while (cur != this);
-            return false;
+            if (Equals(value, cur.Value)) return true;
+            cur = cur.Next;
         }
         while (cur != this);
         return false;
     }
+
     public void Append(T value)
     {
         if(Exists(value)) throw new ArgumentException("Given value is already included in this list!");
