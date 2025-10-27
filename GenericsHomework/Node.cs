@@ -19,7 +19,7 @@
             Node<T> cur = this;
             do
             {
-                if(Equals(value, Value)) return true;
+                if(Equals(value, cur.Value)) return true;
                 cur = cur.Next;
             }
             while (cur != this);
