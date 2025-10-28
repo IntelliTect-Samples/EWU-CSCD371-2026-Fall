@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="GenericsHomework.Tests/GenericsHomework.Tests.csproj" Id="0173701a-c846-463c-b7cc-d9c627c53a65" />
+  <Project Path="GenericsHomework/GenericsHomework.csproj" />
+</Solution>
