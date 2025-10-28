@@ -1,0 +1,15 @@
+﻿<Project Sdk="MSTest.Sdk/4.0.0-preview.25465.3">
+
+  <PropertyGroup>
+    <UseVSTest>true</UseVSTest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\GenericsHomework\GenericsHomework.csproj" />
+	</ItemGroup>
+
+</Project>
