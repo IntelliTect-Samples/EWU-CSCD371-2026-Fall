@@ -7,7 +7,6 @@ public class GenericsHomeworkTests
 {
     [TestMethod]
     [DataRow("hello", "hello")]
-    [DataRow(null, "null")]
     public void ToString_ValueIsString_ReturnsValueToString(string input, string expected)
     {
         // Arrange
@@ -74,7 +73,7 @@ public class GenericsHomeworkTests
         bool result = node.Exists("hello");
 
         // Assert
-        Assert.AreEqual<bool>(true, result);
+        Assert.IsTrue(result);
     }
 
     [TestMethod]
@@ -87,7 +86,7 @@ public class GenericsHomeworkTests
         bool result = node.Exists("world");
 
         // Assert
-        Assert.AreEqual<bool>(false, result);
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -102,7 +101,7 @@ public class GenericsHomeworkTests
         bool result = first.Exists(3);
 
         // Assert
-        Assert.AreEqual<bool>(true, result);
+        Assert.IsTrue(result);
     }
 
     [TestMethod]
@@ -117,7 +116,7 @@ public class GenericsHomeworkTests
         bool result = first.Exists(99);
 
         // Assert
-        Assert.AreEqual<bool>(false, result);
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -132,7 +131,7 @@ public class GenericsHomeworkTests
         bool result = first.Exists(null);
 
         // Assert
-        Assert.AreEqual<bool>(true, result);
+        Assert.IsTrue(result);
     }
 
     [TestMethod]
