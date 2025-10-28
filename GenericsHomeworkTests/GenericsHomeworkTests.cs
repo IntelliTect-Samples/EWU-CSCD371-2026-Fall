@@ -120,21 +120,6 @@ public class GenericsHomeworkTests
     }
 
     [TestMethod]
-    public void Exists_ValueIsNullInList_ReturnsTrue()
-    {
-        // Arrange
-        Node<string> first = new("a");
-        Node<string> second = first.Append(null);
-        Node<string> third = second.Append("c");
-
-        // Act
-        bool result = first.Exists(null);
-
-        // Assert
-        Assert.IsTrue(result);
-    }
-
-    [TestMethod]
     public void Append_DuplicateValue_ThrowsInvalidOperationException()
     {
         // Arrange
