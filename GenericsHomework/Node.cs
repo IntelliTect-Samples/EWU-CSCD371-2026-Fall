@@ -27,7 +27,13 @@ public class Node<T>
         while (cur != this);
         return false;
     }
-
+    /// <summary>
+    /// Inserts a new node immediately after this node in the list.
+    /// </summary>
+    /// <remarks>
+    /// This method does <b>not</b> append to the end of the list.
+    /// Instead, it places the new node directly in front of this node’s current successor.
+    /// </remarks>
     public void Append(T value)
     {
         if(Exists(value)) throw new ArgumentException("Given value is already included in this list!");

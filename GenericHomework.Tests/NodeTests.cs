@@ -74,4 +74,19 @@ public class NodeTests
         // Assert
         Assert.AreEqual<string>(node.Next.Value, test2);
     }
+    [TestMethod]
+    public void Node_Append_AppendsNextNext()
+    {
+        // Arrange
+        var node = new Node<string>("test1");
+        string test2 = "test2";
+        string test3 = "test3";
+        // Act
+        node.Append(test2);
+        node.Append(test3);
+
+        // Assert
+        Assert.AreEqual<string>(node.Next.Next.Value, test2);
+        Assert.AreEqual<string>(node.Next.Value, test3);
+    }
 }
