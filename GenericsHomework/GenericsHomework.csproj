@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>GenericsHomework_</RootNamespace>
+		<OutputType>Library</OutputType>
+	</PropertyGroup>
+</Project>
