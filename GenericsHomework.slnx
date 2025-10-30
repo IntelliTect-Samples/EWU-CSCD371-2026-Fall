@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.Props" />
+  </Folder>
+  <Project Path="GenericsHomework.Tests/GenericsHomework.Tests.csproj" />
+  <Project Path="GenericsHomework/GenericsHomework/GenericsHomework.csproj" />
+</Solution>

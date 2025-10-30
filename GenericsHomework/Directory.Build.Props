@@ -1,0 +1,10 @@
+<Project>
+   <PropertyGroup>
+	   <Nullablue>enable</Nullablue>
+	   <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	   <EnableNETAnalyzers>true</EnableNETAnalyzers>
+	   <AnalysisLevel>latest-all</AnalysisLevel>
+	   <TargetFramework>net9.0</TargetFramework>
+	   <LangVersion>latest</LangVersion>
+   </PropertyGroup>
+</Project>
