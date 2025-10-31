@@ -1,0 +1,33 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Target Framework: Use the latest released .NET version -->
+    <!-- As of late 2024, .NET 9.0 is the latest -->
+    <!-- Alternative: Use net8.0 for LTS (Long Term Support) -->
+    <TargetFramework>net9.0</TargetFramework>
+    
+    <!-- Language Version: Use the latest C# language features -->
+    <!-- Currently C# 13 with .NET 9 -->
+    <LangVersion>latest</LangVersion>
+    
+    <!-- Nullable Reference Types: REQUIRED by assignment -->
+    <!-- Enables compile-time null safety checks -->
+    <Nullable>enable</Nullable>
+    
+    <!-- .NET Analyzers: REQUIRED by assignment -->
+    <!-- Provides code quality warnings and suggestions -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    
+    <!-- Analysis Level: Use the latest analyzer rules -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    
+    <!-- Implicit Usings: Reduces boilerplate using statements -->
+    <!-- Optional but recommended for cleaner code -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- Treat Warnings as Errors: Optional, set to true for stricter builds -->
+    <!-- Keep false during development for flexibility -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

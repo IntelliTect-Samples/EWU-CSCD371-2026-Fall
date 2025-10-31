@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- All shared properties (TargetFramework, LangVersion, Nullable, EnableNETAnalyzers) 
+         are inherited from Directory.Build.props in the parent directory -->
+    
+    <!-- Mark this as a test project (not meant to be packaged) -->
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MSTest framework packages -->
+    <PackageReference Include="MSTest.TestAdapter" Version="3.2.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.2.2" />
+    
+    <!-- Microsoft test SDK (required for dotnet test command) -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    
+    <!-- Code coverage collector (optional but recommended) -->
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference to the main library project being tested -->
+    <ProjectReference Include="..\GenericsHomework\GenericsHomework.csproj" />
+  </ItemGroup>
+
+</Project>

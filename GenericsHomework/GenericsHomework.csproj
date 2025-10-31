@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- All shared properties (TargetFramework, LangVersion, Nullable, EnableNETAnalyzers) 
+         are inherited from Directory.Build.props in the parent directory -->
+    
+    <!-- Optional: Specify assembly metadata for this specific project -->
+    <AssemblyName>GenericsHomework</AssemblyName>
+    <RootNamespace>GenericsHomework</RootNamespace>
+    
+    <!-- Optional: Add project description -->
+    <Description>A circular linked list implementation using generics</Description>
+  </PropertyGroup>
+
+</Project>
