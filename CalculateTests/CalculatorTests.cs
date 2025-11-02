@@ -59,4 +59,12 @@ public sealed class CalculatorTests
     {
         Assert.IsFalse(Calculator.TryCalculate(input, out int result));
     }
+
+    [TestMethod]
+    [DataRow("2.0 / 5.0")]
+    [DataRow("3.14159265359 / 2.71828")]
+    public void TryParse_NonInts_ReturnsFalse(string input)
+    {
+        Assert.IsFalse(Calculator.TryCalculate(input, out int result));
+    }
 }
