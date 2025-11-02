@@ -26,7 +26,6 @@ public class Program
 
             program.WriteLine("Enter another calculation, or press Enter to quit:");
         }
-
         program.WriteLine("Ciao!");
         return 0;
     }
