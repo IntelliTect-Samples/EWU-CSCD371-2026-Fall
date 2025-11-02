@@ -12,6 +12,8 @@ public class Calculator
     public static readonly IReadOnlyDictionary<char, Func<int,int,int>> MathematicalOperations = new Dictionary<char, Func<int, int, int>>()
     {{ '+', Add }, { '-', Subtract }, { '*', Multiply }, { '/', Divide }};
 
+    private const string AcceptableFormat = " {0} ";
+
     public static int Add(int a, int b)
     {
         return checked(a + b);
@@ -36,7 +38,8 @@ public class Calculator
         operation = '_';
         foreach (char iOperation in MathematicalOperations.Keys)
         {
-            if (input.Contains($" {iOperation} "))
+            
+            if (input.Contains(string.Format(AcceptableFormat, iOperation)))
             {
                 operation = iOperation;
                 return true;
