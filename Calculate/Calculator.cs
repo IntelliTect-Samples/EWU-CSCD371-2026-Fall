@@ -9,7 +9,7 @@ namespace Calculate;
 
 public class Calculator
 {
-    public static IReadOnlyDictionary<char, Func<int,int,int>> MathematicalOperations = new Dictionary<char, Func<int, int, int>>()
+    public static readonly IReadOnlyDictionary<char, Func<int,int,int>> MathematicalOperations = new Dictionary<char, Func<int, int, int>>()
     {{ '+', Add }, { '-', Subtract }, { '*', Multiply }, { '/', Divide }};
 
     public static int Add(int a, int b)
