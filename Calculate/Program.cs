@@ -28,7 +28,6 @@ public class Program
         }
 
         program.WriteLine("Ciao!");
-
         return 0;
     }
 }
