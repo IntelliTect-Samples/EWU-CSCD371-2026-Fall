@@ -1,5 +1,7 @@
 ﻿using Calculate;
 
+namespace Calculate;
+
 public class Program
 {
     public Action<string> WriteLine { get; init; }
