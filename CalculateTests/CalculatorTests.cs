@@ -41,7 +41,7 @@ public sealed class CalculatorTests
     public void TryParse_OperationSpaces_Success(string input, int expected)
     {
         Assert.IsTrue(Calculator.TryCalculate(input, out int result));
-        Assert.AreEqual(result, expected);
+        Assert.AreEqual<int>(result, expected);
     }
 
     [TestMethod]
