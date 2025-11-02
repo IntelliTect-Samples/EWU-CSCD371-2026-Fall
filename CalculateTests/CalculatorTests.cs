@@ -67,4 +67,14 @@ public sealed class CalculatorTests
     {
         Assert.IsFalse(Calculator.TryCalculate(input, out int result));
     }
+    [TestMethod]
+    [DataRow("15151 + 5 + 51235 + 21512515 + 241254125")]
+    [DataRow("12+/-251")]
+    [DataRow("a + b")]
+    [DataRow(" *  -  + ")]
+    [DataRow("1 * 5p")]
+    public void TryParse_Gibberish_ReturnsFalse(string input)
+    {
+        Assert.IsFalse(Calculator.TryCalculate(input, out int result));
+    }
 }
