@@ -19,7 +19,7 @@ public class ProgramTests
     {
         //Arrange
         string text = "ABC";
-        string output = null;
+        string output = null!;
         Program p = new()
         {
             WriteLine = (string input) => { output = input; }
