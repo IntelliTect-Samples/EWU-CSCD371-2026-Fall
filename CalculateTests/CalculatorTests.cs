@@ -30,7 +30,7 @@ public sealed class CalculatorTests
     [DataRow("2/2")]
     public void TryParse_OperationNoSpaces_InvalidString(string input)
     {
-        Assert.IsFalse(Calculator.TryCalculate(input, out int result));
+        Assert.IsFalse(Calculator.TryCalculate(input, out int _));
     }
 
     [TestMethod]
@@ -41,7 +41,7 @@ public sealed class CalculatorTests
     public void TryParse_OperationSpaces_Success(string input, int expected)
     {
         Assert.IsTrue(Calculator.TryCalculate(input, out int result));
-        Assert.AreEqual<int>(result, expected);
+        Assert.AreEqual<int>(expected, result);
     }
 
     [TestMethod]
@@ -50,14 +50,14 @@ public sealed class CalculatorTests
     [DataRow("2147483647 - -1")]
     public void TryParse_Overflow_ReturnsFalse(string input)
     {
-        Assert.IsFalse(Calculator.TryCalculate(input, out int result));
+        Assert.IsFalse(Calculator.TryCalculate(input, out int _));
     }
 
     [TestMethod]
     [DataRow("2 / 0")]
     public void TryParse_DivideByZero_ReturnsFalse(string input)
     {
-        Assert.IsFalse(Calculator.TryCalculate(input, out int result));
+        Assert.IsFalse(Calculator.TryCalculate(input, out int _));
     }
 
     [TestMethod]
@@ -65,7 +65,7 @@ public sealed class CalculatorTests
     [DataRow("3.14159265359 / 2.71828")]
     public void TryParse_NonInts_ReturnsFalse(string input)
     {
-        Assert.IsFalse(Calculator.TryCalculate(input, out int result));
+        Assert.IsFalse(Calculator.TryCalculate(input, out int _));
     }
     [TestMethod]
     [DataRow("15151 + 5 + 51235 + 21512515 + 241254125")]
@@ -76,6 +76,6 @@ public sealed class CalculatorTests
     [DataRow("1 * 5 * ")]
     public void TryParse_Gibberish_ReturnsFalse(string input)
     {
-        Assert.IsFalse(Calculator.TryCalculate(input, out int result));
+        Assert.IsFalse(Calculator.TryCalculate(input, out int _));
     }
 }
