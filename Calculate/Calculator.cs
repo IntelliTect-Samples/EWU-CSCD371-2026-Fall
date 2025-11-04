@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ public class Calculator
     public static readonly IReadOnlyDictionary<char, Func<int,int,int>> MathematicalOperations = new Dictionary<char, Func<int, int, int>>()
     {{ '+', Add }, { '-', Subtract }, { '*', Multiply }, { '/', Divide }};
 
-    private const string AcceptableFormat = " {0} ";
+    private static readonly CompositeFormat AcceptableFormat = CompositeFormat.Parse(" {0} ");
 
     public static int Add(int a, int b)
     {
@@ -36,10 +37,12 @@ public class Calculator
     private static bool TryGetOperation(string input, out char operation)
     {
         operation = '_';
+        
+
         foreach (char iOperation in MathematicalOperations.Keys)
         {
             
-            if (input.Contains(string.Format(AcceptableFormat, iOperation)))
+            if (input.Contains(string.Format(CultureInfo.InvariantCulture, AcceptableFormat, iOperation)))
             {
                 operation = iOperation;
                 return true;
