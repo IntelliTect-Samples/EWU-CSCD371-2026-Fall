@@ -15,18 +15,12 @@ public class Calculator
 
     private static readonly CompositeFormat AcceptableFormat = CompositeFormat.Parse(" {0} ");
 
-    public static int Add(int a, int b)
-    {
-        return checked(a + b);
-    }
-    public static int Subtract(int a, int b)
-    {
-        return checked(a - b);
-    }
-    public static int Multiply(int a, int b)
-    {
-        return checked(a * b);
-    }
+    public static int Add(int a, int b) => checked(a + b);
+
+    public static int Subtract(int a, int b) => checked(a - b);
+
+    public static int Multiply(int a, int b) => checked(a * b);
+
     public static int Divide(int a, int b)
     {
         if (b == 0) throw new DivideByZeroException($"Param {nameof(b)} was 0!");
