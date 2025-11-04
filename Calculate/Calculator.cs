@@ -37,7 +37,7 @@ public class Calculator
     private static bool TryGetOperation(string input, out char operation)
     {
         operation = '_';
-        if (!string.IsNullOrEmpty(input)) return false;
+        if (string.IsNullOrEmpty(input)) return false;
 
         foreach (char iOperation in MathematicalOperations.Keys)
         {
@@ -55,7 +55,7 @@ public class Calculator
     {
         value = 0;
 
-        if (!string.IsNullOrEmpty(input)) return false;
+        if (string.IsNullOrEmpty(input)) return false;
 
         if (!TryGetOperation(input, out char operation)) return false;
 
