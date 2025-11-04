@@ -54,6 +54,9 @@ public class Calculator
     public static bool TryCalculate(string input, out int value)
     {
         value = 0;
+
+        if (input == null) return false;
+
         if (!TryGetOperation(input, out char operation)) return false;
 
         string[] parts = input.Split(operation);

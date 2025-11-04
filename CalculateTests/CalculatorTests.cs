@@ -74,6 +74,7 @@ public sealed class CalculatorTests
     [DataRow(" *  -  + ")]
     [DataRow("1 * 5p")]
     [DataRow("1 * 5 * ")]
+    [DataRow(null)]
     public void TryParse_Gibberish_ReturnsFalse(string input)
     {
         Assert.IsFalse(Calculator.TryCalculate(input, out int _));
