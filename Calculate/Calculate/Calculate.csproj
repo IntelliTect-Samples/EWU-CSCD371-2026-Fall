@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ConsoleUtilities\ConsoleUtilities.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+	  <RootNamespace>Calculate</RootNamespace>
+	  <AssemblyName>Calculate</AssemblyName>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <RootNamespace>Calculate.Tests</RootNamespace>
+	  <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Calculate\Calculate\Calculate.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MSTest.TestAdapter" Version="3.6.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.6.2" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+	</ItemGroup>
+
+</Project>
