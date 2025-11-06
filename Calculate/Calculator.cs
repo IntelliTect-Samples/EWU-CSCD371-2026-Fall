@@ -61,12 +61,8 @@ public class Calculator
             value = MathematicalOperations[operation](lhs, rhs);
             return true;
         }
-        catch (Exception ex)
-        {
-            if(ex is DivideByZeroException || ex is OverflowException)
-                return false;
-            throw;
-        }
+        catch (DivideByZeroException){return false;}
+        catch (OverflowException) { return false; }
     }
 
 }
