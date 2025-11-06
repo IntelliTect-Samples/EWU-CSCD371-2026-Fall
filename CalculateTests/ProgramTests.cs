@@ -11,8 +11,8 @@ public class ProgramTests
         //Arrange
         Program p = new();
         //Assert
-        Assert.AreEqual(p.WriteLine, Console.WriteLine);
-        Assert.AreEqual(p.ReadLine, Console.ReadLine);
+        Assert.AreEqual<Action<string>>(p.WriteLine, Console.WriteLine);
+        Assert.AreEqual<Func<string?>>(p.ReadLine, Console.ReadLine);
     }
     [TestMethod]
     public void Write_Custom_Success()
@@ -28,7 +28,7 @@ public class ProgramTests
         p.WriteLine(text);
 
         //Assert
-        Assert.AreEqual(output, text);
+        Assert.AreEqual<string>(output, text);
     }
     [TestMethod]
     public void ReadLine_Custom_Success()
@@ -43,6 +43,6 @@ public class ProgramTests
         string output = p.ReadLine()!;
 
         //Assert
-        Assert.AreEqual(output, text);
+        Assert.AreEqual<string>(output, text);
     }
 }
