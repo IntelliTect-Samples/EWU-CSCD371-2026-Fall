@@ -1,15 +1,19 @@
-﻿using Calculate;
-
-namespace Calculate;
+﻿namespace Calculate;
 
 public class Program
 {
-    public Action<string> WriteLine { get; init; }
-    public Func<string?> ReadLine { get; init; }
+    private Action<string> _WriteLine = Console.WriteLine;
+    public Action<string> WriteLine
+    { 
+        get => _WriteLine;
+        init => _WriteLine = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
-    public Program() {
-        WriteLine = Console.WriteLine;
-        ReadLine = Console.ReadLine;
+    private Func<string?> _ReadLine = Console.ReadLine;
+    public Func<string?> ReadLine
+    {
+        get => _ReadLine;
+        init => _ReadLine = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     public static int Main()
