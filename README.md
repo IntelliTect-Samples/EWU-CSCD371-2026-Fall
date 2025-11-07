@@ -11,24 +11,24 @@ Chapter 15: Collection Interfaces with Standard Query Operators
 
 ## Instructions
 
-- Create a *Console* project called "Calculate". ❌✔
+- Create a *Console* project called "Calculate.". ✔
 - Define a Program Class
-  - Define two init-only setter properties, `WriteLine` and `ReadLine`, that contain delegates for writing a line of text and reading a line of text respectively ❌✔
-  - Write a test that sets these properties at construction time and then invokes the properties and verifies the expected behavior occurs. ❌✔
-  - Set the default behavior for the `WriteLine` and `ReadLine` properties to invoke `System.Console` versions of the methods and add an empty default constructor. ❌✔
-- Define a Calculator class ❌✔
-  - Define static `Add`, `Subtract`, `Multiply`, and `Divide` methods that have two parameters and return a third parameter. ❌✔
+  - Define two init-only setter properties, `WriteLine` and `ReadLine`, that contain delegates for writing a line of text and reading a line of text respectively ✔
+  - Write a test that sets these properties at construction time and then invokes the properties and verifies the expected behavior occurs. ✔
+  - Set the default behavior for the `WriteLine` and `ReadLine` properties to invoke `System.Console` versions of the methods and add an empty default constructor. ✔
+- Define a Calculator class ✔
+  - Define static `Add`, `Subtract`, `Multiple`, and `Divide` methods that have two parameters and return a third parameter. ✔
   - Define a read-only property, `MathematicalOperations`, of type `System.Collections.Generics.IReadOnlyDictionary<TKey,TValue>` that:
-    - is initialized to a `System.Collections.Generics.Dictionary<<TKey,TValue>` instance that. ❌✔
-      - Uses `char` for the key corresponding to the operators +, -, *, and /. ❌✔
-      - Has values that correspond with the Add, Subtract, Multiply, and Divide methods. ❌✔
-  - Implement a `TryCalculate` method following "TryParse" pattern ❌✔
-    - Valid `calculation` expressions include such strings as "3 + 4", "42 - 2", etc. ❌✔
-    - If there is no whitespace around the operator, you can assume the `calculation` is invalid and return false. Similarly if the operands are not integers. ❌✔
-    - Use `string.Split()`, pattern matching, logical and operators to parse the string in their entirety ❌✔
-    - Index into the `MathematicalOperations` method using the operator parsed during pattern matching to find the corresponding implementation and invoke it. ❌✔
-- Implement the Program class to instantiate the calculator and invoke it based on user input from the console. ❌✔
-- Be sure to use the `WriteLine`/`ReadLine` properties on `Program` for testing the input and output of your program. ❌✔
+    - is initialized to a `System.Collections.Generics.Dictionary<<TKey,TValue>` instance that. ✔
+      - Uses `char` for the key corresponding to the operators +, -, *, and /. ✔
+      - Has values that correspond with the Add, Subtract, Multiple, and Divide methods. ✔
+  - Implement a `TryCalculate` method following "TryParse" pattern ✔
+    - Valid `calculation` expressions include such strings as "3 + 4", "42 - 2", etc. ✔
+    - If there is no whitespace around the operator, you can assume the `calculation` is invalid and return false. Similarly if the operands are not integers. ✔
+    - Use `string.Split()`, pattern matching, logical and operators to parse the string in their entirety ✔
+    - Index into the `MathematicalOperations` method using the operator parsed during pattern matching to find the corresponding implementation and invoke it. ✔
+- Implement the Program class to instantiate the calculator and invoke it based on user input from the console. ✔
+- Be sure to use the `WriteLine`/`ReadLine` properties on `Program` for testing the input and output of your program. ✔
 
 ## Extra Credit
 
@@ -42,12 +42,12 @@ Do one of the following two options (or both if you want extra, extra credit) :)
 
 - Place all shared project properties into a `Directory.Build.props` file.
 - Place all shared project items into a `Directory.Build.targets` file. (optional)
-- nullable reference types is enabled  ❌✔
-- Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ❌✔
-- Set LangVersion and the TargetFramework to the latest released versions available (preview versions optional)   ❌✔
-- and enabled .NET analyzers for both projects ❌✔
-- For this assignment, always use `Assert.AreEqual<T>()` (the generic version)  ❌✔
-- All of the above should be unit tested ❌✔
-- Choose simplicity over complexity ❌✔
+- nullable reference types is enabled  ✔
+- Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ✔
+- Set LangVersion and the TargetFramework to the latest released versions available (preview versions optional)   ✔
+- and enabled .NET analyzers for both projects ✔
+- For this assignment, always use `Assert.AreEqual<T>()` (the generic version)  ✔
+- All of the above should be unit tested ✔
+- Choose simplicity over complexity ✔
 
 ## See [Docs](Docs)
