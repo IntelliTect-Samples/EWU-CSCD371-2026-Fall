@@ -13,6 +13,6 @@ public class PlaceholderTest
         // Arrange
         var items = new List<int> { 1, 2, 3};
         // Act & Assert
-        Assert.AreEqual(3, items.Count, "The list count check failed.");
+        Assert.HasCount(3, items, "The list count check failed.");
     }
 }
