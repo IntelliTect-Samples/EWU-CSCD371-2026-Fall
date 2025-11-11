@@ -1,3 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Linq;
 
 [assembly: Parallelize(Scope = ExecutionScope.ClassLevel)]
+
+[TestClass]
+public class PlaceholderTest
+{
+    [TestMethod]
+    public void Placeholder_UsingLinqCount()
+    {
+        // Arrange
+        var items = new List<int> { 1, 2, 3};
+        // Act & Assert
+        Assert.AreEqual(3, items.Count(), "The list count check failed.");
+    }
+}
