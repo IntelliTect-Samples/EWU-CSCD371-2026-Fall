@@ -99,7 +99,7 @@ public class SampleDataTests
     }
     //Include a test that uses LINQ to verify the data is sorted correctly (do not use a hardcoded list)
     [TestMethod]
-    public void GetUniqueSortedListOfStatesGivenCsvRows_LoadsCVS_HardcodedIsSorted()
+    public void GetUniqueSortedListOfStatesGivenCsvRows_LoadsCVS_IsSortedLinqTest()
     {
         //Assign
         SampleData sampleData = new SampleData();
