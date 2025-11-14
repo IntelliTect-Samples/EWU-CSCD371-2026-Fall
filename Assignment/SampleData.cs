@@ -28,8 +28,11 @@ public class SampleData : ISampleData
         } }
 
     // 2.
-    public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows() 
-        => throw new NotImplementedException();
+    public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()
+    {
+        IEnumerable<string> csvTemp = CsvRows.Distinct();
+        return csvTemp.OrderBy(n => n);
+    }
 
     // 3.
     public string GetAggregateSortedListOfStatesUsingCsvRows()
