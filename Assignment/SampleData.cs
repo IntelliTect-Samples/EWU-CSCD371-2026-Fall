@@ -1,12 +1,31 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Assignment;
 
 public class SampleData : ISampleData
 {
+    private const string SampleDirectory = "People.csv";
+
     // 1.
-    public IEnumerable<string> CsvRows => throw new NotImplementedException();
+    public IEnumerable<string> CsvRows { 
+        get {
+            List<string> list = new List<string>();
+            using (StreamReader reader = new StreamReader(SampleDirectory))
+            {
+                string? line = reader.ReadLine();
+                while(line != null)
+                {
+                    list.Add(line);
+                    line = reader.ReadLine();
+                } 
+            }
+
+            return list.Skip(1);
+        } }
 
     // 2.
     public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows() 
