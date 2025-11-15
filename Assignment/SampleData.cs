@@ -65,10 +65,11 @@ public class SampleData : ISampleData
 
     public IPerson StringToPerson(string input)
     {
+        if(input == null) throw new ArgumentNullException(nameof(input));
+
         string[] split = input.Split(',');
 
-        if(split.Length <= 7)
-            throw new InvalidDataException($"{nameof(input)} : {input}");
+        if(split.Length <= 7) throw new InvalidDataException($"{nameof(input)} : {input}");
 
         Address address = new Address(split[4], split[5], split[6], split[7]);
         return new Person(split[1], split[2], address, split[3]);

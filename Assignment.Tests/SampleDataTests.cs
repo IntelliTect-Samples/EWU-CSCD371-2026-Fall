@@ -110,6 +110,14 @@ public class SampleDataTests
         Assert.IsTrue(csvOut.OrderBy(n => n).SequenceEqual(csvOut));
     }
     [TestMethod]
+    public void StringToPerson_NullInput_Throws()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        //Assert
+        Assert.Throws<ArgumentNullException>(() => sampleData.StringToPerson(null!));
+    }
+    [TestMethod]
     public void StringToPerson_ImproperLength_Throws()
     {
         //Assign
