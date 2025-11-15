@@ -15,18 +15,7 @@ public class SampleData : ISampleData
     // 1.
     public IEnumerable<string> CsvRows { 
         get {
-            List<string> list = new List<string>();
-            using (StreamReader reader = new StreamReader(SampleDirectory))
-            {
-                string? line = reader.ReadLine();
-                while(line != null)
-                {
-                    list.Add(line);
-                    line = reader.ReadLine();
-                } 
-            }
-
-            return list.Skip(1);
+            return File.ReadLines(SampleDirectory).Skip(1);
         } 
     }
 
@@ -50,14 +39,8 @@ public class SampleData : ISampleData
     {
         get 
         {
-            List<IPerson> people = new List<IPerson>();
-            foreach (string personString in CsvRows)
-            {
-                IPerson person = StringToPerson(personString);
-                people.Add(person);
-            }
-
-            return people.OrderBy(person => person.Address.State)
+            return CsvRows.Select(StringToPerson)
+                .OrderBy(person => person.Address.State)
                 .ThenBy(person => person.Address.City)
                 .ThenBy(person => person.Address.Zip);
         }
@@ -76,8 +59,10 @@ public class SampleData : ISampleData
     }
 
     // 5.
-    public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(
-        Predicate<string> filter) => throw new NotImplementedException();
+    public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(Predicate<string> filter)
+    {
+        throw new NotImplementedException();
+    }
 
     // 6.
     public string GetAggregateListOfStatesGivenPeopleCollection(
