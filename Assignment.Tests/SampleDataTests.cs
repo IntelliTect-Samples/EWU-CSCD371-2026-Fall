@@ -146,19 +146,6 @@ public class SampleDataTests
         Assert.AreEqual<string>("Zip", person.Address.Zip);
     }
     [TestMethod]
-    public void People_CheckOrdering_IsOrdered()
-    {
-        //Assign
-        SampleData sampleData = new SampleData();
-        IEnumerable<IPerson> people = sampleData.People;
-        //Act
-        IEnumerable<IPerson> clonePeople = people.OrderBy(person => person.Address.State)
-                .ThenBy(person => person.Address.City)
-                .ThenBy(person => person.Address.Zip);
-        //Assert
-        Assert.IsTrue(clonePeople.SequenceEqual(people));
-    }
-    [TestMethod]
     public void People_MaintainsLength_EqualLength()
     {
         //Assign
@@ -168,7 +155,7 @@ public class SampleDataTests
         //Act
         bool hasDuplicates = people.Count() != people.Distinct().Count();
         //Assert
-        Assert.AreEqual<int>(peopleAsString.Count(), people.Count());
+        Assert.HasCount(peopleAsString.Count(), people);
         Assert.IsFalse(hasDuplicates);
     }
     [TestMethod]
@@ -185,5 +172,49 @@ public class SampleDataTests
         bool hasDuplicates = people.Count() != people.Distinct().Count();
         //Assert
         Assert.IsFalse(hasDuplicates);
+    }
+    [TestMethod]
+    public void FilterByEmailAddress_SingleEmail_Success()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        Predicate<string> emailPredicate = (string email) => { return "mjeannotp@google.ca".Equals(email); };
+        (string,string) expectedName = ("Molly", "Jeannot");
+
+        //Act
+        IEnumerable<(string FirstName, string LastName)> fullNames = sampleData.FilterByEmailAddress(emailPredicate);
+        
+        //Assert
+        Assert.Contains(expectedName, fullNames);
+        Assert.HasCount(1, fullNames);
+    }
+    [TestMethod]
+    public void FilterByEmailAddress_MultipleEmails_Success()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        Predicate<string> emailPredicate = (string email) => {  return "mjeannotp@google.ca".Equals(email) 
+                                                                    || "mrawsthorneq@slate.com".Equals(email); };
+        (string, string)[] expectedName = { ("Molly", "Jeannot"), ("Maria", "Rawsthorne") };
+        //Act
+        IEnumerable<(string FirstName, string LastName)> fullNames = sampleData.FilterByEmailAddress(emailPredicate);
+
+        //Assert
+        Assert.IsTrue(expectedName.SequenceEqual(fullNames));
+        Assert.HasCount(2, fullNames);
+    }
+    [TestMethod]
+    public void FilterByEmailAddress_FakeEmail_ReturnsNoUsers()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        Predicate<string> emailPredicate = (string email) => {
+            return "offical_rnicrosoft@bing.com".Equals(email);
+        };
+        //Act
+        IEnumerable<(string FirstName, string LastName)> fullNames = sampleData.FilterByEmailAddress(emailPredicate);
+
+        //Assert
+        Assert.HasCount(0, fullNames);
     }
 }

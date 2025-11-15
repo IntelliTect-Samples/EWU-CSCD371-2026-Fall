@@ -61,7 +61,7 @@ public class SampleData : ISampleData
     // 5.
     public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(Predicate<string> filter)
     {
-        throw new NotImplementedException();
+        return People.Where(person => filter(person.EmailAddress)).Select(p => (p.FirstName,p.LastName));
     }
 
     // 6.
