@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Assignment.Tests;
@@ -107,5 +108,74 @@ public class SampleDataTests
 
         //Assert
         Assert.IsTrue(csvOut.OrderBy(n => n).SequenceEqual(csvOut));
+    }
+    [TestMethod]
+    public void StringToPerson_ImproperLength_Throws()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        string personMissingOneElement = "1,Priscilla,Jenyns,pjenyns0@state.gov,7884 Corry Way,Helena,70577";
+        string personMissingTwoElements = "1,Priscilla,Jenyns,pjenyns0@state.gov,7884 Corry Way,Helena";
+
+        //Assert
+        Assert.Throws<InvalidDataException>( () => sampleData.StringToPerson(personMissingOneElement));
+        Assert.Throws<InvalidDataException>(() => sampleData.StringToPerson(personMissingTwoElements));
+    }
+    [TestMethod]
+    public void StringToPerson_ProperLength_ParsesCorrectly()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        string personMissingOneElement = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip";
+        //Assert
+        IPerson person = sampleData.StringToPerson(personMissingOneElement);
+        Assert.AreEqual<string>("FirstName", person.FirstName);
+        Assert.AreEqual<string>("LastName", person.LastName);
+        Assert.AreEqual<string>("Email", person.EmailAddress);
+        Assert.AreEqual<string>("StreetAddress", person.Address.StreetAddress);
+        Assert.AreEqual<string>("City", person.Address.City);
+        Assert.AreEqual<string>("State", person.Address.State);
+        Assert.AreEqual<string>("Zip", person.Address.Zip);
+    }
+    [TestMethod]
+    public void People_CheckOrdering_IsOrdered()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        IEnumerable<IPerson> people = sampleData.People;
+        //Act
+        IEnumerable<IPerson> clonePeople = people.OrderBy(person => person.Address.State)
+                .ThenBy(person => person.Address.City)
+                .ThenBy(person => person.Address.Zip);
+        //Assert
+        Assert.IsTrue(clonePeople.SequenceEqual(people));
+    }
+    [TestMethod]
+    public void People_MaintainsLength_EqualLength()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        IEnumerable<IPerson> people = sampleData.People;
+        IEnumerable<string> peopleAsString = sampleData.CsvRows;
+        //Act
+        bool hasDuplicates = people.Count() != people.Distinct().Count();
+        //Assert
+        Assert.AreEqual<int>(peopleAsString.Count(), people.Count());
+        Assert.IsFalse(hasDuplicates);
+    }
+    [TestMethod]
+    public void People_NoDuplicates_Success()
+    {
+        // NOTE: This test may fail if duplicates are added to people.csv
+        // This test was created to ensure 'People' is being populated with potentally useful information
+        // without having to implement the entire functionality of 'People'.
+
+        //Assign
+        SampleData sampleData = new SampleData();
+        IEnumerable<IPerson> people = sampleData.People;
+        //Act
+        bool hasDuplicates = people.Count() != people.Distinct().Count();
+        //Assert
+        Assert.IsFalse(hasDuplicates);
     }
 }
