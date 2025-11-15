@@ -217,4 +217,47 @@ public class SampleDataTests
         //Assert
         Assert.HasCount(0, fullNames);
     }
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_TwoPeopleFromSameState_IsDistinct()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        List<IPerson> peopleList = new List<IPerson>();
+        Person person = new Person("First", "Last", new Address("12E Somewhere", "Spocan", "WA", "99208"), "fake@email.com");
+        Person personTwo = new Person("Person", "People", new Address("13E Somewhere", "Spocan", "WA", "99501"), "real@email.com");
+        peopleList.Add(person);
+        peopleList.Add(personTwo);
+        //Act
+        string stateOutput = sampleData.GetAggregateListOfStatesGivenPeopleCollection(peopleList);
+
+        //Assert
+        Assert.AreEqual<string>("WA", stateOutput);
+    }
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_TwoPeopleFromDifferingState_BothIncluded()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        List<IPerson> peopleList = new List<IPerson>();
+        Person person = new Person("First", "Last", new Address("12E Somewhere", "Spocan", "WA", "99208"), "fake@email.com");
+        Person personTwo = new Person("Person", "People", new Address("13E Somewhere", "Somewhhere", "CA", "99501"), "real@email.com");
+        peopleList.Add(person);
+        peopleList.Add(personTwo);
+        //Act
+        string stateOutput = sampleData.GetAggregateListOfStatesGivenPeopleCollection(peopleList);
+
+        //Assert
+        Assert.AreEqual<string>("WA,CA", stateOutput);
+    }
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_PeopleCSV_DistinctCount()
+    {
+        //Assign
+        SampleData sampleData = new SampleData();
+        //Act
+        string stateOutput = sampleData.GetAggregateListOfStatesGivenPeopleCollection(sampleData.People);
+
+        //Assert
+        Assert.AreEqual<string>(sampleData.GetAggregateSortedListOfStatesUsingCsvRows(), stateOutput);
+    }
 }

@@ -13,16 +13,16 @@ public class SampleData : ISampleData
     private const string SampleDirectory = "People.csv";
 
     // 1.
-    public IEnumerable<string> CsvRows { 
+    public IEnumerable<string> CsvRows {
         get {
             return File.ReadLines(SampleDirectory).Skip(1);
-        } 
+        }
     }
 
     // 2.
     public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()
     {
-        IEnumerable<string> csvTemp = CsvRows.Distinct();
+        IEnumerable<string> csvTemp = CsvRows.Select(StringToPerson).Select(p => $"{p.Address.State}").Distinct();
         return csvTemp.OrderBy(n => n);
     }
 
@@ -30,14 +30,13 @@ public class SampleData : ISampleData
     public string GetAggregateSortedListOfStatesUsingCsvRows()
     {
         IEnumerable<string> csvTemp = GetUniqueSortedListOfStatesGivenCsvRows();
-
         return string.Join(",", csvTemp);
     }
 
     // 4.
     public IEnumerable<IPerson> People
     {
-        get 
+        get
         {
             return CsvRows.Select(StringToPerson)
                 .OrderBy(person => person.Address.State)
@@ -48,11 +47,11 @@ public class SampleData : ISampleData
 
     public IPerson StringToPerson(string input)
     {
-        if(input == null) throw new ArgumentNullException(nameof(input));
+        if (input == null) throw new ArgumentNullException(nameof(input));
 
         string[] split = input.Split(',');
 
-        if(split.Length <= 7) throw new InvalidDataException($"{nameof(input)} : {input}");
+        if (split.Length <= 7) throw new InvalidDataException($"{nameof(input)} : {input}");
 
         Address address = new Address(split[4], split[5], split[6], split[7]);
         return new Person(split[1], split[2], address, split[3]);
@@ -61,10 +60,12 @@ public class SampleData : ISampleData
     // 5.
     public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(Predicate<string> filter)
     {
-        return People.Where(person => filter(person.EmailAddress)).Select(p => (p.FirstName,p.LastName));
+        return People.Where(person => filter(person.EmailAddress)).Select(p => (p.FirstName, p.LastName));
     }
 
     // 6.
-    public string GetAggregateListOfStatesGivenPeopleCollection(
-        IEnumerable<IPerson> people) => throw new NotImplementedException();
+    public string GetAggregateListOfStatesGivenPeopleCollection(IEnumerable<IPerson> people) => people
+        .Select(p => $"{p.Address.State}")
+        .Distinct()
+        .Aggregate((a, b) => a + $",{b}");
 }
