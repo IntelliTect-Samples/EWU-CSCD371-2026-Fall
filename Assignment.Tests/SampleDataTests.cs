@@ -11,7 +11,7 @@ public class SampleDataTests
 {
     private static bool IsListSorted(List<string> list)
     {
-        for(int i = 1; i < list.Count(); i++)
+        for(int i = 1; i < list.Count; i++)
         {
             if (StringComparer.OrdinalIgnoreCase.Compare(list[i - 1], list[i]) > 0) return false;
         }
@@ -19,7 +19,7 @@ public class SampleDataTests
     }
     private static bool IsSetDistinct(IEnumerable<string> list)
     {
-        HashSet<string> visited = new();
+        HashSet<string> visited = [];
         foreach (string s in list)
         {
             if (visited.Contains(s))
@@ -34,25 +34,25 @@ public class SampleDataTests
     [TestMethod]
     public void TestIsListSorted_SortedList_True()
     {
-        Assert.IsTrue(IsSetDistinct(new List<string> { "a", "ab", "abc" }));
+        Assert.IsTrue(IsSetDistinct(["a", "ab", "abc"]));
     }
 
     [TestMethod]
     public void TestIsListSorted_NotSortedList_False()
     {
-        Assert.IsFalse(IsSetDistinct(new List<string> { "b", "a", "abc", "b" }));
+        Assert.IsFalse(IsSetDistinct(["b", "a", "abc", "b"]));
     }
 
     [TestMethod]
     public void TestDistinct_IsDistinct_True()
     {
-        Assert.IsTrue(IsSetDistinct(new List<string> { "a", "b", "ab" }));
+        Assert.IsTrue(IsSetDistinct(["a", "b", "ab"]));
     }
 
     [TestMethod]
     public void TestDistinct_IsNotDistinct_False()
     {
-        Assert.IsFalse(IsSetDistinct(new List<string> { "b", "c", "a" , "b"}));
+        Assert.IsFalse(IsSetDistinct(["b", "c", "a", "b"]));
     }
     #endregion
 
@@ -60,7 +60,7 @@ public class SampleDataTests
     public void CsvRows_loadsPeopleCvs_NotNull()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         IEnumerable<string> csvOut = sampleData.CsvRows.ToList();
         //Assert
         Assert.IsNotNull(csvOut);
@@ -70,7 +70,7 @@ public class SampleDataTests
     public void CsvRows_loadsPeopleCvs_IgnoresFirstRow()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         IEnumerable<string> csvOut = sampleData.CsvRows.ToList();
         //Assert
         Assert.HasCount(50, csvOut);//CSV is of size 51, we should be getting 50.
@@ -81,7 +81,7 @@ public class SampleDataTests
     public void GetUniqueSortedListOfStatesGivenCsvRows_LoadsCVS_IsSorted()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         IEnumerable<string> csvOut = sampleData.GetUniqueSortedListOfStatesGivenCsvRows();
 
         //Assert
@@ -92,7 +92,7 @@ public class SampleDataTests
     public void GetUniqueSortedListOfStatesGivenCsvRows_LoadsCVS_IsDistinct()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         IEnumerable<string> csvOut = sampleData.GetUniqueSortedListOfStatesGivenCsvRows();
 
         //Assert
@@ -103,7 +103,7 @@ public class SampleDataTests
     public void GetUniqueSortedListOfStatesGivenCsvRows_LoadsCVS_IsSortedLinqTest()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         IEnumerable<string> csvOut = sampleData.GetUniqueSortedListOfStatesGivenCsvRows();
 
         //Assert
@@ -113,30 +113,29 @@ public class SampleDataTests
     public void StringToPerson_NullInput_Throws()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         //Assert
-        Assert.Throws<ArgumentNullException>(() => sampleData.StringToPerson(null!));
+        Assert.Throws<ArgumentNullException>(() => SampleData.StringToPerson(null!));
     }
     [TestMethod]
     public void StringToPerson_ImproperLength_Throws()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         string personMissingOneElement = "1,Priscilla,Jenyns,pjenyns0@state.gov,7884 Corry Way,Helena,70577";
         string personMissingTwoElements = "1,Priscilla,Jenyns,pjenyns0@state.gov,7884 Corry Way,Helena";
 
         //Assert
-        Assert.Throws<InvalidDataException>( () => sampleData.StringToPerson(personMissingOneElement));
-        Assert.Throws<InvalidDataException>(() => sampleData.StringToPerson(personMissingTwoElements));
+        Assert.Throws<InvalidDataException>( () => SampleData.StringToPerson(personMissingOneElement));
+        Assert.Throws<InvalidDataException>(() => SampleData.StringToPerson(personMissingTwoElements));
     }
     [TestMethod]
     public void StringToPerson_ProperLength_ParsesCorrectly()
     {
         //Assign
-        SampleData sampleData = new SampleData();
         string personMissingOneElement = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip";
         //Assert
-        IPerson person = sampleData.StringToPerson(personMissingOneElement);
+        IPerson person = SampleData.StringToPerson(personMissingOneElement);
         Assert.AreEqual<string>("FirstName", person.FirstName);
         Assert.AreEqual<string>("LastName", person.LastName);
         Assert.AreEqual<string>("Email", person.EmailAddress);
@@ -149,7 +148,7 @@ public class SampleDataTests
     public void People_MaintainsLength_EqualLength()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         IEnumerable<IPerson> people = sampleData.People;
         IEnumerable<string> peopleAsString = sampleData.CsvRows;
         //Act
@@ -166,7 +165,7 @@ public class SampleDataTests
         // without having to implement the entire functionality of 'People'.
 
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         IEnumerable<IPerson> people = sampleData.People;
         //Act
         bool hasDuplicates = people.Count() != people.Distinct().Count();
@@ -177,8 +176,8 @@ public class SampleDataTests
     public void FilterByEmailAddress_SingleEmail_Success()
     {
         //Assign
-        SampleData sampleData = new SampleData();
-        Predicate<string> emailPredicate = (string email) => { return "mjeannotp@google.ca".Equals(email); };
+        SampleData sampleData = new();
+        static bool emailPredicate(string email) { return "mjeannotp@google.ca".Equals(email); }
         (string,string) expectedName = ("Molly", "Jeannot");
 
         //Act
@@ -192,10 +191,10 @@ public class SampleDataTests
     public void FilterByEmailAddress_MultipleEmails_Success()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         Predicate<string> emailPredicate = (string email) => {  return "mjeannotp@google.ca".Equals(email) 
                                                                     || "mrawsthorneq@slate.com".Equals(email); };
-        (string, string)[] expectedName = { ("Molly", "Jeannot"), ("Maria", "Rawsthorne") };
+        (string, string)[] expectedName = [("Molly", "Jeannot"), ("Maria", "Rawsthorne")];
         //Act
         IEnumerable<(string FirstName, string LastName)> fullNames = sampleData.FilterByEmailAddress(emailPredicate);
 
@@ -207,7 +206,7 @@ public class SampleDataTests
     public void FilterByEmailAddress_FakeEmail_ReturnsNoUsers()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         Predicate<string> emailPredicate = (string email) => {
             return "offical_rnicrosoft@bing.com".Equals(email);
         };
@@ -221,10 +220,10 @@ public class SampleDataTests
     public void GetAggregateListOfStatesGivenPeopleCollection_TwoPeopleFromSameState_IsDistinct()
     {
         //Assign
-        SampleData sampleData = new SampleData();
-        List<IPerson> peopleList = new List<IPerson>();
-        Person person = new Person("First", "Last", new Address("12E Somewhere", "Spocan", "WA", "99208"), "fake@email.com");
-        Person personTwo = new Person("Person", "People", new Address("13E Somewhere", "Spocan", "WA", "99501"), "real@email.com");
+        SampleData sampleData = new();
+        List<IPerson> peopleList = [];
+        Person person = new("First", "Last", new Address("12E Somewhere", "Spocan", "WA", "99208"), "fake@email.com");
+        Person personTwo = new("Person", "People", new Address("13E Somewhere", "Spocan", "WA", "99501"), "real@email.com");
         peopleList.Add(person);
         peopleList.Add(personTwo);
         //Act
@@ -237,10 +236,10 @@ public class SampleDataTests
     public void GetAggregateListOfStatesGivenPeopleCollection_TwoPeopleFromDifferingState_BothIncluded()
     {
         //Assign
-        SampleData sampleData = new SampleData();
-        List<IPerson> peopleList = new List<IPerson>();
-        Person person = new Person("First", "Last", new Address("12E Somewhere", "Spocan", "WA", "99208"), "fake@email.com");
-        Person personTwo = new Person("Person", "People", new Address("13E Somewhere", "Somewhhere", "CA", "99501"), "real@email.com");
+        SampleData sampleData = new();
+        List<IPerson> peopleList = [];
+        Person person = new("First", "Last", new Address("12E Somewhere", "Spocan", "WA", "99208"), "fake@email.com");
+        Person personTwo = new("Person", "People", new Address("13E Somewhere", "Somewhhere", "CA", "99501"), "real@email.com");
         peopleList.Add(person);
         peopleList.Add(personTwo);
         //Act
@@ -253,7 +252,7 @@ public class SampleDataTests
     public void GetAggregateListOfStatesGivenPeopleCollection_PeopleCSV_DistinctCount()
     {
         //Assign
-        SampleData sampleData = new SampleData();
+        SampleData sampleData = new();
         //Act
         string stateOutput = sampleData.GetAggregateListOfStatesGivenPeopleCollection(sampleData.People);
 
