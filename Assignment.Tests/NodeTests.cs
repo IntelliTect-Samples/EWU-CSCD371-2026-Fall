@@ -8,7 +8,7 @@ namespace Assignment.Tests;
 [TestClass]
 public class NodeTests
 {
-    private NodeCollection<int> MakeCircularlyLinkedList(params int[] values)
+    private static NodeCollection<int> MakeCircularlyLinkedList(params int[] values)
     {
         if (values == null || values.Length == 0)
         {
