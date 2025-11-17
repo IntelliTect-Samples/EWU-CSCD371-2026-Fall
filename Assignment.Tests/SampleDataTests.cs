@@ -177,7 +177,7 @@ public class SampleDataTests
     {
         //Assign
         SampleData sampleData = new();
-        static bool emailPredicate(string email) { return "mjeannotp@google.ca".Equals(email); }
+        static bool emailPredicate(string email) { return "mjeannotp@google.ca".Equals(email, StringComparison.Ordinal); }
         (string,string) expectedName = ("Molly", "Jeannot");
 
         //Act
@@ -192,8 +192,8 @@ public class SampleDataTests
     {
         //Assign
         SampleData sampleData = new();
-        Predicate<string> emailPredicate = (string email) => {  return "mjeannotp@google.ca".Equals(email) 
-                                                                    || "mrawsthorneq@slate.com".Equals(email); };
+        Predicate<string> emailPredicate = (string email) => {  return "mjeannotp@google.ca".Equals(email, StringComparison.Ordinal) 
+                                                                    || "mrawsthorneq@slate.com".Equals(email, StringComparison.Ordinal); };
         (string, string)[] expectedName = [("Molly", "Jeannot"), ("Maria", "Rawsthorne")];
         //Act
         IEnumerable<(string FirstName, string LastName)> fullNames = sampleData.FilterByEmailAddress(emailPredicate);
@@ -208,7 +208,7 @@ public class SampleDataTests
         //Assign
         SampleData sampleData = new();
         Predicate<string> emailPredicate = (string email) => {
-            return "offical_rnicrosoft@bing.com".Equals(email);
+            return "offical_rnicrosoft@bing.com".Equals(email, StringComparison.Ordinal);
         };
         //Act
         IEnumerable<(string FirstName, string LastName)> fullNames = sampleData.FilterByEmailAddress(emailPredicate);
