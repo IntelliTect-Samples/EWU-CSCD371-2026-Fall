@@ -22,15 +22,17 @@ public class SampleData : ISampleData
     // 2.
     public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()
     {
-        IEnumerable<string> csvTemp = CsvRows.Select(StringToPerson).Select(p => $"{p.Address.State}").Distinct();
-        return csvTemp.OrderBy(n => n);
+        return CsvRows.
+            Select(StringToPerson)
+            .Select(p => $"{p.Address.State}")
+            .Distinct()
+            .OrderBy(n => n, StringComparer.OrdinalIgnoreCase);
     }
 
     // 3.
     public string GetAggregateSortedListOfStatesUsingCsvRows()
     {
-        IEnumerable<string> csvTemp = GetUniqueSortedListOfStatesGivenCsvRows();
-        return string.Join(",", csvTemp);
+        return string.Join(",", GetUniqueSortedListOfStatesGivenCsvRows());
     }
 
     // 4.
