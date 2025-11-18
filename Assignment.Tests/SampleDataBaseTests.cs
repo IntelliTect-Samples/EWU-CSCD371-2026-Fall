@@ -5,10 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Assignment.Tests;
-
 public static class AssertExtensions
 {
-    public static Assert That = null!;
+    internal static Assert That = null!;
 
     public static void HasCount<T>(this Assert assert, int expected, IEnumerable<T> collection)
     {
@@ -25,6 +24,11 @@ public static class AssertExtensions
 public abstract class BaseSampleDataTests<TService> where TService : class
 {
     protected TService DataService { get; set; } = default!;
+
+    private static readonly string[] TestSortedList = { "a", "ab", "abc" };
+    private static readonly string[] TestUnsortedList = { "b", "a", "abc", "b" };
+    private static readonly string[] TestDistinctList = { "a", "b", "ab" };
+    private static readonly string[] TestUndistinctList = { "b", "c", "a", "b" };
 
     protected abstract TService CreateService();
     protected abstract IEnumerable<string> GetCsvRows();
@@ -54,29 +58,28 @@ public abstract class BaseSampleDataTests<TService> where TService : class
         return list.Count() == list.Distinct().Count();
     }
 
-
     [TestMethod]
     public void TestIsListSorted_SortedList_True()
     {
-        Assert.IsTrue(IsSetDistinct(new string[] { "a", "ab", "abc" }));
+        Assert.IsTrue(IsSetDistinct(TestSortedList));
     }
 
     [TestMethod]
     public void TestIsListSorted_NotSortedList_False()
     {
-        Assert.IsFalse(IsSetDistinct(new string[] { "b", "a", "abc", "b" }));
+        Assert.IsFalse(IsSetDistinct(TestUnsortedList));
     }
 
     [TestMethod]
     public void TestDistinct_IsDistinct_True()
     {
-        Assert.IsTrue(IsSetDistinct(new string[] { "a", "b", "ab" }));
+        Assert.IsTrue(IsSetDistinct(TestDistinctList));
     }
 
     [TestMethod]
     public void TestDistinct_IsNotDistinct_False()
     {
-        Assert.IsFalse(IsSetDistinct(new string[] { "b", "c", "a", "b" }));
+        Assert.IsFalse(IsSetDistinct(TestUndistinctList));
     }
 
 
@@ -160,6 +163,7 @@ public abstract class BaseSampleDataTests<TService> where TService : class
         // Assert
         AssertExtensions.That.HasCount(peopleAsString.Count(), people);
 
+        // Assert sorting logic
         var isSorted = people.Zip(people.Skip(1), (prev, next) =>
             StringComparer.Ordinal.Compare(prev.Address.State, next.Address.State) <= 0 &&
             (StringComparer.Ordinal.Compare(prev.Address.State, next.Address.State) < 0 ||
@@ -172,7 +176,7 @@ public abstract class BaseSampleDataTests<TService> where TService : class
         Assert.IsTrue(isSorted, "People collection is not correctly sorted by State, City, then Zip.");
     }
 
-    // 5.
+    // 5. 
     [TestMethod]
     public void FilterByEmailAddress_SingleEmail_Success()
     {
