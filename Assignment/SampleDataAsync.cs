@@ -10,7 +10,7 @@ public class SampleDataAsync : SampleDataServiceBase, IAsyncSampleData
 {
     protected override IEnumerable<string> GetRawCsvRowsSync() => Enumerable.Empty<string>();
 
-    private async IAsyncEnumerable<string> GetRawCsvRowsAsync()
+    private static async IAsyncEnumerable<string> GetRawCsvRowsAsync()
     {
         var lines = await Task.Run(() => File.ReadLines(SampleDirectory));
         foreach (var line in lines.Skip(1))
