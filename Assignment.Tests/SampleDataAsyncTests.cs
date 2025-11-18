@@ -12,7 +12,7 @@ public class SampleDataAsyncTests : BaseSampleDataTests<IAsyncSampleData>
     // 1.
     protected override IAsyncSampleData CreateService() => new SampleDataAsync();
 
-    private static IEnumerable<T> ResolveAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
+    private static List<T> ResolveAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
     {
         var resolvedList = new List<T>();
 
