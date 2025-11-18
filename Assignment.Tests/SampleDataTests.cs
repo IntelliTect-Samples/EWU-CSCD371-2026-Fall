@@ -98,6 +98,19 @@ public class SampleDataTests
         //Assert
         Assert.IsTrue(IsSetDistinct(csvOut));
     }
+
+    [TestMethod]
+    public void GetUniqueSortedListOfStatesGivenCsvRows_HardCodedCompare_IsDistinct()
+    {
+        //Assign
+        SampleData sampleData = new();
+        IEnumerable<string> csvOut = sampleData.GetUniqueSortedListOfStatesGivenCsvRows();
+
+        //Assert
+        Assert.AreEqual<string>("AL AZ CA DC FL GA IN KS LA MD MN MO MT NC NE NH NV NY OR PA SC TN TX UT VA WA WV", string.Join(" ", csvOut));
+        Assert.AreEqual<int>(27, csvOut.Count());//would be 50 if the list contains duplicates.
+    }
+
     //Include a test that uses LINQ to verify the data is sorted correctly (do not use a hardcoded list)
     [TestMethod]
     public void GetUniqueSortedListOfStatesGivenCsvRows_LoadsCVS_IsSortedLinqTest()
@@ -178,13 +191,12 @@ public class SampleDataTests
         //Assign
         SampleData sampleData = new();
         static bool emailPredicate(string email) { return "mjeannotp@google.ca".Equals(email, StringComparison.Ordinal); }
-        (string,string) expectedName = ("Molly", "Jeannot");
 
         //Act
         IEnumerable<(string FirstName, string LastName)> fullNames = sampleData.FilterByEmailAddress(emailPredicate);
         
         //Assert
-        Assert.Contains(expectedName, fullNames);
+        Assert.Contains(("Molly", "Jeannot"), fullNames);
         Assert.HasCount(1, fullNames);
     }
     [TestMethod]
@@ -194,12 +206,13 @@ public class SampleDataTests
         SampleData sampleData = new();
         Predicate<string> emailPredicate = (string email) => {  return "mjeannotp@google.ca".Equals(email, StringComparison.Ordinal) 
                                                                     || "mrawsthorneq@slate.com".Equals(email, StringComparison.Ordinal); };
-        (string, string)[] expectedName = [("Molly", "Jeannot"), ("Maria", "Rawsthorne")];
+        
+        IEnumerable<(string FirstName, string LastName)> expectedName = [("Molly", "Jeannot"), ("Maria", "Rawsthorne")];
         //Act
         IEnumerable<(string FirstName, string LastName)> fullNames = sampleData.FilterByEmailAddress(emailPredicate);
 
         //Assert
-        Assert.IsTrue(expectedName.SequenceEqual(fullNames));
+        CollectionAssert.AreEqual(expectedName.ToList(), fullNames.ToList());
         Assert.HasCount(2, fullNames);
     }
     [TestMethod]
@@ -257,6 +270,6 @@ public class SampleDataTests
         string stateOutput = sampleData.GetAggregateListOfStatesGivenPeopleCollection(sampleData.People);
 
         //Assert
-        Assert.AreEqual<string>(sampleData.GetAggregateSortedListOfStatesUsingCsvRows(), stateOutput);
+        Assert.AreEqual<string>(string.Join(",", sampleData.GetUniqueSortedListOfStatesGivenCsvRows()), stateOutput);
     }
 }
