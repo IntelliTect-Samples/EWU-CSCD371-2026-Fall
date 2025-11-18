@@ -8,14 +8,17 @@ using System.Net;
 
 namespace Assignment;
 
-public class SampleData : ISampleData
+public class SampleData : SampleDataServiceBase, ISampleData
 {
-    private const string SampleDirectory = "People.csv";
+    protected override IEnumerable<string> GetRawCsvRowsSync()
+    {
+        return File.ReadLines(SampleDirectory);
+    }
 
     // 1.
     public IEnumerable<string> CsvRows {
         get {
-            return File.ReadLines(SampleDirectory).Skip(1);
+            return GetRawCsvRowsSync().Skip(1);
         }
     }
 
@@ -40,25 +43,11 @@ public class SampleData : ISampleData
     {
         get
         {
-            return CsvRows.Select(StringToPerson)
-                .OrderBy(person => person.Address.State)
-                .ThenBy(person => person.Address.City)
-                .ThenBy(person => person.Address.Zip);
+            var people = CsvRows.Select(StringToPerson);
+            return GetOrderedPeopleFromListSync(people);
         }
     }
     
-    public static IPerson StringToPerson(string input)
-    {
-        ArgumentNullException.ThrowIfNull(input);
-
-        string[] split = input.Split(',');
-
-        if (split.Length <= 7) throw new InvalidDataException($"{nameof(input)} : {input}");
-
-        Address address = new(split[4], split[5], split[6], split[7]);
-        return new Person(split[1], split[2], address, split[3]);
-    }
-
     // 5.
     public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(Predicate<string> filter)
     {
@@ -66,8 +55,9 @@ public class SampleData : ISampleData
     }
 
     // 6.
-    public string GetAggregateListOfStatesGivenPeopleCollection(IEnumerable<IPerson> people) => people
-        .Select(p => $"{p.Address.State}")
-        .Distinct()
-        .Aggregate((a, b) => a + $",{b}");
+    public string GetAggregateListOfStatesGivenPeopleCollection(IEnumerable<IPerson> people)
+    {
+        return AggregateStatesSync(people);
+    }
+        
 }
