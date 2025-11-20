@@ -44,7 +44,7 @@ public class NodeTests
     }
 
     [TestMethod]
-    public void Values_ShouldHandleSingleNodeCorrectly()
+    public void NodeCollection_InitializeWithSize_ContainsOneNode()
     {
         // Arrange
         var singleNode = new NodeCollection<int>(99);
@@ -59,7 +59,7 @@ public class NodeTests
     }
 
     [TestMethod]
-    public void ChildItems_ReturnLessThanMaxSTartingFromChild()
+    public void ChildItems_MaxThree_ReturnLessThanMaxStartingFromChild()
     {
         // Arrange
         var head = MakeCircularlyLinkedList(1, 2, 3, 4);
@@ -89,7 +89,7 @@ public class NodeTests
     }
 
     [TestMethod]
-    public void ChildItems_MaxZeroReturnsEmptyCollection()
+    public void ChildItems_MaxZero_ReturnsEmptyCollection()
     {
         // Arrange
         var head = MakeCircularlyLinkedList(1, 2, 3);
@@ -103,7 +103,7 @@ public class NodeTests
     }
 
     [TestMethod]
-    public void ChildItems_MaxTwoReturnsOneItem()
+    public void ChildItems_MaxTwo_ReturnsOneItem()
     {
         // Arrange
         var head = MakeCircularlyLinkedList(1, 2, 3, 4);
@@ -119,7 +119,7 @@ public class NodeTests
     }
 
     [TestMethod]
-    public void ChildItems_MaxExceedsChildrenStopsAtEnd()
+    public void ChildItems_MaxExceedsChildren_StopsAtEnd()
     {
         // Arrange
         var head = MakeCircularlyLinkedList(1, 2, 3);
