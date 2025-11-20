@@ -1,7 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\Assignment.Interfaces\Assignment.Interfaces.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Assignment.Interfaces\Assignment.Interfaces.csproj" />
+	</ItemGroup>
+
+	<!-- 1. Change "Copy to" property on People.csv to "Copy if newer" -->
+	<ItemGroup>
+		<None Update="People.csv">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
