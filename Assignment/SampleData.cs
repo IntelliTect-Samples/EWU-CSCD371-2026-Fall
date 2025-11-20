@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 
 namespace Assignment;
 
@@ -24,7 +21,7 @@ public class SampleData : ISampleData
     {
         return CsvRows.
             Select(StringToPerson)
-            .Select(p => $"{p.Address.State}")
+            .Select(p => p.Address.State)
             .Distinct()
             .OrderBy(n => n, StringComparer.OrdinalIgnoreCase);
     }
@@ -67,7 +64,7 @@ public class SampleData : ISampleData
 
     // 6.
     public string GetAggregateListOfStatesGivenPeopleCollection(IEnumerable<IPerson> people) => people
-        .Select(p => $"{p.Address.State}")
+        .Select(p => p.Address.State)
         .Distinct()
         .Aggregate((a, b) => a + $",{b}");
 }
