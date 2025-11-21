@@ -1,0 +1,12 @@
+<Project>
+  <ItemGroup>
+    <Content Include="**\People.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="DirectoryBuild_CopiedSharedItems" AfterTargets="Build">
+    <Message Importance="Low" Text="Directory.Build.targets applied." />
+  </Target>
+  </Project>
