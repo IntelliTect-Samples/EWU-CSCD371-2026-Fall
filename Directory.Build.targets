@@ -1,0 +1,11 @@
+<Project>
+  <ItemGroup Condition="Exists('People.csv')">
+    <None Remove="People.csv" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('People.csv')">
+    <Content Include="People.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
