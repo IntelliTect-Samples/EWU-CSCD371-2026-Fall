@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Assignment;
 
-public interface IPerson
+public interface IPerson 
 {
     string FirstName { get; }
     string LastName { get; }

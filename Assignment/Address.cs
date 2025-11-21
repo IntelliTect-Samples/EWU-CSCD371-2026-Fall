@@ -9,8 +9,10 @@ public class Address : IAddress
         State = state;
         Zip = zip;
     }
-    public string StreetAddress { get; set; }
-    public string City { get; set; }
-    public string State { get; set; }
-    public string Zip { get; set; }
+    
+    // FIX: Changed 'set' to 'init' for immutability
+    public string StreetAddress { get; init; } 
+    public string City { get; init; }
+    public string State { get; init; }
+    public string Zip { get; init; }
 }
