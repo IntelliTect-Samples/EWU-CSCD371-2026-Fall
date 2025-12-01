@@ -54,10 +54,10 @@ which executes ping for an array of hostNameOrAddresses (which can all be "local
 
 - Place all shared project properties into a `Directory.Build.Props` file.
 - Place all shared project items into a `Directory.Build.targets` file.
-- Ensure nullable reference types is enabled  ❌✔
-- Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ❌✔
-- Set `LangVersion` and the `TargetFramework` to the latest released versions available (preview versions optional)   ❌✔
-- and enabled .NET analyzers for both projects ❌✔
-- For this assignment, consider using `Assert.AreEqual<T>()` (the generic version)  ❌✔
-- All of the above should be unit tested ❌✔
-- Choose simplicity over complexity ❌✔
+- Ensure nullable reference types is enabled  ✔
+- Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ✔
+- Set `LangVersion` and the `TargetFramework` to the latest released versions available (preview versions optional)   ✔
+- and enabled .NET analyzers for both projects ✔
+- For this assignment, consider using `Assert.AreEqual<T>()` (the generic version)  ✔
+- All of the above should be unit tested ✔
+- Choose simplicity over complexity ✔
