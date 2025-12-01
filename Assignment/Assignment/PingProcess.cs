@@ -11,6 +11,9 @@ namespace Assignment;
 
 public record struct PingResult(int ExitCode, string? StdOutput);
 
+/// <summary>
+/// This class basically runs "ping" in your cmd (or something similar)
+/// </summary>
 public class PingProcess
 {
     private ProcessStartInfo StartInfo { get; } = new("ping");
@@ -19,55 +22,47 @@ public class PingProcess
     {
         StartInfo.Arguments = hostNameOrAddress;
         StringBuilder? stringBuilder = null;
-        void updateStdOutput(string? line) =>
-            (stringBuilder??=new StringBuilder()).AppendLine(line);
+        void updateStdOutput(string? line) => (stringBuilder??=new StringBuilder()).AppendLine(line);
         Process process = RunProcessInternal(StartInfo, updateStdOutput, default, default);
-        return new PingResult( process.ExitCode, stringBuilder?.ToString());
+        return new PingResult(process.ExitCode, stringBuilder?.ToString());
     }
 
     public Task<PingResult> RunTaskAsync(string hostNameOrAddress)
     {
-        throw new NotImplementedException();
+        return Task.Run(() => { return Run(hostNameOrAddress); });
     }
 
-    async public Task<PingResult> RunAsync(
-        string hostNameOrAddress, CancellationToken cancellationToken = default)
+    async public Task<PingResult> RunAsync(string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
-        Task task = null!;
-        await task;
-        throw new NotImplementedException();
+        cancellationToken.ThrowIfCancellationRequested();
+        Task<PingResult> task = Task.Run(() => { return Run(hostNameOrAddress); }, cancellationToken);
+        return await task;
     }
 
     async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
     {
-        StringBuilder? stringBuilder = null;
-        ParallelQuery<Task<int>>? all = hostNameOrAddresses.AsParallel().Select(async item =>
-        {
-            Task<PingResult> task = null!;
-            // ...
-
-            await task.WaitAsync(default(CancellationToken));
-            return task.Result.ExitCode;
-        });
-
+        StringBuilder? stringBuilder = new StringBuilder();
+        Task<int>[] all = hostNameOrAddresses
+            .AsParallel()
+            .Select(async item =>
+            {
+                Task<PingResult> task = RunTaskAsync(item);
+                PingResult output = await task.WaitAsync(default(CancellationToken));
+                stringBuilder.Append(output.StdOutput);
+                return task.Result.ExitCode;
+            }).ToArray();
         await Task.WhenAll(all);
         int total = all.Aggregate(0, (total, item) => total + item.Result);
-        return new PingResult(total, stringBuilder?.ToString());
+        return new PingResult(total, stringBuilder.ToString());
     }
 
-    async public Task<PingResult> RunLongRunningAsync(
-        string hostNameOrAddress, CancellationToken cancellationToken = default)
+    async public Task<PingResult> RunLongRunningAsync(string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
-        Task task = null!;
-        await task;
-        throw new NotImplementedException();
+        Task<PingResult> task = Task.Factory.StartNew(() => Run(hostNameOrAddress),cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Current);
+        return await task;
     }
 
-    private Process RunProcessInternal(
-        ProcessStartInfo startInfo,
-        Action<string?>? progressOutput,
-        Action<string?>? progressError,
-        CancellationToken token)
+    private Process RunProcessInternal(ProcessStartInfo startInfo, Action<string?>? progressOutput, Action<string?>? progressError, CancellationToken token)
     {
         var process = new Process
         {
@@ -76,11 +71,7 @@ public class PingProcess
         return RunProcessInternal(process, progressOutput, progressError, token);
     }
 
-    private Process RunProcessInternal(
-        Process process,
-        Action<string?>? progressOutput,
-        Action<string?>? progressError,
-        CancellationToken token)
+    private Process RunProcessInternal(Process process, Action<string?>? progressOutput, Action<string?>? progressError, CancellationToken token)
     {
         process.EnableRaisingEvents = true;
         process.OutputDataReceived += OutputHandler;
