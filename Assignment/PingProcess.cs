@@ -20,7 +20,7 @@ public class PingProcess
 
     public PingResult Run(string hostNameOrAddress)
     {
-        StartInfo.Arguments = hostNameOrAddress;
+        StartInfo.Arguments = hostNameOrAddress + " -n 4";
         StringBuilder? stringBuilder = null;
         void updateStdOutput(string? line) => (stringBuilder??=new StringBuilder()).AppendLine(line);
         Process process = RunProcessInternal(StartInfo, updateStdOutput, default, default);
