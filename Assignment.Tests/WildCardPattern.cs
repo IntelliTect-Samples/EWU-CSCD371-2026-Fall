@@ -2,6 +2,10 @@
 // and then modified to remove of PowerShell specific elements.
 #nullable disable // Nullable not supported in this legacy file.
 
+//TODO: Someone should fix their shit.
+#pragma warning disable CA1852
+#pragma warning disable IDE0161
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -267,7 +271,7 @@ public sealed partial class WildcardPattern
     public static string Escape(
         string pattern, char escapeCharacter)
     {
-        return Escape(pattern, Array.Empty<char>(), escapeCharacter);
+        return Escape(pattern, [], escapeCharacter);
     }
 
     /// <summary>
@@ -616,7 +620,7 @@ internal abstract class WildcardPatternParser
         {
             if (!pattern.Pattern.Equals($"{pattern.EscapeCharacter}", StringComparison.Ordinal)) // Win7 backcompatibility requires treating '`' pattern as '' pattern when this code was used with PowerShell.
             {
-                parser.AppendLiteralCharacter(pattern.Pattern[pattern.Pattern.Length - 1]);
+                parser.AppendLiteralCharacter(pattern.Pattern[^1]);
             }
         }
 
@@ -871,7 +875,7 @@ internal class WildcardPatternMatcher
 
             // swap patternPositionsForCurrentStringPosition
             // with patternPositionsForNextStringPosition
-            var tmp = patternPositionsForCurrentStringPosition;
+            PatternPositionsVisitor tmp = patternPositionsForCurrentStringPosition;
             patternPositionsForCurrentStringPosition = patternPositionsForNextStringPosition;
             patternPositionsForNextStringPosition = tmp;
         }
@@ -1018,10 +1022,7 @@ internal class WildcardPatternMatcher
     {
         private readonly char _literalCharacter;
 
-        public LiteralCharacterElement(char literalCharacter)
-        {
-            _literalCharacter = literalCharacter;
-        }
+        public LiteralCharacterElement(char literalCharacter) => _literalCharacter = literalCharacter;
 
         public override void ProcessStringCharacter(
                         char currentStringCharacter,
@@ -1044,10 +1045,7 @@ internal class WildcardPatternMatcher
     {
         private readonly Regex _Regex;
 
-        public BracketExpressionElement(Regex regex)
-        {
-            _Regex = regex ?? throw new ArgumentNullException(nameof(regex));
-        }
+        public BracketExpressionElement(Regex regex) => _Regex = regex ?? throw new ArgumentNullException(nameof(regex));
 
         public override void ProcessStringCharacter(
                         char currentStringCharacter,
@@ -1090,7 +1088,7 @@ internal class WildcardPatternMatcher
 
     private class MyWildcardPatternParser : WildcardPatternParser
     {
-        private readonly List<PatternElement> _patternElements = new();
+        private readonly List<PatternElement> _patternElements = [];
         private CharacterNormalizer _characterNormalizer;
         private RegexOptions _regexOptions;
         private StringBuilder _bracketExpressionBuilder;
@@ -1105,7 +1103,7 @@ internal class WildcardPatternMatcher
                 _regexOptions = WildcardPatternToRegexParser.TranslateWildcardOptionsIntoRegexOptions(pattern.Options),
             };
             WildcardPatternParser.Parse(pattern, parser);
-            return parser._patternElements.ToArray();
+            return [.. parser._patternElements];
         }
 
         protected override void AppendLiteralCharacter(char c)
@@ -1155,7 +1153,7 @@ internal class WildcardPatternMatcher
         }
     }
 
-    private struct CharacterNormalizer
+    private readonly struct CharacterNormalizer
     {
         private readonly CultureInfo _cultureInfo;
         private readonly bool _caseInsensitive;
@@ -1237,3 +1235,5 @@ internal class WildcardPatternToDosWildcardParser : WildcardPatternParser
         return parser._result.ToString();
     }
 }
+#pragma warning restore CA1852
+#pragma warning restore IDE0161

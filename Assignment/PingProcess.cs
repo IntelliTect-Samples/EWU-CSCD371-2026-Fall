@@ -41,7 +41,7 @@ public class PingProcess
 
     async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
     {
-        StringBuilder? stringBuilder = new StringBuilder();
+        StringBuilder? stringBuilder = new();
         Task<int>[] all = hostNameOrAddresses
             .AsParallel()
             .Select(async item =>
