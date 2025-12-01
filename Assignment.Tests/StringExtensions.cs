@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 
 namespace IntelliTect.TestTools;
 
+#pragma warning disable CA1711
+
 /// <summary>
 /// Useful string extensions for performing assertions.
 /// </summary>
@@ -33,3 +35,4 @@ public static class StringExtensions
     public static bool IsLike(this string text, string pattern, char escapeCharacter) =>
         new WildcardPattern(pattern, escapeCharacter).IsMatch(text);
 }
+#pragma warning restore CA1711

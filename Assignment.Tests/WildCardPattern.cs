@@ -5,6 +5,7 @@
 //TODO: Someone should fix their shit.
 #pragma warning disable CA1852
 #pragma warning disable IDE0161
+#pragma warning disable CA2201
 
 using System;
 using System.Collections.Generic;
@@ -1237,3 +1238,4 @@ internal class WildcardPatternToDosWildcardParser : WildcardPatternParser
 }
 #pragma warning restore CA1852
 #pragma warning restore IDE0161
+#pragma warning restore CA2201

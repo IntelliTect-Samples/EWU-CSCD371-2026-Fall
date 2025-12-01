@@ -100,7 +100,7 @@ public class PingProcessTests
         AggregateException aggregateAcception = Assert.Throws<AggregateException>(() => Sut.RunAsync("localhost", cts.Token).Wait());
 
         aggregateAcception.Flatten();
-        Assert.IsInstanceOfType(aggregateAcception.InnerException, typeof(TaskCanceledException));
+        Assert.IsInstanceOfType<TaskCanceledException>(aggregateAcception.InnerException);
     }
     
     [TestMethod]
@@ -109,7 +109,7 @@ public class PingProcessTests
         string[] hostNames = new string[] { "localhost", "localhost", "localhost", "localhost" };
         PingResult result = await Sut.RunAsync(hostNames);
         string[]? lines = result.StdOutput?.Split(Environment.NewLine);
-        Assert.AreEqual<int?>(4, lines!.Where(s => s.Contains("Pinging")).ToList().Count());//Expecting 4 returns.
+        Assert.HasCount(4, lines!.Where(s => s.Contains("Pinging")).ToList());
     }
 
     [TestMethod]
