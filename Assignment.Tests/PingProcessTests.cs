@@ -25,8 +25,8 @@ public class PingProcessTests
     [TestMethod]
     public void Start_PingProcess_Success()
     {
-        string termination = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? " -n 4" : " -c 4 -W 1";
-        Process process = Process.Start("ping" + termination, "localhost");
+        string termination = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? " -n 4" : " -c 4";
+        Process process = Process.Start("ping", "localhost" + termination);
         process.WaitForExit();
         Assert.AreEqual<int>(0, process.ExitCode);
     }
