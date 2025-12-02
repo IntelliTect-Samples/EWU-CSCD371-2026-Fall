@@ -19,9 +19,9 @@ public class PingProcess
 {
     private ProcessStartInfo StartInfo { get; } = new("ping");
 
-    public PingResult Run(string hostNameOrAddress)
+    public virtual PingResult Run(string hostNameOrAddress)
     {
-        string termination = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? " -n 4" : " -c 4 -W 1";
+        string termination = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? " -n 4" : " -c 4";
 
         StartInfo.Arguments = hostNameOrAddress + termination;
         StringBuilder? stringBuilder = null;
@@ -45,13 +45,19 @@ public class PingProcess
     async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
     {
         StringBuilder? stringBuilder = new();
+        object _Sync = new();
+
+
         Task<int>[] all = hostNameOrAddresses
             .AsParallel()
             .Select(async item =>
             {
                 Task<PingResult> task = RunTaskAsync(item);
                 PingResult output = await task.WaitAsync(default(CancellationToken));
-                stringBuilder.Append(output.StdOutput);
+                lock(_Sync)
+                {
+                    stringBuilder.Append(output.StdOutput);
+                }
                 return task.Result.ExitCode;
             }).ToArray();
         await Task.WhenAll(all);

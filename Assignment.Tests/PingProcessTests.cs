@@ -14,7 +14,7 @@ namespace Assignment.Tests;
 [TestClass]
 public class PingProcessTests
 {
-    PingProcess Sut { get; set; } = new();
+    PingProcessMock Sut { get; set; } = new();
 
     [TestInitialize]
     public void TestInitialize()
