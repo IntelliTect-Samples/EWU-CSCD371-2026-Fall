@@ -1,12 +1,13 @@
 ﻿using IntelliTect.TestTools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Assignment.Tests;
 
@@ -24,7 +25,8 @@ public class PingProcessTests
     [TestMethod]
     public void Start_PingProcess_Success()
     {
-        Process process = Process.Start("ping", "localhost");
+        string termination = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? " -n 4" : " -c 4 -W 1";
+        Process process = Process.Start("ping" + termination, "localhost");
         process.WaitForExit();
         Assert.AreEqual<int>(0, process.ExitCode);
     }
