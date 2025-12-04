@@ -3,5 +3,9 @@
     "vs": {
       "version": "16.8"
     }
+  },
+  "sdk": {
+    "version": "9.0.305",
+    "rollForward": "latestMinor"
   }
 }

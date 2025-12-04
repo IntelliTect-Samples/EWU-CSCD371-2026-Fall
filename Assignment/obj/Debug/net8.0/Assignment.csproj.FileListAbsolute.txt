@@ -1,0 +1,12 @@
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/bin/Debug/net8.0/Assignment.deps.json
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/bin/Debug/net8.0/Assignment.dll
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/bin/Debug/net8.0/Assignment.pdb
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/Assignment.GeneratedMSBuildEditorConfig.editorconfig
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/Assignment.AssemblyInfoInputs.cache
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/Assignment.AssemblyInfo.cs
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/Assignment.csproj.CoreCompileInputs.cache
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/Assignment.sourcelink.json
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/Assignment.dll
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/refint/Assignment.dll
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/Assignment.pdb
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment/Assignment/obj/Debug/net8.0/ref/Assignment.dll

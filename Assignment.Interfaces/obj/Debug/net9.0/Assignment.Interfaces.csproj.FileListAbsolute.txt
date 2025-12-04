@@ -1,0 +1,12 @@
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/bin/Debug/net9.0/Assignment.Interfaces.deps.json
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/bin/Debug/net9.0/Assignment.Interfaces.dll
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/bin/Debug/net9.0/Assignment.Interfaces.pdb
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/Assignment.Interfaces.GeneratedMSBuildEditorConfig.editorconfig
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/Assignment.Interfaces.AssemblyInfoInputs.cache
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/Assignment.Interfaces.AssemblyInfo.cs
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/Assignment.Interfaces.csproj.CoreCompileInputs.cache
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/Assignment.Interfaces.sourcelink.json
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/Assignment.Interfaces.dll
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/refint/Assignment.Interfaces.dll
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/Assignment.Interfaces.pdb
+/Users/user/Desktop/EWU-CSCD371-2025-Fall/Assignment.Interfaces/obj/Debug/net9.0/ref/Assignment.Interfaces.dll
