@@ -42,33 +42,33 @@ public class PingProcess
         return await task;
     }
 
-    async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
+    async public Task<PingResult> RunAsync(CancellationToken token = default, params string[] hostNameOrAddresses)
     {
         StringBuilder? stringBuilder = new();
         object _Sync = new();
-
 
         Task<int>[] all = hostNameOrAddresses
             .AsParallel()
             .Select(async item =>
             {
-                Task<PingResult> task = RunTaskAsync(item);
-                PingResult output = await task.WaitAsync(default(CancellationToken));
+                PingResult output = await RunTaskAsync(item).WaitAsync(token);
                 lock(_Sync)
                 {
                     stringBuilder.Append(output.StdOutput);
                 }
-                return task.Result.ExitCode;
+                return output.ExitCode;
             }).ToArray();
         await Task.WhenAll(all);
         int total = all.Aggregate(0, (total, item) => total + item.Result);
         return new PingResult(total, stringBuilder.ToString());
     }
 
-    async public Task<PingResult> RunLongRunningAsync(string hostNameOrAddress, CancellationToken cancellationToken = default)
+    public Task<int> RunLongRunningAsync(ProcessStartInfo startInfo, Action<string?>? progressOutput,
+        Action<string?>? progressError, CancellationToken token)
     {
-        Task<PingResult> task = Task.Factory.StartNew(() => Run(hostNameOrAddress),cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Current);
-        return await task;
+        return Task.Factory.StartNew(() =>{
+            return RunProcessInternal(startInfo, progressOutput, progressError, token).ExitCode; 
+        }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
     private Process RunProcessInternal(ProcessStartInfo startInfo, Action<string?>? progressOutput, Action<string?>? progressError, CancellationToken token)
@@ -145,7 +145,7 @@ public class PingProcess
             {
                 process.Kill();
             }
-
+    
         }
         return process;
 

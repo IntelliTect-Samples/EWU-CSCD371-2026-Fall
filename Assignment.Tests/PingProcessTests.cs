@@ -16,12 +16,6 @@ public class PingProcessTests
 {
     PingProcessMock Sut { get; set; } = new();
 
-    [TestInitialize]
-    public void TestInitialize()
-    {
-        Sut = new();
-    }
-
     [TestMethod]
     public void Start_PingProcess_Success()
     {
@@ -109,7 +103,7 @@ public class PingProcessTests
     async public Task RunAsync_MultipleHostAddresses_True()
     {
         string[] hostNames = new string[] { "localhost", "localhost", "localhost", "localhost" };
-        PingResult result = await Sut.RunAsync(hostNames);
+        PingResult result = await Sut.RunAsync(default,hostNames);
         string[]? lines = result.StdOutput?.Split(Environment.NewLine);
         Assert.HasCount(4, lines!.Where(s => s.Contains("Pinging")).ToList());
     }
@@ -117,21 +111,21 @@ public class PingProcessTests
     [TestMethod]
     async public Task RunLongRunningAsync_UsingTpl_Success()
     {
-        PingResult result = await Sut.RunLongRunningAsync("localhost");
-        AssertValidPingOutput(result);
+        string progressoutput = "";
+        void readProgress(string? info)
+        {
+            progressoutput += info;
+        }
+        void readError(string? info) { };//DoNothing
+        string termination = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "-n" : "-c";
+        Process process = Process.Start("ping", "localhost" + termination);
+        ProcessStartInfo pinfo = new ProcessStartInfo("ping");
+        pinfo.ArgumentList.Add("localhost");
+        pinfo.ArgumentList.Add(termination);
+        pinfo.ArgumentList.Add("4");
+        int result = await Sut.RunLongRunningAsync(pinfo, readProgress, readError, default);
+        Assert.AreEqual(0, result);
     }
-    /*
-    //Assuming this test is undesirable.
-    [TestMethod]
-    public void StringBuilderAppendLine_InParallel_IsNotThreadSafe()
-    {
-        IEnumerable<int> numbers = Enumerable.Range(0, short.MaxValue);
-        System.Text.StringBuilder stringBuilder = new();
-        numbers.AsParallel().ForAll(item => stringBuilder.AppendLine(""));
-        int lineCount = stringBuilder.ToString().Split(Environment.NewLine).Length;
-        Assert.AreNotEqual(lineCount, numbers.Count()+1);
-    }
-    */
     readonly string PingOutputLikeExpression = @"
 Pinging * with 32 bytes of data:
 Reply from ::1: time<*
