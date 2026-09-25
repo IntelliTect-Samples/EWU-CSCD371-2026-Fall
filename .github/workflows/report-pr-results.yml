@@ -1,0 +1,190 @@
+name: Report PR results
+
+on:
+  workflow_run:
+    workflows: ["Build and Test .NET"]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  resolve:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pull-requests: read
+    outputs:
+      number: ${{ steps.pr.outputs.number }}
+    steps:
+      - name: Resolve the originating PR
+        id: pr
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const repo = context.repo;
+            const fullName = `${repo.owner}/${repo.repo}`;
+            const { data: workflow } = await github.rest.actions.getWorkflow({
+              ...repo, workflow_id: 'build-and-test.yml'
+            });
+            if (run.repository.full_name !== fullName ||
+                run.workflow_id !== workflow.id ||
+                run.path !== '.github/workflows/build-and-test.yml') {
+              throw new Error('Unexpected source repository or workflow.');
+            }
+
+            // Fork runs can have an empty pull_requests array; never trust an artifact's PR number.
+            const headOwner = run.head_repository.full_name.split('/')[0];
+            const candidates = await github.paginate(github.rest.pulls.list, {
+              ...repo, state: 'open', head: `${headOwner}:${run.head_branch}`, per_page: 100
+            });
+            const matches = candidates.filter(pr =>
+              pr.state === 'open' &&
+              pr.base.repo.full_name === fullName &&
+              pr.base.ref.startsWith('Assignment') &&
+              pr.head.sha === run.head_sha &&
+              pr.head.ref === run.head_branch &&
+              pr.head.repo?.id === run.head_repository.id
+            );
+            if (matches.length === 0) {
+              core.notice('No current open assignment PR matches this run; skipping stale or closed PR results.');
+              return;
+            }
+            if (matches.length !== 1) {
+              throw new Error('Ambiguous PR association; refusing to post a comment.');
+            }
+            core.setOutput('number', matches[0].number);
+
+  report:
+    needs: resolve
+    if: needs.resolve.outputs.number != ''
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pr-results-${{ needs.resolve.outputs.number }}
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      pull-requests: write
+    steps:
+      - name: Prepare the result comment
+        id: comment
+        uses: actions/github-script@v8
+        env:
+          PR_NUMBER: ${{ needs.resolve.outputs.number }}
+        with:
+          script: |
+            const fs = require('node:fs');
+            const path = require('node:path');
+            const { execFileSync } = require('node:child_process');
+            const repo = context.repo;
+            const run = context.payload.workflow_run;
+            const number = Number(process.env.PR_NUMBER);
+            if (!Number.isSafeInteger(number) || number <= 0) {
+              throw new Error('Invalid resolved PR number.');
+            }
+
+            async function isCurrent() {
+              const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number: number });
+              if (pr.state !== 'open' || !pr.base.ref.startsWith('Assignment') ||
+                  pr.base.repo.full_name !== `${repo.owner}/${repo.repo}` ||
+                  pr.head.sha !== run.head_sha || pr.head.ref !== run.head_branch ||
+                  pr.head.repo?.id !== run.head_repository.id) {
+                core.notice('The PR changed or closed; skipping this result.');
+                return false;
+              }
+              const { data: latestAttempt } = await github.rest.actions.getWorkflowRun({
+                ...repo, run_id: run.id
+              });
+              if (latestAttempt.run_attempt !== run.run_attempt) {
+                core.notice('A newer attempt exists; skipping this result.');
+                return false;
+              }
+              const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+                ...repo, workflow_id: run.workflow_id, event: 'pull_request',
+                head_sha: run.head_sha, per_page: 100
+              });
+              if (runs.some(other =>
+                  other.id > run.id &&
+                  other.head_repository?.id === run.head_repository.id &&
+                  other.head_branch === run.head_branch)) {
+                core.notice('A newer run exists for this commit; skipping this result.');
+                return false;
+              }
+              return true;
+            }
+            if (!await isCurrent()) return;
+
+            const runUrl = `${context.serverUrl}/${repo.owner}/${repo.repo}/actions/runs/${run.id}/attempts/${run.run_attempt}`;
+            let body = `## Build and test results\n\n**Result:** ${run.conclusion}\n\n` +
+              `Commit: \`${run.head_sha}\` | [Workflow run, attempt ${run.run_attempt}](${runUrl})\n\n`;
+            let reportingError;
+            try {
+              const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, {
+                ...repo, run_id: run.id, per_page: 100
+              });
+              const matches = artifacts.filter(a => a.name === `pr-coverage-${run.run_attempt}`);
+              if (matches.length === 0) {
+                core.notice('This attempt did not upload a coverage summary.');
+                body += 'Coverage is unavailable for this attempt. See the workflow run for details.\n';
+              } else {
+                if (matches.length !== 1) throw new Error('Duplicate coverage artifacts.');
+                const artifact = matches[0];
+                if (artifact.expired) throw new Error('The coverage artifact has expired.');
+                if (artifact.size_in_bytes > 1_000_000) throw new Error('Coverage archive exceeds the size limit.');
+                const { data } = await github.rest.actions.downloadArtifact({
+                  ...repo, artifact_id: artifact.id, archive_format: 'zip'
+                });
+                const archive = Buffer.from(data);
+                if (archive.length > 1_000_000) throw new Error('Downloaded archive exceeds the size limit.');
+
+                // Parse data only: never extract files or execute anything supplied by the PR.
+                const coverage = execFileSync('python3', ['-c', `
+            import io, stat, sys, zipfile
+            with zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read())) as archive:
+                entries = archive.infolist()
+                if len(entries) != 1 or entries[0].filename != "SummaryGithub.md":
+                    raise ValueError("Unexpected coverage archive layout")
+                entry = entries[0]
+                if entry.is_dir() or stat.S_ISLNK(entry.external_attr >> 16):
+                    raise ValueError("Coverage must be a regular file")
+                if entry.file_size > 50000:
+                    raise ValueError("Coverage summary exceeds the 50000-byte limit")
+                text = archive.read(entry).decode("utf-8-sig")
+                if not text.strip() or any(ord(c) < 32 and c not in "\\n\\r\\t" for c in text):
+                    raise ValueError("Empty or invalid coverage text")
+                sys.stdout.buffer.write(text.encode("utf-8"))
+            `], { input: archive, encoding: 'utf8', maxBuffer: 60_000, timeout: 5000 });
+                const safeCoverage = coverage.replace(/&/g, '&amp;')
+                  .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/@/g, '&#64;');
+                if (Buffer.byteLength(safeCoverage, 'utf8') > 55_000) {
+                  throw new Error('Escaped coverage exceeds the comment size limit.');
+                }
+                body += `### Coverage reported by the PR workflow\n\n${safeCoverage}\n`;
+              }
+            } catch (error) {
+              reportingError = error;
+              core.error(`Coverage reporting failed: ${error.message}`);
+              body += 'Coverage could not be reported. See the **Report PR results** workflow logs for the reporting error.\n';
+            }
+
+            if (!await isCurrent()) return;
+            const file = path.join(process.env.RUNNER_TEMP, 'pr-result-comment.md');
+            fs.writeFileSync(file, body, 'utf8');
+            core.setOutput('path', file);
+            core.setOutput('publish', 'true');
+            core.setOutput('reporting-error', reportingError ? 'true' : 'false');
+
+      - name: Post the sticky result comment
+        if: steps.comment.outputs.publish == 'true'
+        uses: marocchino/sticky-pull-request-comment@v3.0.5
+        with:
+          number: ${{ needs.resolve.outputs.number }}
+          recreate: true
+          path: ${{ steps.comment.outputs.path }}
+
+      - name: Surface coverage reporting errors
+        if: ${{ always() && steps.comment.outputs.reporting-error == 'true' }}
+        run: |
+          echo "::error::The run outcome was prepared for the PR, but coverage reporting failed. See the preceding logs."
+          exit 1

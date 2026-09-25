@@ -67,3 +67,37 @@ Please note:
 * Please keep all videos ***confidential***. These videos are for people enrolled in this class.  No videos or parts of videos may be copied/distributed/shared.
 
 #### [Calendar](./Docs/Schedule.md)
+
+## Assignment CI for maintainers
+
+Assignment branches use `pull_request` to call the public reusable workflow in
+`.github/workflows/build-and-test.yml@main`. Builds run in this repository with
+read-only permissions, including PRs from student forks. Students do not need to
+enable Actions on their forks; maintainers must still approve runs when required
+by the repository's external-contributor policy.
+
+The build publishes its coverage summary as an artifact and job summary, including
+available coverage when tests fail. `Report PR results`, installed on `main`,
+responds to the completed run and posts a sticky PR comment with the outcome,
+commit, run link, and available coverage. Build failures without coverage still
+receive a status comment. Reporting errors are visible in the reporter's logs.
+The reporter alone can write comments: it validates the PR association and result
+freshness, and never checks out or executes student code. These results provide
+feedback, not tamper-proof grading.
+
+When releasing an assignment from the private instructor repository:
+
+1. Keep its workflow name `Build and Test .NET`, use `pull_request`, and grant only
+   `contents: read`. Preserve that assignment's existing workflow inputs.
+2. Call
+   `IntelliTect-Samples/EWU-CSCD371-2026-Fall/.github/workflows/build-and-test.yml@main`,
+   not the private instructor workflow. Instructor branches are release templates;
+   running CI in the instructor repository is not required.
+3. Publish shared build/reporting changes to public `main` before releasing callers.
+   Do not replace public `main` with the old instructor workflow implementation.
+4. For an existing fork or PR, sync the updated public assignment branch into the
+   student's branch and resolve its workflow to the new caller. Updating `main`
+   alone does not trigger a run. Push the synced branch, or reopen the PR after its
+   workflow is corrected, to generate a new PR event.
+
+Do not use `pull_request_target` or enable unsafe PR checkout for student builds.

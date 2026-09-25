@@ -48,14 +48,13 @@ on:
         required: false
         type: boolean
         default: true
-  pull_request:
-    branches:
-      - Assignment**
+
+permissions:
+  contents: read
 
 jobs:
   build-and-test:
     permissions:
-      pull-requests: write
       contents: read
     defaults:
       run:
@@ -64,7 +63,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-            ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
@@ -77,11 +77,13 @@ jobs:
           repository: ${{ github.repository }}
           ref: "main"
           path: "temp"
+          persist-credentials: false
           sparse-checkout: |
             Shared/.editorconfig
             Shared/.runsettings
             Shared/analyzers.txt
-          sparse-checkout-cone-mode: true
+            Shared/dependencies.txt
+          sparse-checkout-cone-mode: false
       - name: Copy .editorconfig file if not exists
         working-directory: "."
         if: ${{ inputs.add-editorconfig }}
@@ -167,23 +169,30 @@ jobs:
 
       - name: ReportGenerator
         id: reportgenerator
-        if: github.event_name == 'pull_request_target' || github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && hashFiles('**/coverage.cobertura.xml') != '' }}
         uses: danielpalme/ReportGenerator-GitHub-Action@5.5.9
         with:
           reports: '**/coverage.cobertura.xml'
           targetdir: coveragereport
           reporttypes: MarkdownSummaryGithub
 
-      - name: Post comment to PR
-        if: github.event_name == 'pull_request_target' || github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v3.0.5
-        with:
-          recreate: true
-          path: coveragereport/SummaryGithub.md
-
       - name: Write to Job Summary
+        if: ${{ !cancelled() && steps.reportgenerator.outcome == 'success' }}
         working-directory: "."
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload coverage summary
+        if: ${{ !cancelled() && steps.reportgenerator.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-coverage-${{ github.run_attempt }}
+          path: coveragereport/SummaryGithub.md
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Explain missing coverage
+        if: ${{ !cancelled() && steps.reportgenerator.outcome == 'skipped' }}
+        run: echo "::notice::No coverage was produced. The PR reporter will still publish the run outcome."
 
       - name: Convert failing tests to VS Playlist
         if: failure()
