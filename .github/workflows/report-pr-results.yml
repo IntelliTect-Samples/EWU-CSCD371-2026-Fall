@@ -156,7 +156,9 @@ jobs:
                 sys.stdout.buffer.write(text.encode("utf-8"))
             `], { input: archive, encoding: 'utf8', maxBuffer: 60_000, timeout: 5000 });
                 const safeCoverage = coverage.replace(/&/g, '&amp;')
-                  .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/@/g, '&#64;');
+                  .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/@/g, '&#64;')
+                  // Preserve only ReportGenerator's inert disclosure tags, without arbitrary attributes.
+                  .replace(/&lt;(\/?(?:details|summary)|details open)&gt;/g, '<$1>');
                 if (Buffer.byteLength(safeCoverage, 'utf8') > 55_000) {
                   throw new Error('Escaped coverage exceeds the comment size limit.');
                 }
