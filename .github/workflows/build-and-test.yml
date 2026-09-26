@@ -170,7 +170,7 @@ jobs:
       - name: ReportGenerator
         id: reportgenerator
         if: ${{ !cancelled() && github.event_name == 'pull_request' && hashFiles('**/coverage.cobertura.xml') != '' }}
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.9
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.11
         with:
           reports: '**/coverage.cobertura.xml'
           targetdir: coveragereport
