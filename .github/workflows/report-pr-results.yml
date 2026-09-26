@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Resolve the originating PR
         id: pr
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const run = context.payload.workflow_run;
@@ -69,7 +69,7 @@ jobs:
     steps:
       - name: Prepare the result comment
         id: comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           PR_NUMBER: ${{ needs.resolve.outputs.number }}
         with:
