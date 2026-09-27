@@ -65,6 +65,10 @@ public class Program
 
     public static Question[] LoadQuestions(string filePath)
     {
+        if (!File.Exists(filePath)) { // Input validation check and syntax practice
+            throw new IOException($"File not found: {filePath}!");
+        }
+
         string[] lines = File.ReadAllLines(filePath);
 
         Question[] questions = new Question[lines.Length / 5];
@@ -86,7 +90,16 @@ public class Program
             question.Answers[1] = answer2;
             question.Answers[2] = answer3;
             question.CorrectAnswerIndex = correctAnswerIndex;
+
+            questions[i] = question; // Questions were created but never saved and
+                                     // code does not have data validation. Fixed.
+
         }
+
+        if (lines.Length == 0) { // Additional data validation check for empty file and practice with syntax.
+            throw new IOException($"Invalid input file: {filePath}!"); // $ seems to be like printf
+        }
+
         return questions;
     }
 }
