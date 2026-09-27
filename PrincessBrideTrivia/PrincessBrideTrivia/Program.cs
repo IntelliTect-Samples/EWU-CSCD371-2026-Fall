@@ -88,6 +88,16 @@ public class Program
             question.CorrectAnswerIndex = correctAnswerIndex;
             questions[i] = question;
         }
+        ShuffleQuestions(questions);
         return questions;
+    }
+
+    public static void ShuffleQuestions(Question[] questions)
+    {
+        for (int i = questions.Length - 1; i > 0; i--)
+        {
+            int swapIndex = Random.Shared.Next(i + 1);
+            (questions[i], questions[swapIndex]) = (questions[swapIndex], questions[i]);
+        }
     }
 }

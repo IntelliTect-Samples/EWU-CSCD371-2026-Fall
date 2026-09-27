@@ -25,6 +25,42 @@ public class ProgramTests
     }
 
     [TestMethod]
+    public void ShuffleQuestions_QuestionsArray_PreservesAllQuestions()
+    {
+        // Arrange
+        Question[] questions =
+        [
+            new Question { Text = "Question 1" },
+            new Question { Text = "Question 2" },
+            new Question { Text = "Question 3" },
+        ];
+        Question[] expectedQuestions = [.. questions];
+
+        // Act
+        Program.ShuffleQuestions(questions);
+
+        // Assert
+        Assert.HasCount(expectedQuestions.Length, questions);
+        foreach (Question expectedQuestion in expectedQuestions)
+        {
+            Assert.IsTrue(Array.IndexOf(questions, expectedQuestion) >= 0);
+        }
+    }
+
+    [TestMethod]
+    public void ShuffleQuestions_EmptyArray_DoesNotThrow()
+    {
+        // Arrange
+        Question[] questions = [];
+
+        // Act
+        Program.ShuffleQuestions(questions);
+
+        // Assert
+        Assert.HasCount(0, questions);
+    }
+
+    [TestMethod]
     [DataRow("1", true)]
     [DataRow("2", false)]
     public void DisplayResult_ValidUserGuess_ReturnsExpectedBoolean(string userGuess, bool expectedResult)
