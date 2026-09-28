@@ -114,11 +114,6 @@ public class Program
         }
     }
 
-    public static string GetFilePath()
-    {
-        return "Trivia.txt";
-    }
-
     public static Question[] LoadQuestions(string filePath)
     {
         string[] lines = File.ReadAllLines(filePath);

@@ -79,18 +79,6 @@ public class ProgramTests
     }
 
     [TestMethod]
-    public void GetFilePath_WhenCalled_ReturnsExistingFilePath()
-    {
-        // Arrange
-
-        // Act
-        string filePath = Program.GetFilePath();
-
-        // Assert
-        Assert.IsTrue(File.Exists(filePath));
-    }
-
-    [TestMethod]
     [DataRow(1, 1, "100%")]
     [DataRow(5, 10, "50%")]
     [DataRow(5, 12, "41.67%")]
