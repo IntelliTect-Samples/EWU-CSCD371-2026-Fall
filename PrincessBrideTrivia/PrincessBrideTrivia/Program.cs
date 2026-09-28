@@ -4,7 +4,9 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        string filePath = GetFilePath();
+        int userChoice = GetQuizInputFromUser();
+        
+        string filePath = GetFilePathForChoice(userChoice);
         Question[] questions = LoadQuestions(filePath);
 
         int numberCorrect = 0;
@@ -17,6 +19,60 @@ public class Program
             }
         }
         Console.WriteLine("You got " + GetPercentCorrect(numberCorrect, questions.Length) + " correct");
+    }
+
+    /// <summary>
+    /// Prompts the user to Select quiz 1 or 2.
+    /// Continues prompting until valid input is received.
+    /// </summary>
+    /// <returns>
+    /// the int value representing the selected quiz.
+    /// </returns>
+    public static int GetQuizInputFromUser()
+    {
+        while (true)
+        {
+            Console.WriteLine("Would you like to take quiz one, or quiz two?");
+            Console.Write("Enter 1 or 2: ");
+            
+            string input = Console.ReadLine();
+
+            switch (input)
+            {
+                case "1":
+                    return 1;
+                
+                case "2":
+                    return 2;
+                
+                default:
+                    Console.WriteLine("Invalid input. Please enter a 1 or a 2.");
+                    break;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Returns the file path for the associated quiz.
+    /// Use <see cref="GetQuizInputFromUser"/> to obtain this int value. 
+    /// </summary>
+    /// <param name="choice">
+    /// The int value representing selected quiz.
+    /// </param>
+    /// <returns>
+    /// The file path for the selected quiz.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="choice"/> does not match a valid quiz option.
+    /// </exception>
+    public static string GetFilePathForChoice(int choice)
+    {
+        return choice switch
+        {
+            1 => "Trivia.txt",
+            2 => "Trivia2.txt",
+            _ => throw new ArgumentException("Invalid choice.")
+        };
     }
 
     public static string GetPercentCorrect(int numberCorrectAnswers, int numberOfQuestions)
@@ -56,11 +112,6 @@ public class Program
         {
             Console.WriteLine((i + 1) + ": " + question.Answers[i]);
         }
-    }
-
-    public static string GetFilePath()
-    {
-        return "Trivia.txt";
     }
 
     public static Question[] LoadQuestions(string filePath)
