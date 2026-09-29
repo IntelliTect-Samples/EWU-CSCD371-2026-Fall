@@ -21,7 +21,8 @@ public class Program
 
     public static string GetPercentCorrect(int numberCorrectAnswers, int numberOfQuestions)
     {
-        return (numberCorrectAnswers / numberOfQuestions * 100) + "%";
+        double percentageCorrect = (double)numberCorrectAnswers / numberOfQuestions * 100;
+        return $"{percentageCorrect:F0}%"; // Was using this to trim decimal to two places but test wants whole numbers.
     }
 
     public static bool AskQuestion(Question question)
