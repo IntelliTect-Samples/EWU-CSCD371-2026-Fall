@@ -5,7 +5,7 @@ public class LogFactory
 
     private string? _filePath;
 
-    public void ConfigureFileLoader(string filePath)
+    public void ConfigureFileLogger(string filePath)
     {
         _filePath = filePath;
     }
