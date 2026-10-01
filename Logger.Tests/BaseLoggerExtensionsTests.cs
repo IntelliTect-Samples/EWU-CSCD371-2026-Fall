@@ -22,7 +22,7 @@ public class BaseLoggerExtensionsTests
     public void Error_WithData_LogsMessage()
     {
         // Arrange
-        var logger = new TestLogger();
+        var logger = new TestLogger{ ClassName = nameof(BaseLoggerExtensionsTests) };
 
         // Act
         //logger.Error("Message {0}", 42);
