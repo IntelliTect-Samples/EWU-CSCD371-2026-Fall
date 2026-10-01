@@ -351,3 +351,4 @@ MigrationBackup/
 
 # Live unit testing files.
 *.lutconfig
+/EWU-CSCD371-2026-Fall/
