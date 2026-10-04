@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System;
 using System.Collections.Generic;
 
 namespace Logger.Tests;
@@ -13,7 +14,7 @@ public class BaseLoggerExtensionsTests
         // Arrange
 
         // Act
-        //BaseLoggerExtensions.Error(null, "");
+        Assert.ThrowsExactly<ArgumentNullException>(() => BaseLoggerExtensions.Error(null, ""));
 
         // Assert
     }
@@ -25,7 +26,7 @@ public class BaseLoggerExtensionsTests
         var logger = new TestLogger();
 
         // Act
-        //logger.Error("Message {0}", 42);
+        logger.Error("Message {0}", 42);
 
         // Assert
         Assert.HasCount(1, logger.LoggedMessages);
