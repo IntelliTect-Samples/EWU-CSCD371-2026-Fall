@@ -2,7 +2,7 @@
 
 public static class Debug
 {
-    private static BaseLogger s_logger;
+    private static BaseLogger? s_logger;
 
     public static void Configure(string filePath)
     {
@@ -16,6 +16,9 @@ public static class Debug
         s_logger?.Information(message);
     }
 }
+
+// Will: The s_logger?.Information(message) line already handles the null
+// state by skipping the call.
     
 // what becomes the point of setting the "ClassName" property here?
 // it will always be this Debug class (if you follow the correct factory setup)

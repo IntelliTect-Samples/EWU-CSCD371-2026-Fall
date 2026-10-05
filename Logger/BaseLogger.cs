@@ -10,10 +10,11 @@ public abstract class BaseLogger
     /// <param name="message">The message to log</param>
     public abstract void Log(LogLevel logLevel, string message);
     
+    // Will: Requires the callers to supply a class name through initializer. 
     /// <summary>
     /// The name of the class that created this logger instance. Set once during initialization.
     /// </summary>
     // CORE 1.1: BaseLogger needs an auto property to store class name
-    public string ClassName { get; init; }
+    public required string ClassName { get; init; }
 }
 

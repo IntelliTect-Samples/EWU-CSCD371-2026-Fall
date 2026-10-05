@@ -8,7 +8,7 @@ public static class BaseLoggerExtensions
     // each should: take a string for the message, as well as param array of arguments.
     // each is: shortcut for calling BaseLogger.Log, auto supplying appropriate LogLevel.
     // methods should throw an exception if the BaseLogger param is null.
-    extension(BaseLogger logger)
+    extension(BaseLogger? logger)
     {
         // CORE: extension method for Error
         public void Error(string message, params object[] args)
