@@ -77,4 +77,27 @@ public class ConsoleLoggerTests
             Console.SetOut(originalOutput);
         }
     }
+
+    [TestMethod]
+    public void ConsoleLogger_Create_SetsClassName()
+    {
+        var logger = ConsoleLogger.Create(nameof(ConsoleLoggerTests));
+        
+        Assert.AreEqual("ConsoleLoggerTests", ((ConsoleLogger)logger).ClassName);
+    }
+
+    [TestMethod]
+    public void ConsoleLogger_Create_MakesConsoleLoggerInstance()
+    {
+        var logger = ConsoleLogger.Create(nameof(ConsoleLoggerTests));
+        
+        Assert.IsInstanceOfType<ConsoleLogger>(logger);
+    }
+
+    [TestMethod]
+    public void ConsoleLogger_CreateWithNull_ThrowsArgNullException()
+    {
+        // assert
+        Assert.ThrowsExactly<ArgumentNullException>(() => ConsoleLogger.Create(null!));
+    }
 }
