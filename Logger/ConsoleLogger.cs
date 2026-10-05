@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Logger;
 
@@ -12,7 +13,7 @@ public class ConsoleLogger : BaseLogger, ILogger
 {
     public override void Log(LogLevel level, string message)
     {
-        string timestamp = DateTime.Now.ToString("G");
+        string timestamp = DateTime.Now.ToString("G", CultureInfo.InvariantCulture);
         
         string line = $"{timestamp} {ClassName} {level} : {message}";
 

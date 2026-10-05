@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 
 namespace Logger;
@@ -15,7 +16,7 @@ public class FileLogger(string filePath) : BaseLogger
 {
     public override void Log(LogLevel level, string message)
     {
-        string timestamp = DateTime.Now.ToString("G");
+        string timestamp = DateTime.Now.ToString("G", CultureInfo.InvariantCulture);
         
         string line = $"{timestamp} {ClassName} {level} : {message}";
         
