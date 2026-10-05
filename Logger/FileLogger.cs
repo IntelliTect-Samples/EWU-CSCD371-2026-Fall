@@ -1,4 +1,6 @@
 namespace Logger;
+using System.Globalization;
+
 
 public class FileLogger : BaseLogger
 {
@@ -12,7 +14,7 @@ public class FileLogger : BaseLogger
     }
     public override void Log(LogLevel logLevel, string message)
     {
-        string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm tt");
+        string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm tt", CultureInfo.InvariantCulture);
         message = $"{date} {className} {logLevel}: {message}";
         File.AppendAllText(filePath, message + Environment.NewLine);
     }

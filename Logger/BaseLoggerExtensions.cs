@@ -1,28 +1,29 @@
 ﻿namespace Logger;
+using System.Globalization;
 
 public static class BaseLoggerExtensions
 {
     public static void Error(this BaseLogger logger, string message, params object[] args)
     {
         ArgumentNullException.ThrowIfNull(logger);
-        logger.Log(LogLevel.Error, string.Format(message, args));
+        logger.Log(LogLevel.Error, string.Format(CultureInfo.InvariantCulture, message, args));
     }
     public static void Warning(this BaseLogger logger, string message, params object[] args)
     {
         ArgumentNullException.ThrowIfNull(logger);
-        logger.Log(LogLevel.Warning, string.Format(message, args));
+        logger.Log(LogLevel.Warning, string.Format(CultureInfo.InvariantCulture, message, args));
     }
 
     public static void Information(this BaseLogger logger, string message, params object[] args)
     {
         ArgumentNullException.ThrowIfNull(logger);
-        logger.Log(LogLevel.Information, string.Format(message, args));
+        logger.Log(LogLevel.Information, string.Format(CultureInfo.InvariantCulture, message, args));
     }
 
     public static void Debug(this BaseLogger logger, string message, params object[] args)
     {
         ArgumentNullException.ThrowIfNull(logger);
-        logger.Log(LogLevel.Debug, string.Format(message, args));
+        logger.Log(LogLevel.Debug, string.Format(CultureInfo.InvariantCulture, message, args));
     }
 
 
