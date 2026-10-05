@@ -1,0 +1,172 @@
+# Trusted metadata-only check for assignment PRs.
+# Uses pull_request_target so it reruns on title/description edits without fork-run approval.
+# It must never check out, download, or execute pull request content.
+# Requires the repository Actions policy that allows pull_request_target for this file only.
+name: PR Metadata
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize, ready_for_review]
+    branches:
+      - 'Assignment*'
+
+permissions: {}
+
+concurrency:
+  group: pr-metadata-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: PR metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Check PR title and partner mention
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const MARKER = '<!-- pr-metadata-check -->';
+            const BOT_LOGIN = 'github-actions[bot]';
+            const TITLE_PATTERN = /\bAssignment\s*\d+/i;
+            // Same mention and pairing rules as the instructor grading-report.ps1 Get-DeclaredPartners.
+            const MENTION = /(?<![\w/])@([a-z\d](?:[a-z\d-]{0,37}[a-z\d])?)(?![\w/-])/gi;
+            const PAIRING = /\b(partners?|paired|pairing|collaborat\w*|worked\s+with|working\s+with)\b/i;
+
+            const blank = (text) => text.replace(/[^\n]/g, ' ');
+
+            // GitHub does not notify mentions in code, HTML comments, or quotes, so CI ignores them.
+            // Bare/pairing classification still uses the original line so CI never accepts what grading rejects.
+            function findMentions(body) {
+              const original = (body ?? '').replace(/\r\n?/g, '\n');
+              const masked = original.replace(/<!--[\s\S]*?(?:-->|$)/g, blank);
+              const originalLines = original.split('\n');
+              const maskedLines = masked.split('\n');
+              const found = new Set();
+              const uncertain = new Set();
+              const ignored = new Set();
+              let fence = null;
+              for (let i = 0; i < originalLines.length; i++) {
+                const line = originalLines[i];
+                let visible = maskedLines[i];
+                const fenceMatch = /^ {0,3}(`{3,}|~{3,})/.exec(visible);
+                if (fence) {
+                  if (fenceMatch && fenceMatch[1][0] === fence[0] && fenceMatch[1].length >= fence.length &&
+                    /^ {0,3}(`+|~+)\s*$/.test(visible)) {
+                    fence = null;
+                  }
+                  visible = '';
+                } else if (fenceMatch) {
+                  fence = fenceMatch[1];
+                  visible = '';
+                } else if (/^\s*>/.test(visible)) {
+                  visible = '';
+                } else {
+                  visible = visible.replace(/(`+)[\s\S]*?\1/g, blank);
+                }
+                const lineMentions = [...line.matchAll(MENTION)].map((m) => m[1].toLowerCase());
+                const visibleMentions = new Set([...visible.matchAll(MENTION)].map((m) => m[1].toLowerCase()));
+                for (const login of lineMentions) {
+                  if (!visibleMentions.has(login)) ignored.add(login);
+                }
+                if (!visibleMentions.size) continue;
+                const bare = line.replace(MENTION, '').replace(/\([^)]*\)/g, '').replace(/[\s,;:&*+-]/g, '') === '';
+                const pairing = PAIRING.test(line);
+                for (const login of visibleMentions) {
+                  if (bare || pairing) found.add(login);
+                  else uncertain.add(login);
+                }
+              }
+              for (const login of found) {
+                uncertain.delete(login);
+                ignored.delete(login);
+              }
+              for (const login of uncertain) ignored.delete(login);
+              return { found: [...found].sort(), uncertain: [...uncertain].sort(), ignored: [...ignored].sort() };
+            }
+
+            async function accountType(login) {
+              try {
+                const { data } = await github.rest.users.getByUsername({ username: login });
+                return data.type;
+              } catch (error) {
+                if (error.status === 404) return null;
+                throw error;
+              }
+            }
+
+            // Code spans keep usernames from notifying anyone.
+            const show = (login) => `\`@${login}\``;
+
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number });
+            const author = pr.user.login.toLowerCase();
+            const problems = [];
+
+            if (!TITLE_PATTERN.test(pr.title ?? '')) {
+              problems.push('**Title:** include the assignment number in the PR title, for example `Assignment 1`.');
+            }
+
+            const mentions = findMentions(pr.body);
+            const partners = [];
+            const rejected = [];
+            for (const login of mentions.found) {
+              if (login === author) {
+                rejected.push(`${show(login)} (that's you)`);
+                continue;
+              }
+              const type = await accountType(login);
+              if (type === 'User') partners.push(login);
+              else rejected.push(`${show(login)} (${type ? `${type.toLowerCase()} account` : 'no such GitHub user'})`);
+            }
+            if (!partners.length) {
+              const details = [
+                'Tag your partner in the description, on its own line or with a note that you collaborated, for example `Partner: @their-username`.'
+              ];
+              if (rejected.length) details.push(`Not counted: ${rejected.join(', ')}.`);
+              if (mentions.uncertain.length) {
+                details.push(`Unclear mentions (add a word like "partner" or "worked with" on that line): ${mentions.uncertain.map(show).join(', ')}.`);
+              }
+              if (mentions.ignored.length) {
+                details.push(`Ignored because they are in code, an HTML comment, or a quote: ${mentions.ignored.map(show).join(', ')}.`);
+              }
+              problems.push(`**Partner:** ${details.join(' ')}`);
+            }
+
+            const comments = (await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number: pull_number, per_page: 100
+            })).filter((comment) => comment.user?.login === BOT_LOGIN && comment.body?.includes(MARKER));
+
+            if (!problems.length) {
+              for (const comment of comments) {
+                await github.rest.issues.deleteComment({ owner, repo, comment_id: comment.id });
+              }
+              core.info(`PR metadata OK. Partner(s): ${partners.join(', ')}`);
+              return;
+            }
+
+            const body = [
+              MARKER,
+              '### PR metadata needs attention',
+              '',
+              ...problems.map((problem) => `- ${problem}`),
+              '',
+              'Edit the PR title or description; this check reruns automatically and this comment disappears once everything passes.',
+              'See [Submitting a pull request](https://github.com/IntelliTect-Samples/EWU-CSCD371-2026-Fall/blob/main/Docs/Homework-Assignments.md#submitting-a-pull-request) and [Pairing](https://github.com/IntelliTect-Samples/EWU-CSCD371-2026-Fall/blob/main/Docs/Homework-Grading.md#pairing).'
+            ].join('\n');
+
+            const [existing, ...extras] = comments;
+            if (existing) {
+              if (existing.body !== body) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+              }
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: pull_number, body });
+            }
+            for (const comment of extras) {
+              await github.rest.issues.deleteComment({ owner, repo, comment_id: comment.id });
+            }
+            core.setFailed(problems.join('\n'));

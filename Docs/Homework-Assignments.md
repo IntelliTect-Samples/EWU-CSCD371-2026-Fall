@@ -33,8 +33,8 @@ Do not open a pull request until you are ready to have someone else [review it](
 2. Click the New pull request button
 3. Set the source and target repository and branch. Pay attention to the direction of the arrow icon.
 4. Click Create pull request.
-5. Ensure the title includes "Assignment `<number>`"
-6. If you [paired](Homework-Grading.md#Pairing), ensure the other person's name is included in the description. Enter any reasonable description. Please note: the title and description can be updated over time.
+5. Ensure the title includes "Assignment `<number>`" (for example `Assignment 1`).
+6. If you [paired](Homework-Grading.md#Pairing), ensure the other person's GitHub username is @mentioned in the description (for example `Partner: @username`). Enter any reasonable description. Please note: the title and description can be updated over time. The `PR metadata` check verifies both and comments on your PR until they are fixed.
 
 ## Peer Review
 

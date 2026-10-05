@@ -101,3 +101,28 @@ When releasing an assignment from the private instructor repository:
    workflow is corrected, to generate a new PR event.
 
 Do not use `pull_request_target` or enable unsafe PR checkout for student builds.
+
+### PR metadata check
+
+`.github/workflows/pr-metadata.yml` (check name `PR metadata`) validates PRs targeting
+`Assignment*` branches. It reruns automatically when the title or description changes:
+
+- The title must contain `Assignment <number>`, for example `Assignment 1` or `Assignment1`.
+- The description must @mention a partner, either on a line containing only mentions
+  or on a line with a pairing word such as "partner", "paired", "collaborated", or
+  "worked with" (for example `Partner: @username`). These rules match `Get-DeclaredPartners` in the instructor
+  `Scripts/grading-report.ps1`. CI is stricter than grading: it ignores mentions in code,
+  HTML comments, and quotes, as well as self-mentions, bots, organizations, and
+  nonexistent users. Any partner CI accepts is also detected by grading.
+
+The check fails and posts a comment explaining the fix while a rule fails, then
+deletes the comment once both rules pass.
+
+This is the only workflow that uses `pull_request_target`, so it runs without
+fork-run approval and students cannot modify it. It reads only PR metadata through
+the API and never checks out or executes PR content; keep it that way. GitHub blocks
+`pull_request_target` by default in public repositories from November 2, 2026, so
+this repository has an Actions policy (**Settings → Actions → Policies**) named
+`Allow PR metadata check`. That policy allows `pull_request_target` only for
+`.github/workflows/pr-metadata.yml`. If you rename the file, update the policy; without the policy,
+this check stops running.
