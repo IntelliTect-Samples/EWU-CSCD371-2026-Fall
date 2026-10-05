@@ -33,7 +33,7 @@ public class LogFactoryTests
 
             // Assert
             Assert.IsNotNull(logger);
-            Assert.IsInstanceOfType(logger, typeof(FileLogger));
+            Assert.IsInstanceOfType<FileLogger>(logger);
             Assert.AreEqual(nameof(LogFactoryTests), logger!.className);
         }
         finally
