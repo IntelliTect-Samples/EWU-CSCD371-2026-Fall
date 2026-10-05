@@ -14,11 +14,11 @@ namespace Logger;
 /// <param name="filePath">The path to the file to append logs to</param>
 public class FileLogger(string filePath) : BaseLogger
 {
-    public override void Log(LogLevel level, string message)
+    public override void Log(LogLevel logLevel, string message)
     {
         string timestamp = DateTime.Now.ToString("G", CultureInfo.InvariantCulture);
         
-        string line = $"{timestamp} {ClassName} {level} : {message}";
+        string line = $"{timestamp} {ClassName} {logLevel} : {message}";
         
         File.AppendAllText(filePath, line + Environment.NewLine);
     }

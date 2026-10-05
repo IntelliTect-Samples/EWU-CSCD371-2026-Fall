@@ -11,11 +11,11 @@ namespace Logger;
 /// </summary>
 public class ConsoleLogger : BaseLogger, ILogger
 {
-    public override void Log(LogLevel level, string message)
+    public override void Log(LogLevel logLevel, string message)
     {
         string timestamp = DateTime.Now.ToString("G", CultureInfo.InvariantCulture);
         
-        string line = $"{timestamp} {ClassName} {level} : {message}";
+        string line = $"{timestamp} {ClassName} {logLevel} : {message}";
 
         Console.WriteLine(line);
     }
