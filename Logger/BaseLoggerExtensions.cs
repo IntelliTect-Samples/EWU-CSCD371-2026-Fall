@@ -1,5 +1,4 @@
 ﻿namespace Logger;
-using System;
 
 public static class BaseLoggerExtensions
 {

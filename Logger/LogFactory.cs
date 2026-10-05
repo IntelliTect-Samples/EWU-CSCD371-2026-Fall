@@ -3,14 +3,14 @@
 public class LogFactory
 {
 
-    private string filePath;
+    private string? filePath;
 
     public void ConfigureFileLogger(string fp)
     {
         filePath = fp;
     }
 
-    public BaseLogger CreateLogger(string className)
+    public BaseLogger? CreateLogger(string className)
     {
         if (filePath is null)
         {

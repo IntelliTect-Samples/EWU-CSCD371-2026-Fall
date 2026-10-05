@@ -1,31 +1,68 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using System.Collections.Generic;
-
 namespace Logger.Tests;
 
 [TestClass]
 public class BaseLoggerExtensionsTests
 {
+    #region Null Logger Behavior Tests
+
     [TestMethod]
     public void Error_WithNullLogger_ThrowsException()
     {
         // Arrange
 
         // Act
-        //BaseLoggerExtensions.Error(null, "");
 
         // Assert
+        Assert.Throws<ArgumentNullException>(() => BaseLoggerExtensions.Error(null!, ""));
     }
+
+    [TestMethod]
+    public void Warning_WithNullLogger_ThrowsException()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(() => BaseLoggerExtensions.Warning(null!, ""));
+    }
+
+    [TestMethod]
+    public void Information_WithNullLogger_ThrowsException()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(() => BaseLoggerExtensions.Information(null!, ""));
+    }
+
+    [TestMethod]
+    public void Debug_WithNullLogger_ThrowsException()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(() => BaseLoggerExtensions.Debug(null!, ""));
+    }
+
+    #endregion
+
+    #region Formatted Logging Behavior Tests
 
     [TestMethod]
     public void Error_WithData_LogsMessage()
     {
         // Arrange
-        var logger = new TestLogger();
+        var logger = new TestLogger { className = nameof(BaseLoggerExtensionsTests) };
 
         // Act
-        //logger.Error("Message {0}", 42);
+        logger.Error("Message {0}", 42);
 
         // Assert
         Assert.HasCount(1, logger.LoggedMessages);
@@ -33,6 +70,52 @@ public class BaseLoggerExtensionsTests
         Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
     }
 
+    [TestMethod]
+    public void Warning_WithData_LogsMessage()
+    {
+        // Arrange
+        var logger = new TestLogger { className = nameof(BaseLoggerExtensionsTests) };
+
+        // Act
+        logger.Warning("Message {0}", 42);
+
+        // Assert
+        Assert.HasCount(1, logger.LoggedMessages);
+        Assert.AreEqual(LogLevel.Warning, logger.LoggedMessages[0].LogLevel);
+        Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
+    }
+
+    [TestMethod]
+    public void Information_WithData_LogsMessage()
+    {
+        // Arrange
+        var logger = new TestLogger { className = nameof(BaseLoggerExtensionsTests) };
+
+        // Act
+        logger.Information("Message {0}", 42);
+
+        // Assert
+        Assert.HasCount(1, logger.LoggedMessages);
+        Assert.AreEqual(LogLevel.Information, logger.LoggedMessages[0].LogLevel);
+        Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
+    }
+
+    [TestMethod]
+    public void Debug_WithData_LogsMessage()
+    {
+        // Arrange
+        var logger = new TestLogger { className = nameof(BaseLoggerExtensionsTests) };
+
+        // Act
+        logger.Debug("Message {0}", 42);
+
+        // Assert
+        Assert.HasCount(1, logger.LoggedMessages);
+        Assert.AreEqual(LogLevel.Debug, logger.LoggedMessages[0].LogLevel);
+        Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
+    }
+
+    #endregion
 }
 
 public class TestLogger : BaseLogger
