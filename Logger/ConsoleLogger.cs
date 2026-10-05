@@ -8,19 +8,21 @@ namespace Logger;
 /// the given log level, and the message.
 /// Derived from <see cref="BaseLogger"/>
 /// </summary>
-public class ConsoleLogger : BaseLogger
+public class ConsoleLogger : BaseLogger, ILogger
 {
     public override void Log(LogLevel level, string message)
     {
         string timestamp = DateTime.Now.ToString("G");
-
-        // output should include:
+        
         string line = $"{timestamp} {ClassName} {level} : {message}";
-        // the current date/time
-        // the name of the class that created the logger
-        // the log level
-        // the message
 
         Console.WriteLine(line);
+    }
+    
+    public static ILogger Create(string className)
+    {
+        ArgumentNullException.ThrowIfNull(className);
+        
+        return new ConsoleLogger { ClassName = className };
     }
 }
