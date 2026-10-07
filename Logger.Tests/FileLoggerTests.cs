@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
+using System.Globalization;
 using System.IO;
 
 namespace Logger.Tests;
@@ -13,13 +14,16 @@ public class FileLoggerTests
     [TestInitialize]
     public void TestInitialize()
     {
-        _filePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        _filePath = Path.GetTempFileName();
     }
 
     [TestCleanup]
     public void TestCleanup()
     {
-        File.Delete(_filePath);
+        if (File.Exists(_filePath))
+        {
+            File.Delete(_filePath);
+        }
     }
 
     [TestMethod]
@@ -35,16 +39,21 @@ public class FileLoggerTests
     {
         // Arrange
         var logger = new FileLogger(_filePath) { ClassName = nameof(FileLoggerTests) };
-        string today = DateTime.Now.ToShortDateString();
+        string expectedSuffix = $" {nameof(FileLoggerTests)} Warning: Test message";
+        // The logged timestamp is truncated to whole seconds, so allow up to a second before.
+        DateTime before = DateTime.Now.AddSeconds(-1);
 
         // Act
         logger.Log(LogLevel.Warning, "Test message");
+        DateTime after = DateTime.Now;
 
         // Assert
         string[] lines = File.ReadAllLines(_filePath);
         Assert.HasCount(1, lines);
-        Assert.StartsWith(today, lines[0]);
-        Assert.EndsWith($"{nameof(FileLoggerTests)} Warning: Test message", lines[0]);
+        Assert.EndsWith(expectedSuffix, lines[0]);
+        string timestamp = lines[0][..^expectedSuffix.Length];
+        DateTime loggedAt = DateTime.Parse(timestamp, CultureInfo.CurrentCulture);
+        Assert.IsInRange(before, after, loggedAt);
     }
 
     [TestMethod]

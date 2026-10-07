@@ -11,9 +11,9 @@ public class FileLogger : BaseLogger
 
     public override void Log(LogLevel logLevel, string message)
     {
-    string line = $"{DateTime.Now} {ClassName} {logLevel}: {message}{Environment.NewLine}";
-    File.AppendAllText(FilePath, line);
+        string line = $"{DateTime.Now} {ClassName} {logLevel}: {message}{Environment.NewLine}";
+        File.AppendAllText(FilePath, line);
     }
 
-    
+
 }
