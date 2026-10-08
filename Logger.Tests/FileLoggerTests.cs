@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
+using System.Globalization;
 using System.IO;
 
 namespace Logger.Tests;
@@ -25,7 +26,9 @@ public class FileLoggerTests
         // Assert
         string result = File.ReadAllText(path);
 
-        StringAssert.Contains(result, DateTime.Now.Year.ToString());
+        StringAssert.Contains(
+            result,
+            DateTime.Now.Year.ToString(CultureInfo.InvariantCulture));
         StringAssert.Contains(result, nameof(FileLoggerTests));
         StringAssert.Contains(result, "Warning");
         StringAssert.Contains(result, "Test message");
