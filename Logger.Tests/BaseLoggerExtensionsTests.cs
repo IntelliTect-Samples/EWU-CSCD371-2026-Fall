@@ -11,24 +11,18 @@ public class BaseLoggerExtensionsTests
     [TestMethod]
     public void Error_WithNullLogger_ThrowsException()
     {
-        // Arrange
         BaseLogger? logger = null;
-        // Act
 
-        // Assert
         Assert.ThrowsExactly<ArgumentNullException>(() => logger.Error(""));
     }
 
     [TestMethod]
     public void Error_WithOneArgument_LogsFormattedMessage()
     {
-        // Arrange
         var logger = new TestLogger() { ClassName = nameof(BaseLoggerExtensionsTests) };
 
-        // Act
         logger.Error("Message {0}", 42);
 
-        // Assert
         Assert.HasCount(1, logger.LoggedMessages);
         Assert.AreEqual(LogLevel.Error, logger.LoggedMessages[0].LogLevel);
         Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
@@ -37,24 +31,18 @@ public class BaseLoggerExtensionsTests
     [TestMethod]
     public void Warning_WithNullLogger_ThrowsException()
     {
-        // Arrange
         BaseLogger? logger = null;
-        // Act
 
-        // Assert
         Assert.ThrowsExactly<ArgumentNullException>(() => logger.Warning(""));
     }
 
     [TestMethod]
     public void Warning_WithOneArgument_LogsFormattedMessage()
     {
-        // Arrange
         var logger = new TestLogger() { ClassName = nameof(BaseLoggerExtensionsTests) };
 
-        // Act
         logger.Warning("Message {0}", 42);
 
-        // Assert
         Assert.HasCount(1, logger.LoggedMessages);
         Assert.AreEqual(LogLevel.Warning, logger.LoggedMessages[0].LogLevel);
         Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
@@ -63,24 +51,18 @@ public class BaseLoggerExtensionsTests
     [TestMethod]
     public void Information_WithNullLogger_ThrowsException()
     {
-        // Arrange
         BaseLogger? logger = null;
-        // Act
 
-        // Assert
         Assert.ThrowsExactly<ArgumentNullException>(() => logger.Information(""));
     }
 
     [TestMethod]
     public void Information_WithOneArgument_LogsFormattedMessage()
     {
-        // Arrange
         var logger = new TestLogger() { ClassName = nameof(BaseLoggerExtensionsTests) };
 
-        // Act
         logger.Information("Message {0}", 42);
 
-        // Assert
         Assert.HasCount(1, logger.LoggedMessages);
         Assert.AreEqual(LogLevel.Information, logger.LoggedMessages[0].LogLevel);
         Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
@@ -89,24 +71,18 @@ public class BaseLoggerExtensionsTests
     [TestMethod]
     public void Debug_WithNullLogger_ThrowsException()
     {
-        // Arrange
         BaseLogger? logger = null;
-        // Act
 
-        // Assert
         Assert.ThrowsExactly<ArgumentNullException>(() => logger.Debug(""));
     }
 
     [TestMethod]
     public void Debug_WithOneArgument_LogsFormattedMessage()
     {
-        // Arrange
         var logger = new TestLogger() { ClassName = nameof(BaseLoggerExtensionsTests) };
 
-        // Act
         logger.Debug("Message {0}", 42);
 
-        // Assert
         Assert.HasCount(1, logger.LoggedMessages);
         Assert.AreEqual(LogLevel.Debug, logger.LoggedMessages[0].LogLevel);
         Assert.AreEqual("Message 42", logger.LoggedMessages[0].Message);
@@ -203,7 +179,6 @@ public class BaseLoggerExtensionsTests
         Assert.AreEqual(LogLevel.Information, logger.LoggedMessages[0].LogLevel);
         Assert.AreEqual("You are 42", logger.LoggedMessages[0].Message);
     }
-
 }
 
 public class TestLogger : BaseLogger

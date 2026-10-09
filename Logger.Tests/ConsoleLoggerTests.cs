@@ -18,7 +18,6 @@ public class ConsoleLoggerTests
     {
         TextWriter originalOutput = Console.Out;
         using var capturedOutput = new StringWriter();
-
         try
         {
             Console.SetOut(capturedOutput);
@@ -46,7 +45,6 @@ public class ConsoleLoggerTests
         {
             Console.SetOut(originalOutput);
         }
-
     }
 
     [TestMethod]
@@ -97,7 +95,6 @@ public class ConsoleLoggerTests
     [TestMethod]
     public void ConsoleLogger_CreateWithNull_ThrowsArgNullException()
     {
-        // assert
         Assert.ThrowsExactly<ArgumentNullException>(() => ConsoleLogger.Create(null!));
     }
 }

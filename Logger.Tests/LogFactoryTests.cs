@@ -8,7 +8,6 @@ namespace Logger.Tests;
 [TestClass]
 public class LogFactoryTests
 {
-
     [TestMethod]
     public void CreateLogger_WithoutConfiguration_ReturnsNull()
     {
@@ -62,7 +61,6 @@ public class LogFactoryTests
             Assert.IsTrue(DateTime.TryParse(timestampText, out DateTime timestamp));
             Assert.IsTrue(timestamp >= before.AddSeconds(-1) && timestamp <= after);
         }
-
         finally
         {
             File.Delete(filePath);
@@ -101,5 +99,4 @@ public class LogFactoryTests
             File.Delete(secondPath);
         }
     }
-
 }
