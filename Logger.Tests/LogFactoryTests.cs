@@ -1,8 +1,8 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using System;
-using System.IO;
 using System.Globalization;
+using System.IO;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Logger.Tests;
 
@@ -104,5 +104,21 @@ public class LogFactoryTests
             File.Delete(firstPath);
             File.Delete(secondPath);
         }
+    }
+
+    [TestMethod]
+    public void CreateLogger_WithNullClassName_ThrowsArgumentNullException()
+    {
+        var factory = new LogFactory();
+
+        Assert.ThrowsExactly<ArgumentNullException>(() => factory.CreateLogger(null!));
+    }
+
+    [TestMethod]
+    public void ConfigureFileLogger_WithNullPath_ThrowsArgumentNullException()
+    {
+        var factory = new LogFactory();
+
+        Assert.ThrowsExactly<ArgumentNullException>(() => factory.ConfigureFileLogger(null!));
     }
 }

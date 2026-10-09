@@ -9,7 +9,7 @@ namespace Logger;
 public class LogFactory
 {
     private string? _fileLoggerPath;
-    
+
     /// <summary>
     /// Creates a new <see cref="BaseLogger"/> instance using the configured FilePath.
     /// </summary>
@@ -21,10 +21,10 @@ public class LogFactory
     public BaseLogger? CreateLogger(string className)
     {
         ArgumentNullException.ThrowIfNull(className);
-        
+
         return _fileLoggerPath is null ? null : new FileLogger(_fileLoggerPath) { ClassName = className };
     }
-    
+
     /// <summary>
     /// Configures the factory with the file path,
     /// so that <see cref="FileLogger"/> instances created by this factory,

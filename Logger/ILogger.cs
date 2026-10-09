@@ -1,9 +1,8 @@
-namespace Logger
+namespace Logger;
+
+public interface ILogger
 {
-    public interface ILogger
-    {
-        void Log(LogLevel logLevel, string message);
-        
-        public static abstract ILogger Create(string className);
-    }
+    void Log(LogLevel logLevel, string message);
+
+    public static abstract ILogger Create(string className);
 }

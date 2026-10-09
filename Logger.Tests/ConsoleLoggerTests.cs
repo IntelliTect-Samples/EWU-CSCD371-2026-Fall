@@ -1,8 +1,8 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using System;
-using System.IO;
 using System.Globalization;
+using System.IO;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Logger.Tests;
 
@@ -65,7 +65,7 @@ public class ConsoleLoggerTests
 
             logger.Log(LogLevel.Warning, "First Message");
             logger.Log(LogLevel.Warning, "Second Message");
-            
+
             using var reader = new StringReader(capturedOutput.ToString());
             string? firstLine = reader.ReadLine();
             string? secondLine = reader.ReadLine();
@@ -86,7 +86,7 @@ public class ConsoleLoggerTests
     public void ConsoleLogger_Create_SetsClassName()
     {
         var logger = ConsoleLogger.Create(nameof(ConsoleLoggerTests));
-        
+
         Assert.AreEqual("ConsoleLoggerTests", ((ConsoleLogger)logger).ClassName);
     }
 
@@ -94,7 +94,7 @@ public class ConsoleLoggerTests
     public void ConsoleLogger_Create_MakesConsoleLoggerInstance()
     {
         var logger = ConsoleLogger.Create(nameof(ConsoleLoggerTests));
-        
+
         Assert.IsInstanceOfType<ConsoleLogger>(logger);
     }
 

@@ -1,4 +1,4 @@
-﻿namespace Logger;
+namespace Logger;
 
 public abstract class BaseLogger
 {
@@ -9,7 +9,7 @@ public abstract class BaseLogger
     /// <param name="logLevel">The level of importance for this message</param>
     /// <param name="message">The message to log</param>
     public abstract void Log(LogLevel logLevel, string message);
-    
+
     /// <summary>
     /// The name of the class that created this logger instance. Set once during initialization.
     /// </summary>

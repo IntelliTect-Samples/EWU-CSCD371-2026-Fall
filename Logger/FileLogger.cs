@@ -17,9 +17,9 @@ public class FileLogger(string filePath) : BaseLogger
     public override void Log(LogLevel logLevel, string message)
     {
         string timestamp = DateTime.Now.ToString("G", CultureInfo.InvariantCulture);
-        
+
         string line = $"{timestamp} {ClassName} {logLevel} : {message}";
-        
+
         File.AppendAllText(filePath, line + Environment.NewLine);
     }
 }
