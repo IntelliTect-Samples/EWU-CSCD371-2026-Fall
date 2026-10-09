@@ -1,3 +1,15 @@
+/*
+
+a) "Hello Kevin Bost (42)"
+b) "Hello Kevin Bost (45)"
+c) "Hello Kevin (42)"
+d) No output, an exception is thrown
+e) The code does not compile
+
+Correct: e
+
+*/
+
 Person kevin = new()
 {
     Age = 42,

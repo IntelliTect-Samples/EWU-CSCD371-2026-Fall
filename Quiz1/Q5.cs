@@ -1,3 +1,15 @@
+/*
+
+a) "You are 45 years old"
+b) "You are 42 years old"
+c) "You are 40 years old"
+d) No output, an exception is thrown
+e) The code does not compile
+
+Correct: a
+
+*/
+
 Person kevin = new();
 int age = kevin.Age;
 kevin.ShiftAge(age, -3);
