@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
 using System.IO;
+using System.Globalization;
 
 namespace Logger.Tests;
 
@@ -58,7 +59,12 @@ public class LogFactoryTests
             int classNamePosition = contents.IndexOf(nameof(LogFactoryTests), StringComparison.Ordinal);
             Assert.AreEqual($"{nameof(LogFactoryTests)} {level} : {message}", contents[classNamePosition..]);
             string timestampText = contents[..classNamePosition].Trim();
-            Assert.IsTrue(DateTime.TryParse(timestampText, out DateTime timestamp));
+            Assert.IsTrue(DateTime.TryParseExact(
+                timestampText,
+                "G",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime timestamp));
             Assert.IsTrue(timestamp >= before.AddSeconds(-1) && timestamp <= after);
         }
         finally
