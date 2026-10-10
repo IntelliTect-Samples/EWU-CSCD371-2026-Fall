@@ -6,7 +6,7 @@
 /// <remarks>
 /// The <see cref="Program"/> class contains the <see cref="Main(string[])"/> method, which is the entry point of the application. It creates an instance of the <see cref="Jester"/> class and calls its <see cref="Jester.TellJoke"/> method to tell a joke.
 /// </remarks>
-class Program
+internal sealed class Program
 {
     /// <summary>
     /// The main entry point for the application.

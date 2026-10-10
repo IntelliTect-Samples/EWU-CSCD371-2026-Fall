@@ -9,10 +9,7 @@ public class JokeOutput : IJokeConsoleOutput
 {
     public void WriteLine(string joke)
     {
-        if (joke == null)
-        {
-            throw new ArgumentNullException(nameof(joke));
-        }
+        ArgumentNullException.ThrowIfNull(joke, nameof(joke));
 
         Console.WriteLine("\n" + joke + "\n");
     }

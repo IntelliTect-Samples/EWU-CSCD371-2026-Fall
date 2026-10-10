@@ -26,7 +26,7 @@ public class JokeServiceTests
     /// This test verifies that the <see cref="JokeService.GetJoke"/> method correctly retrieves a joke from the Geek Jokes API, parses the JSON response, and decodes any Unicode characters present in the joke. It uses a stubbed HTTP message handler to simulate the API response and asserts that the returned joke matches the expected value.
     /// </remarks>
     [Fact]
-    public void GetJoke_ParsesJsonAndDecodesUnicode()
+    public void GetJokeParsesJsonAndDecodesUnicode()
     {
         const string responseBody =
             """{"joke":"Everything there\u2019s to know about Google."}""";
@@ -59,7 +59,7 @@ public class JokeServiceTests
     [InlineData("""{"other":"value"}""")]
     [InlineData("""{"joke":null}""")]
     [InlineData("""{"joke":123}""")]
-    public void GetJoke_ThrowsWhenResponseHasNoStringJoke(
+    public void GetJokeThrowsWhenResponseHasNoStringJoke(
         string responseBody)
     {
         StubHttpMessageHandler handler = new(responseBody);
@@ -77,7 +77,7 @@ public class JokeServiceTests
     /// This test verifies that the <see cref="JokeService.GetJoke"/> method correctly handles cases where the API response is not valid JSON. It uses a stubbed HTTP message handler to simulate an invalid JSON response and asserts that a <see cref="JsonException"/> is thrown when attempting to parse the response.
     /// </remarks>
     [Fact]
-    public void GetJoke_ThrowsWhenResponseIsInvalidJson()
+    public void GetJokeThrowsWhenResponseIsInvalidJson()
     {
         StubHttpMessageHandler handler = new("not JSON");
         using HttpClient client = new(handler);
@@ -95,7 +95,7 @@ public class JokeServiceTests
     /// This test verifies that the <see cref="JokeService"/> constructor correctly handles a null <paramref name="httpClient"/> parameter by throwing an <see cref="ArgumentNullException"/>. It asserts that the exception thrown has the expected parameter name.
     /// </remarks>
     [Fact]
-    public void Constructor_ThrowsWhenHttpClientIsNull()
+    public void ConstructorThrowsWhenHttpClientIsNull()
     {
         ArgumentNullException exception =
             Assert.Throws<ArgumentNullException>(

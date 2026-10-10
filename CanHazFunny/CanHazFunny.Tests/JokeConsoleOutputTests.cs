@@ -21,7 +21,7 @@ public class JokeConsoleOutputTests
     /// <seealso cref="StringWriter"/>
     /// <seealso cref="TextWriter"/>
     [Fact]
-    public void WriteLine_WritesJokeWithSurroundingBlankLines()
+    public void WriteLineWritesJokeWithSurroundingBlankLines()
     {
         const string expectedJoke = "This is a test joke.";
         TextWriter originalOutput = Console.Out;
@@ -55,7 +55,7 @@ public class JokeConsoleOutputTests
     /// <seealso cref="JokeOutput"/>
     /// <seealso cref="IJokeConsoleOutput"/>
     [Fact]
-    public void WriteLine_ThrowsWhenJokeIsNull()
+    public void WriteLineThrowsWhenJokeIsNull()
     {
         JokeOutput output = new();
 
