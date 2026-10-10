@@ -6,6 +6,11 @@ public class JokeOutput : IJokeConsoleOutput
 {
     public void WriteLine(string joke)
     {
-        Console.WriteLine(joke);
+        if (joke == null)
+        {
+            throw new ArgumentNullException(nameof(joke));
+        }
+
+        Console.WriteLine("\n" + joke + "\n");
     }
 }
