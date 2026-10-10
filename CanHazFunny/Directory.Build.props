@@ -1,14 +1,42 @@
+<!--
+    CSCD 371 - Assignment 3
+    Grader Reference Guide
+
+    CORE REQUIREMENTS
+    - Joke service interface: CanHazFunny/IJokeService.cs
+    - Output interface: CanHazFunny/IJokeConsoleOutput.cs
+    - JokeService interface implementation and joke retrieval:
+      CanHazFunny/JokeService.cs
+    - Console output implementation:
+      CanHazFunny/JokeConsoleOutput.cs (class JokeOutput)
+    - Jester dependencies, null checks, joke filtering, and output:
+      CanHazFunny/Jester.cs
+    - Jester unit tests and coverage:
+      CanHazFunny.Tests/JesterTests.cs
+
+    EXTRA CREDIT
+    - Console output unit tests:
+      CanHazFunny.Tests/JokeConsoleOutputTests.cs
+    - JSON joke retrieval and parsing tests:
+      CanHazFunny.Tests/JokeServiceTests.cs
+
+    BUILD AND ANALYSIS REQUIREMENTS
+    The PropertyGroup below applies shared .NET, C#,
+    nullable, analyzer, and warnings-as-errors settings
+    to both the application and test projects.
+-->
 
 <Project>
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>14.0</LangVersion>
 
+    <!-- Enable options in accordance to assignment instructions -->
     <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    
+
   </PropertyGroup>
 </Project>
