@@ -32,7 +32,8 @@ public class Jester
                 return;
             }
         }
-        while (joke.Contains("Chuck Norris"));
+        while (joke.Contains("Chuck", StringComparison.OrdinalIgnoreCase) 
+            && joke.Contains("Norris", StringComparison.OrdinalIgnoreCase));
 
         _jokeOutput.WriteLine(joke);
     }
