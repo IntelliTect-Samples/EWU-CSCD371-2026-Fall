@@ -4,6 +4,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        new Jester(new JokeService(), new JokeWrite()).TellJoke();
+        using HttpClient client = new();
+
+        new Jester(new JokeService(client), new JokeWrite()).TellJoke();
     }
 }

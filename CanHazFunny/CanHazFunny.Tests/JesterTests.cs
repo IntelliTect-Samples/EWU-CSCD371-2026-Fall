@@ -16,7 +16,9 @@ public class JesterTests
     [Fact]
     public void Constructor_WithNullJokeWrite_ThrowsArgumentNullException()
     {
-        Assert.Throws<ArgumentNullException>(() => new Jester(new JokeService(), null!));
+        var serviceMock = new Mock<IJokeService>().Object;
+
+        Assert.Throws<ArgumentNullException>(() => new Jester(serviceMock, null!));
     }
 
     [Fact]
