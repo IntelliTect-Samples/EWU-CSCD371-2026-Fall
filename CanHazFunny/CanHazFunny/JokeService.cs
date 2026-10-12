@@ -5,6 +5,7 @@ namespace CanHazFunny;
 public class JokeService : IJokeService
 {
     private readonly HttpClient _httpClient;
+
     public JokeService(HttpClient httpClient)
     {
         ArgumentNullException.ThrowIfNull(httpClient);

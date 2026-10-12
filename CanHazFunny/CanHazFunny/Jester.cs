@@ -3,6 +3,7 @@ namespace CanHazFunny;
 public class Jester
 {
     private IJokeService JokeService { get; }
+
     private IJokeWrite JokeWrite { get; }
 
     public Jester(IJokeService jokeService, IJokeWrite jokeWrite)
@@ -22,7 +23,7 @@ public class Jester
             joke = JokeService.GetJoke();
         }
         while (joke.Contains("Chuck Norris"));
-        
+
         JokeWrite.WriteJoke(joke);
     }
 }

@@ -1,7 +1,6 @@
-using Xunit;
-
 using System;
 using Moq;
+using Xunit;
 
 namespace CanHazFunny.Tests;
 
@@ -16,16 +15,17 @@ public class JesterTests
     [Fact]
     public void Constructor_WithNullJokeWrite_ThrowsArgumentNullException()
     {
-        var serviceMock = new Mock<IJokeService>().Object;
+        var service = new Mock<IJokeService>().Object;
 
-        Assert.Throws<ArgumentNullException>(() => new Jester(serviceMock, null!));
+        Assert.Throws<ArgumentNullException>(() => new Jester(service, null!));
     }
 
     [Fact]
-    public void TellJoke_FirstJokeIsAcceptable_WritesExactlyFirstJoke()
+    public void TellJoke_FirstJokeAcceptable_WritesOnlyAcceptedJoke()
     {
         var serviceMock = new Mock<IJokeService>();
-        serviceMock.Setup(service => service.GetJoke()).Returns("Acceptable");
+        serviceMock.Setup(service => service.GetJoke())
+            .Returns("Acceptable");
         var writeMock = new Mock<IJokeWrite>();
         var jester = new Jester(serviceMock.Object, writeMock.Object);
 
@@ -40,10 +40,11 @@ public class JesterTests
     }
 
     [Fact]
-    public void TellJoke_SecondJokeIsAcceptable_WritesExactlyAndOnlyAcceptableJoke()
+    public void TellJoke_SecondJokeAcceptable_WritesOnlyAcceptedJoke()
     {
         var serviceMock = new Mock<IJokeService>();
-        serviceMock.SetupSequence(service => service.GetJoke()).Returns("Chuck Norris")
+        serviceMock.SetupSequence(service => service.GetJoke())
+            .Returns("Chuck Norris")
             .Returns("Acceptable");
         var writeMock = new Mock<IJokeWrite>();
         var jester = new Jester(serviceMock.Object, writeMock.Object);
@@ -59,10 +60,11 @@ public class JesterTests
     }
 
     [Fact]
-    public void TellJoke_FourthJokeIsAcceptable_WritesExactlyAndOnlyAcceptableJoke()
+    public void TellJoke_FourthJokeAcceptable_WritesOnlyAcceptedJoke()
     {
         var serviceMock = new Mock<IJokeService>();
-        serviceMock.SetupSequence(service => service.GetJoke()).Returns("Chuck Norris")
+        serviceMock.SetupSequence(service => service.GetJoke())
+            .Returns("Chuck Norris")
             .Returns("Chuck Norris")
             .Returns("Chuck Norris")
             .Returns("Acceptable");
@@ -80,10 +82,11 @@ public class JesterTests
     }
 
     [Fact]
-    public void TellJoke_JokeContainsChuckNorris_SkipsItAndWritesExactlyAndOnlyNextJoke()
+    public void TellJoke_JokeContainsChuckNorris_WritesOnlyAcceptedJoke()
     {
         var serviceMock = new Mock<IJokeService>();
-        serviceMock.SetupSequence(service => service.GetJoke()).Returns("That Chuck Norris guy is acceptable")
+        serviceMock.SetupSequence(service => service.GetJoke())
+            .Returns("That Chuck Norris guy is acceptable")
             .Returns("Acceptable");
         var writeMock = new Mock<IJokeWrite>();
         var jester = new Jester(serviceMock.Object, writeMock.Object);
