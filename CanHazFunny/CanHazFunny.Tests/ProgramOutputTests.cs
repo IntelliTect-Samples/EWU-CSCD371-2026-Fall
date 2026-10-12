@@ -19,7 +19,7 @@ public class ProgramOutputTests
     /// Tests that the Run method retrieves a joke from the IJokeService and passes it to the IOutputService. The test uses mock implementations of IJokeService and IOutputService to verify that the Program correctly interacts with these services, ensuring that the joke is retrieved and output as expected.
     /// </summary>
     [Fact]
-    public void Run_RetrievesJokeAndPassesItToOutputService()
+    public void RunRetrievesJokeAndPassesItToOutputService()
     {
         const string joke = "A deterministic joke.";
         Mock<IJokeService> jokeService = new();
@@ -36,7 +36,7 @@ public class ProgramOutputTests
     /// Tests that the Main method invokes the Run method with real implementations of IJokeService and IOutputService, and that the joke retrieved from the JokeService is written to the console output. The test uses a stubbed HttpMessageHandler to simulate the JokeService response, allowing for deterministic testing without relying on external services or console output.
     /// </summary>
     [Fact]
-    public void MainInvoke_UsesRealServicesAndWritesTheRetrievedJoke()
+    public void MainInvokeUsesRealServicesAndWritesTheRetrievedJoke()
     {
         const string joke = "A deterministic joke from the actual JokeService.";
         using HttpClient httpClient = new(new JokeResponseHandler(joke));
@@ -75,7 +75,7 @@ public class ProgramOutputTests
     /// Tests that the ConsoleOutputService correctly writes a message to the console output. The test temporarily redirects the console output to a StringWriter, invokes the Output method of the ConsoleOutputService, and verifies that the expected message is written to the console output.
     /// </summary>
     [Fact]
-    public void ConsoleOutputService_Output_WritesMessageToConsole()
+    public void ConsoleOutputServiceOutputWritesMessageToConsole()
     {
         const string message = "Test message";
         TextWriter originalOutput = Console.Out;

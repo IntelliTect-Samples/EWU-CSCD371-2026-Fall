@@ -17,7 +17,7 @@ public class JokeServiceTests
     /// Tests that the GetJoke method returns the expected joke when the external API responds with a successful HTTP status code (200 OK). The test uses a stubbed HttpMessageHandler to simulate the API response, ensuring that the JokeService correctly processes the response and returns the joke string.
     /// </summary>
     [Fact]
-    public void GetJoke_ReturnsResponseBody()
+    public void GetJokeReturnsResponseBody()
     {
         const string joke = "A deterministic joke.";
         using HttpClient httpClient = new(new StubResponseHandler(request =>
@@ -37,7 +37,7 @@ public class JokeServiceTests
     /// Tests that the GetJoke method throws an AggregateException when the external API responds with an unsuccessful HTTP status code (e.g., 503 Service Unavailable). The test uses a stubbed HttpMessageHandler to simulate the API response, ensuring that the JokeService correctly handles error scenarios and propagates exceptions as expected.
     /// </summary>
     [Fact]
-    public void GetJoke_ThrowsWhenResponseIsUnsuccessful()
+    public void GetJokeThrowsWhenResponseIsUnsuccessful()
     {
         using HttpClient httpClient = new(new StubResponseHandler(_ =>
             new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));

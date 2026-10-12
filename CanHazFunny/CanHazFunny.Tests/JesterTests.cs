@@ -13,7 +13,7 @@ public class JesterTests
     /// Tests that the TellJoke method retrieves a joke from the IJokeService and passes it to the IOutputService, while skipping jokes that mention "Chuck Norris". The test uses mock implementations of IJokeService and IOutputService to verify that the Jester correctly interacts with these services, ensuring that jokes mentioning "Chuck Norris" are not output.
     /// </summary>
     [Fact]
-    public void TellJoke_SkipsChuckNorrisJokes_OutputsFirstOtherJoke()
+    public void TellJokeSkipsChuckNorrisJokesOutputsFirstOtherJoke()
     {
         const string joke = "Testing found this joke funny, production never finds it all.";
         Mock<IJokeService> jokeService = new();
@@ -44,7 +44,7 @@ public class JesterTests
     [Theory]
     [InlineData(false, true, "jokeService")]
     [InlineData(true, false, "outputService")]
-    public void Constructor_Throws(bool useValidJokeService, bool useValidOutputService, string expected)
+    public void ConstructorThrows(bool useValidJokeService, bool useValidOutputService, string expected)
     {
         IJokeService? jokeService = useValidJokeService ?
                 new Mock<IJokeService>().Object
