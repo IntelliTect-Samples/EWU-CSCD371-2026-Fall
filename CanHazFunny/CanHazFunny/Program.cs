@@ -4,7 +4,11 @@ class Program
 {
     static void Main(string[] args)
     {
-        //Feel free to use your own setup here - this is just provided as an example
-        //new Jester(new SomeReallyCoolOutputClass(), new SomeJokeServiceClass()).TellJoke();
+        IJokeOutput output = new ConsoleJokeOutput();
+        IJokeService jokeService = new JokeService();
+
+        Jester jester = new Jester(output, jokeService);
+
+        jester.TellJoke();
     }
 }
