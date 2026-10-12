@@ -16,7 +16,7 @@ public class Jester
     {
         string joke = _jokeService.GetJoke();
 
-        while(joke.Contains("Chuck Norris"))
+        while (joke.Contains("Chuck Norris"))
         {
             joke = _jokeService.GetJoke();
         }
