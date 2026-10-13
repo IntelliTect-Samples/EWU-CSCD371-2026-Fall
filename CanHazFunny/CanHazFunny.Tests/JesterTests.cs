@@ -7,7 +7,7 @@ public class JesterTests
 {
 
     [Fact]
-    void TellJokeProducesJokeNotNull()
+    public void TellJokeProducesJokeNotNull()
     {
         string joke = "This is a joke";
 
@@ -23,7 +23,7 @@ public class JesterTests
     }
 
     [Fact]
-    void TellJokeProducesJokeNotEmpty()
+    public void TellJokeProducesJokeNotEmpty()
     {
         string joke = "This is a joke";
 
@@ -39,7 +39,7 @@ public class JesterTests
     }
 
     [Fact]
-    void TellJokeProducesJoke()
+    public void TellJokeProducesJoke()
     {
         string joke = "This is a joke";
 
@@ -55,7 +55,7 @@ public class JesterTests
     }
 
     [Fact]
-    void JokeServiceTest()
+    public void JokeServiceTest()
     {
         JokeService jokeService = new();
         string joke = jokeService.GetJoke();
@@ -64,7 +64,7 @@ public class JesterTests
     }
 
     [Fact]
-    void TellJokeExcludesChuckNorris()
+    public void TellJokeExcludesChuckNorris()
     {
 
         Mock<IJokeService> jokeService = new();
@@ -82,7 +82,7 @@ public class JesterTests
     }
 
     [Fact]
-    void Constructor_NullJokeServiceThrows()
+    public void Constructor_NullJokeServiceThrows()
     {
         JokeService jokeService = null!;
         Mock<IJokeOutput> jokeOutput = new();
@@ -94,7 +94,7 @@ public class JesterTests
     }
 
     [Fact]
-    void Constructor_NullJokeOutputThrows()
+    public void Constructor_NullJokeOutputThrows()
     {
         Mock<IJokeService> jokeService = new();
         CJokeOutput jokeOutput = null!;
