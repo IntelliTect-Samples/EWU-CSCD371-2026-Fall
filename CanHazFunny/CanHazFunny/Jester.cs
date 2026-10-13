@@ -2,16 +2,27 @@
 
 namespace CanHazFunny;
 
-// Core 4: Implement the jester class - it should take both interfaces as dependencies. These are null checked.
+/// <summary>
+/// Represents a jester who tells jokes.
+/// </summary>
 public class Jester(IJokeService jokeService, IOutputService outputService)
 {
+    /// <summary>
+    /// The joke service used to retrieve jokes.
+    /// </summary>
     private readonly IJokeService _jokeService = jokeService ?? throw new ArgumentNullException(nameof(jokeService));
+    
+
+    /// <summary>
+    /// The output service used to display jokes.
+    /// </summary>
     private readonly IOutputService _outputService = outputService ?? throw new ArgumentNullException(nameof(outputService));
 
-    // Core 5: the jester class TellJoke() should:
-    // retrieve a joke from the jokeService
-    // SeeJokeService : if the joke contains - ChuckNorris, skip it and get another
-    // this joke should be written to the output dependency
+   
+    /// <summary>
+    /// Tells a joke retrieved from the joke service, ensuring that it does not contain "Chuck Norris".
+    /// If the joke contains "Chuck Norris", it will retrieve another joke until a suitable one is found. The joke is then output using the output service.
+    /// </summary>
     public void TellJoke()
     {
         string joke;

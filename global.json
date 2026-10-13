@@ -7,6 +7,6 @@
     "version": "18.0"
   },
   "test": {
-    "runner": "VSTest"
+    "runner": "Microsoft.Testing.Platform"
   }
 }
