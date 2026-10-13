@@ -1,6 +1,7 @@
 using Moq;
 using System;
 using Xunit;
+using System.IO;
 namespace CanHazFunny.Tests;
 
 public class JesterTests
@@ -82,7 +83,7 @@ public class JesterTests
     }
 
     [Fact]
-    public void Constructor_NullJokeServiceThrows()
+    public void ConstructorNullJokeServiceThrows()
     {
         JokeService jokeService = null!;
         Mock<IJokeOutput> jokeOutput = new();
@@ -94,7 +95,7 @@ public class JesterTests
     }
 
     [Fact]
-    public void Constructor_NullJokeOutputThrows()
+    public void ConstructorNullJokeOutputThrows()
     {
         Mock<IJokeService> jokeService = new();
         CJokeOutput jokeOutput = null!;
@@ -103,5 +104,23 @@ public class JesterTests
 
         var argNullException = Assert.IsType<ArgumentNullException>(exception);
         Assert.Equal(nameof(jokeOutput), argNullException.ParamName);
+    }
+
+    [Fact]
+    public void OutputJokeWritesJokeToConsole()
+    {
+        TextWriter original = Console.Out;
+        using StringWriter writer = new();
+        Console.SetOut(writer);
+        try
+        {
+            new CJokeOutput().OutputJoke("This is a joke");
+        }
+        finally
+        {
+            Console.SetOut(original);
+        }
+ 
+        Assert.Equal("This is a joke" + Environment.NewLine, writer.ToString());
     }
 }
