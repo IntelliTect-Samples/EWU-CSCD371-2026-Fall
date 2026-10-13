@@ -9,8 +9,8 @@ public class Jester
 
     public Jester(InterfaceJokeService jokeService, InterfaceConsoleOutput output)
     {
-        //ArgumentNullException.ThrowIfNull(jokeService);
-        //ArgumentNullException.ThrowIfNull(output);
+        ArgumentNullException.ThrowIfNull(jokeService); //null check
+        ArgumentNullException.ThrowIfNull(output); //null check
         joke = jokeService;
         jokeOutput = output;
     }
