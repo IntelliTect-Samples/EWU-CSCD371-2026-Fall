@@ -20,7 +20,7 @@ public class JesterTests
     // ---------- Constructor ----------
 
     [Fact]
-    public void Constructor_NullJokeService_ThrowsArgumentNullException()
+    public void ConstructorNullJokeServiceThrowsArgumentNullException()
     {
         var ex = Assert.Throws<ArgumentNullException>(
             () => new Jester(null!, _output.Object));
@@ -29,7 +29,7 @@ public class JesterTests
     }
 
     [Fact]
-    public void Constructor_NullOutput_ThrowsArgumentNullException()
+    public void ConstructorNullOutputThrowsArgumentNullException()
     {
         var ex = Assert.Throws<ArgumentNullException>(
             () => new Jester(_jokeService.Object, null!));
@@ -38,7 +38,7 @@ public class JesterTests
     }
 
     [Fact]
-    public void Constructor_ValidDependencies_DoesNotThrow()
+    public void ConstructorValidDependenciesDoesNotThrow()
     {
         var jester = new Jester(_jokeService.Object, _output.Object);
 
@@ -48,7 +48,7 @@ public class JesterTests
     // ---------- TellJoke: happy path ----------
 
     [Fact]
-    public void TellJoke_CleanJoke_WritesJokeExactlyOnce()
+    public void TellJokeCleanJokeWritesJokeExactlyOnce()
     {
         _jokeService.Setup(s => s.GetJoke()).Returns("Why did the chicken cross the road?");
 
@@ -61,7 +61,7 @@ public class JesterTests
     // ---------- TellJoke: Chuck Norris filtering ----------
 
     [Fact]
-    public void TellJoke_FirstJokeContainsChuckNorris_FetchesAnotherAndWritesThat()
+    public void TellJokeFirstJokeContainsChuckNorrisFetchesAnotherAndWritesThat()
     {
         _jokeService.SetupSequence(s => s.GetJoke())
             .Returns("Chuck Norris can divide by zero.")
@@ -75,7 +75,7 @@ public class JesterTests
     }
 
     [Fact]
-    public void TellJoke_MultipleChuckNorrisJokesInARow_KeepsRetryingUntilClean()
+    public void TellJokeMultipleChuckNorrisJokesInARowKeepsRetryingUntilClean()
     {
         _jokeService.SetupSequence(s => s.GetJoke())
             .Returns("Chuck Norris joke #1")
@@ -97,7 +97,7 @@ public class JesterTests
     [InlineData("cHuCk NoRrIs")]
     [InlineData("Did you hear what Chuck Norris did today?")]
     [InlineData("The legend of chuck norris lives on")]
-    public void TellJoke_ChuckNorrisInAnyCaseOrPosition_IsDiscarded(string badJoke)
+    public void TellJokeChuckNorrisInAnyCaseOrPositionIsDiscarded(string badJoke)
     {
         _jokeService.SetupSequence(s => s.GetJoke())
             .Returns(badJoke)
@@ -114,7 +114,7 @@ public class JesterTests
     [InlineData("Norris")]
     [InlineData("Chuck Berry sings, Norris listens")]
     [InlineData("")]
-    public void TellJoke_PartialMatchOrEmptyJoke_IsNotDiscarded(string okJoke)
+    public void TellJokePartialMatchOrEmptyJokeIsNotDiscarded(string okJoke)
     {
         _jokeService.Setup(s => s.GetJoke()).Returns(okJoke);
 
@@ -127,7 +127,7 @@ public class JesterTests
     // ---------- TellJoke: dependency failures bubble up ----------
 
     [Fact]
-    public void TellJoke_JokeServiceThrows_ExceptionPropagatesAndNothingIsWritten()
+    public void TellJokeJokeServiceThrowsExceptionPropagatesAndNothingIsWritten()
     {
         _jokeService.Setup(s => s.GetJoke()).Throws<InvalidOperationException>();
 
@@ -137,7 +137,7 @@ public class JesterTests
     }
 
     [Fact]
-    public void TellJoke_OutputThrows_ExceptionPropagates()
+    public void TellJokeOutputThrowsExceptionPropagates()
     {
         _jokeService.Setup(s => s.GetJoke()).Returns("A joke");
         _output.Setup(o => o.WriteJoke(It.IsAny<string>())).Throws<IOException>();
