@@ -4,10 +4,10 @@ namespace CanHazFunny;
 
 public class Jester
 {
-    private readonly InterfaceJokeService joke;
-    private readonly InterfaceConsoleOutput jokeOutput;
+    private readonly IJokeService joke;
+    private readonly IConsoleOutput jokeOutput;
 
-    public Jester(InterfaceJokeService jokeService, InterfaceConsoleOutput output)
+    public Jester(IJokeService jokeService, IConsoleOutput output)
     {
         ArgumentNullException.ThrowIfNull(jokeService); //null check
         ArgumentNullException.ThrowIfNull(output); //null check

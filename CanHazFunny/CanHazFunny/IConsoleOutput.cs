@@ -1,6 +1,6 @@
 namespace CanHazFunny;
 
-public interface InterfaceConsoleOutput
+public interface IConsoleOutput
 {
     void WriteJoke(string joke);
 }

@@ -1,6 +1,6 @@
 ﻿namespace CanHazFunny;
 
-class Program
+internal sealed class Program
 {
     static void Main(string[] args)
     {

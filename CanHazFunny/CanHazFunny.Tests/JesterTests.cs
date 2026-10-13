@@ -8,8 +8,8 @@ namespace CanHazFunny.Tests;
 
 public class JesterTests
 {
-    private readonly Mock<InterfaceJokeService> _jokeService = new();
-    private readonly Mock<InterfaceConsoleOutput> _output = new();
+    private readonly Mock<IJokeService> _jokeService = new();
+    private readonly Mock<IConsoleOutput> _output = new();
     private readonly Jester _sut;
 
     public JesterTests()
