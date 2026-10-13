@@ -5,7 +5,7 @@ using Xunit;
 namespace CanHazFunny.Tests;
 
 [CollectionDefinition("Console tests", DisableParallelization = true)]
-public class ConsoleTestCollection
+public class ConsoleTestsDefinition
 {
 }
 
