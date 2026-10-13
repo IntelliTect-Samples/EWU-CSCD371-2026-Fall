@@ -4,8 +4,8 @@ namespace CanHazFunny;
 
 public class Jester
 {
-    private IJokeService _jokeService;
-    private IJokeOutput _jokeOutput;
+    private readonly IJokeService _jokeService;
+    private readonly IJokeOutput _jokeOutput;
 
     public Jester(IJokeService jokeService, IJokeOutput jokeOutput)
     {
