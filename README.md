@@ -25,8 +25,8 @@ For this assignment do the following:
 - The `JokeService` will need to have the interface applied to it. ✔
 - Create an implementation of the output interface that writes out the joke to the console. ✔
 - Implement the `Jester` class. It should take in both interfaces as dependencies. These dependencies should be null checked. ✔
-- The `Jester` class `TellJoke()` method should retrieve a joke from the `JokeService`. If the joke contains "Chuck Norris", skip it and get another. The joke should be written to the output dependency. ✔❌
-- Unit test the Jester class. Code coverage should be above 90% for this class. Moq will make this significantly easier. ✔❌
+- The `Jester` class `TellJoke()` method should retrieve a joke from the `JokeService`. If the joke contains "Chuck Norris", skip it and get another. The joke should be written to the output dependency. ✔
+- Unit test the Jester class. Code coverage should be above 90% for this class. Moq will make this significantly easier. ✔
 
 ## Fundamentals
 
