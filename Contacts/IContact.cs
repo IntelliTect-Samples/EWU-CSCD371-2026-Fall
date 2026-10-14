@@ -2,5 +2,8 @@ namespace Contacts;
 
 public interface IContact
 {
-    // Place members here.
+    Guid Id { get; }
+    FullName Name { get; }
+    string Email { get; }
+    string? Phone { get; }
 }
