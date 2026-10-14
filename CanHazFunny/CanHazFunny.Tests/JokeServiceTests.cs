@@ -52,6 +52,16 @@ public class JokeServiceTests
     }
 
     [Fact]
+    public void GetJoke_NullResponse_ThrowsJsonException()
+    {
+        using HttpClient client = CreateClientReturningJson("null");
+
+        var service = new JokeService(client);
+
+        Assert.Throws<JsonException>(service.GetJoke);
+    }
+
+    [Fact]
     public void GetJoke_MalformedJson_ThrowsJsonException()
     {
         using HttpClient client = CreateClientReturningJson("""{"joke":null""");

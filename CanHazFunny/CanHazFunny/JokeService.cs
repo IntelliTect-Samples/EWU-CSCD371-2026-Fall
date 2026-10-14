@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CanHazFunny;
 
@@ -16,11 +17,15 @@ public class JokeService : IJokeService
     public string GetJoke()
     {
         string json = _httpClient.GetStringAsync("https://geek-jokes.sameerkumar.website/api?format=json").Result;
-        using JsonDocument document = JsonDocument.Parse(json);
+        JokeResponse? response = JsonSerializer.Deserialize<JokeResponse>(json);
 
-        string joke = document.RootElement.GetProperty("joke").GetString()
+        return response?.Joke
             ?? throw new JsonException("API returned null joke");
+    }
 
-        return joke;
+    private sealed class JokeResponse
+    {
+        [JsonPropertyName("joke")]
+        public string? Joke { get; init; }
     }
 }
