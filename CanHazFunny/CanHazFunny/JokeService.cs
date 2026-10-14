@@ -1,14 +1,31 @@
-﻿using System.Net.Http;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CanHazFunny;
 
-public class JokeService
+public class JokeService : IJokeService
 {
-    private HttpClient HttpClient { get; } = new();
+    private readonly HttpClient _httpClient;
+
+    public JokeService(HttpClient httpClient)
+    {
+        ArgumentNullException.ThrowIfNull(httpClient);
+
+        _httpClient = httpClient;
+    }
 
     public string GetJoke()
     {
-        string joke = HttpClient.GetStringAsync("https://geek-jokes.sameerkumar.website/api").Result;
-        return joke;
+        string json = _httpClient.GetStringAsync("https://geek-jokes.sameerkumar.website/api?format=json").Result;
+        JokeResponse? response = JsonSerializer.Deserialize<JokeResponse>(json);
+
+        return response?.Joke
+            ?? throw new JsonException("API returned null joke");
+    }
+
+    private sealed class JokeResponse
+    {
+        [JsonPropertyName("joke")]
+        public string? Joke { get; init; }
     }
 }
