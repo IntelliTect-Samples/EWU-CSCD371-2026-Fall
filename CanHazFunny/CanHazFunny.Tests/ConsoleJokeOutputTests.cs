@@ -6,6 +6,7 @@ namespace CanHazFunny.Tests;
 
 public class ConsoleJokeOutputTests
 {
+    private const string Joke = "Why do programmers prefer dark mode? Because light attracts bugs.";
     [Fact]
     public void WriteJoke_WritesJokeToConsole()
     {
@@ -15,13 +16,13 @@ public class ConsoleJokeOutputTests
 
         try
         {
-            new ConsoleJokeOutput().WriteJoke("Why do programmers prefer dark mode? Because light attracts bugs.");
+            new ConsoleJokeOutput().WriteJoke(Joke);
         }
         finally
         {
             Console.SetOut(originalOut);
         }
 
-        Assert.Equal("Why do programmers prefer dark mode? Because light attracts bugs." + Environment.NewLine, writer.ToString());
+        Assert.Equal(Joke + Environment.NewLine, writer.ToString());
     }
 }
