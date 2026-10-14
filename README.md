@@ -14,7 +14,7 @@ Reference **Chapters 9 - Introducing Structs and Records & Chapter 10 - Well For
 
 ### Types
 
-- Define a full name record (first, last, optional middle), handling `null` and optional values appropriately. ❌✔
+- Define a full name record (first, last, optional middle), handling `null` and optional values appropriately. ✔
 - Define student and employee records, both with contact capabilities. ❌✔
   - Consider what Student and Employee share, and refactor the common code (an abstract base is one option). ❌✔
   - Consider what members Student and Employee should be unique to each type. ❌✔
