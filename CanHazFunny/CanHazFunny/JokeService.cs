@@ -7,12 +7,19 @@ namespace CanHazFunny;
 public class JokeService : IJokeService
 {
     private HttpClient HttpClient { get; } = new();
-
     public string GetJoke()
     {
-        JokeResponse? response = HttpClient.GetFromJsonAsync<JokeResponse>("https://geek-jokes.sameerkumar.website/api?format=json").Result;
-        return response?.Joke ?? throw new InvalidOperationException("The joke service did not return a joke.");
-    }
+        JokeResponse? response = HttpClient
+            .GetFromJsonAsync<JokeResponse>("https://geek-jokes.sameerkumar.website/api?format=json")
+            .GetAwaiter()
+            .GetResult();
 
+
+        return response?.Joke 
+            ?? throw new InvalidOperationException("The joke service did not return a joke.");
+    }
     private sealed record JokeResponse(string Joke);
 }
+
+
+

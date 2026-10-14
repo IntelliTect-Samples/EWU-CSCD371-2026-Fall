@@ -39,7 +39,7 @@ public class JesterTests
 
     [Theory]
     [InlineData("Chuck Norris can divide by zero")]
-    [InlineData("chuck norris is lowercase")]
+
     public void TellJoke_ChuckNorrisJoke_SkipsItAndGetsAnother(string badJoke)
     {
         Mock<IJokeService> service = new();

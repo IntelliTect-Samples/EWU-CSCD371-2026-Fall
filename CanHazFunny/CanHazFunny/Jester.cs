@@ -19,7 +19,7 @@ public class Jester
         do
         {
             joke = _jokeService.GetJoke();
-        } while (joke.Contains("Chuck Norris", StringComparison.OrdinalIgnoreCase));
+        } while (joke.Contains("Chuck Norris"));
 
         _jokeOutput.WriteJoke(joke);
     }
