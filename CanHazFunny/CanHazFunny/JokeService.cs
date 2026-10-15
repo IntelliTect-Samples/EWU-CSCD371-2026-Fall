@@ -6,7 +6,7 @@ namespace CanHazFunny;
 public class JokeService : IJokeService
 {
     private HttpClient HttpClient { get; } = new();
-    private record FunnyResult(string Joke);
+    private sealed record FunnyResult(string Joke);
 
     public string GetJoke()
     {
