@@ -28,10 +28,11 @@ public class Jester
     /// </remarks>
     public Jester(IJokeService jokeService, IJokeConsoleOutput jokeOutput)
     {
-        if (jokeService == null || jokeOutput == null)
-        {
-            throw new ArgumentNullException(jokeService == null ? nameof(jokeService) : nameof(jokeOutput));
-        }
+        // Error Checking
+        ArgumentNullException.ThrowIfNull(jokeService);
+        ArgumentNullException.ThrowIfNull(jokeOutput);
+
+        // Run as normal, assuming exception was not found above
         _jokeService = jokeService;
         _jokeOutput = jokeOutput;
     }
