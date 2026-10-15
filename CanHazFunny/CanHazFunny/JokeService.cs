@@ -52,15 +52,6 @@ public class JokeService : IJokeService
                 "Joke service returned no response.");
         }
 
-        /// <summary>
-        /// Parses the JSON response from the joke service and extracts the joke.
-        /// </summary>
-        /// <param name="response">The JSON response from the joke service.</param>
-        /// <returns>A string containing the joke.</returns>
-        /// <exception cref="InvalidOperationException">Thrown when the response does not contain a valid joke.</exception>
-        /// <remarks>
-        /// The method uses the System.Text.Json library to parse the JSON response and extract the joke. If the response does not contain a valid joke, an InvalidOperationException is thrown.
-        /// </remarks>
         JsonDocument document = JsonDocument.Parse(response);
 
         if (!document.RootElement.TryGetProperty(
