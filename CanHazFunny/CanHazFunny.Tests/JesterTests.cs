@@ -1,43 +1,11 @@
 using Moq;
 using System;
-using Xunit;
 using System.IO;
+using Xunit;
 namespace CanHazFunny.Tests;
 
 public class JesterTests
 {
-
-    [Fact]
-    public void TellJokeProducesJokeNotNull()
-    {
-        string joke = "This is a joke";
-
-        Mock<IJokeService> jokeService = new();
-        Mock<IJokeOutput> jokeOutput = new();
-
-        jokeService.Setup(s => s.GetJoke()).Returns(joke);
-        Jester jester = new(jokeService.Object, jokeOutput.Object);
-
-        jester.TellJoke();
-
-        jokeOutput.Verify(o => o.OutputJoke(It.IsNotNull<string>()), Times.Once);
-    }
-
-    [Fact]
-    public void TellJokeProducesJokeNotEmpty()
-    {
-        string joke = "This is a joke";
-
-        Mock<IJokeService> jokeService = new();
-        Mock<IJokeOutput> jokeOutput = new();
-
-        jokeService.Setup(s => s.GetJoke()).Returns(joke);
-        Jester jester = new(jokeService.Object, jokeOutput.Object);
-
-        jester.TellJoke();
-
-        jokeOutput.Verify(o => o.OutputJoke(It.Is<string>(s => !s.IsWhiteSpace())), Times.Once);
-    }
 
     [Fact]
     public void TellJokeProducesJoke()
@@ -120,7 +88,7 @@ public class JesterTests
         {
             Console.SetOut(original);
         }
- 
+
         Assert.Equal("This is a joke" + Environment.NewLine, writer.ToString());
     }
 }
