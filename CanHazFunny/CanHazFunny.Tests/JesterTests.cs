@@ -66,7 +66,7 @@ public class JesterTests
     public void ConstructorNullJokeOutputThrows()
     {
         Mock<IJokeService> jokeService = new();
-        CJokeOutput jokeOutput = null!;
+        JokeOutput jokeOutput = null!;
 
         var exception = Record.Exception(() => new Jester(jokeService.Object, jokeOutput));
 
@@ -82,7 +82,7 @@ public class JesterTests
         Console.SetOut(writer);
         try
         {
-            new CJokeOutput().OutputJoke("This is a joke");
+            new JokeOutput().OutputJoke("This is a joke");
         }
         finally
         {

@@ -2,7 +2,7 @@ using System;
 
 namespace CanHazFunny;
 
-public class CJokeOutput : IJokeOutput
+public class JokeOutput : IJokeOutput
 {
     public void OutputJoke(string joke)
     {
