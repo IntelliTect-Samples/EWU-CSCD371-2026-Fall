@@ -47,15 +47,16 @@ public class JesterTests
 
     // ---------- TellJoke: happy path ----------
 
-    [Fact]
-    public void TellJokeCleanJokeWritesJokeExactlyOnce()
+    [Theory]
+    [InlineData("Why did the chicken cross the road?")]
+    public void TellJokeCleanJokeWritesJokeExactlyOnce(string cleanJoke)
     {
-        _jokeService.Setup(s => s.GetJoke()).Returns("Why did the chicken cross the road?");
+        _jokeService.Setup(s => s.GetJoke()).Returns(cleanJoke);
 
         _sut.TellJoke();
 
         _jokeService.Verify(s => s.GetJoke(), Times.Once);
-        _output.Verify(o => o.WriteJoke("Why did the chicken cross the road?"), Times.Once);
+        _output.Verify(o => o.WriteJoke(cleanJoke), Times.Once);
     }
 
     // ---------- TellJoke: Chuck Norris filtering ----------

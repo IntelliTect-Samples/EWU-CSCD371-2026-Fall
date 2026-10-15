@@ -9,7 +9,7 @@ public class JokeService : IJokeService
 {
     private readonly HttpClient JokeHttpClient;
 
-    private const string JOKEURL = "https://geek-jokes.sameerkumar.website/api";
+    private const string JokeUrl = "https://geek-jokes.sameerkumar.website/api";
 
     public JokeService() : this(new HttpClient()){
 
@@ -21,7 +21,7 @@ public class JokeService : IJokeService
 
     public string GetJoke()
     {
-        string json = JokeHttpClient.GetStringAsync(JOKEURL).GetAwaiter().GetResult();
+        string json = JokeHttpClient.GetStringAsync(JokeUrl).GetAwaiter().GetResult();
         //string joke = httpClient.GetStringAsync("https://geek-jokes.sameerkumar.website/api").Result;
         string? joke = JsonSerializer.Deserialize<string>(json);
         if (joke is null)
