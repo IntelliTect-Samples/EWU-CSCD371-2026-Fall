@@ -60,8 +60,8 @@ public class Jester
                 return;
             }
         } // Check if the joke contains any of the forbidden words (case-insensitive)
-        while (joke.Contains("Chuck", StringComparison.OrdinalIgnoreCase) 
-            || joke.Contains("Norris", StringComparison.OrdinalIgnoreCase)
+        while ((joke.Contains("Chuck", StringComparison.OrdinalIgnoreCase) 
+            && joke.Contains("Norris", StringComparison.OrdinalIgnoreCase))
             || joke.Contains("Texas Ranger", StringComparison.OrdinalIgnoreCase));
 
         _jokeOutput.WriteLine(joke);
