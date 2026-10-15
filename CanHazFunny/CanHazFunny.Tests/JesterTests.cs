@@ -92,10 +92,10 @@ public class JesterTests
 
         jokeService
             .SetupSequence(service => service.GetJoke())
-            .Returns("A joke about Chuck.")
-            .Returns("A joke about Norris.")
-            .Returns("A joke about chuck.")
-            .Returns("A joke about NORRIS.")
+            .Returns("A joke about Chuck, whose last name is Norris.")
+            .Returns("A joke about Norris, whose first name is Chuck.")
+            .Returns("A joke about chuck, whose last name is norris.")
+            .Returns("A joke about NORRIS, whose first name is CHUCK.")
             .Returns("A joke about a Texas Ranger.")
             .Returns(acceptedJoke);
 
