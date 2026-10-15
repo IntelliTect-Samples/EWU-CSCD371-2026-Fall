@@ -14,17 +14,17 @@ Reference **Chapters 9 - Introducing Structs and Records & Chapter 10 - Well For
 
 ### Types
 
-- Define a full name record (first, last, optional middle), handling `null` and optional values appropriately. ❌✔
-- Define student and employee records, both with contact capabilities. ❌✔
-  - Consider what Student and Employee share, and refactor the common code (an abstract base is one option). ❌✔
-  - Consider what members Student and Employee should be unique to each type. ❌✔
+- Define a full name record (first, last, optional middle), handling `null` and optional values appropriately. ✔
+- Define student and employee records, both with contact capabilities. ✔
+  - Consider what Student and Employee share, and refactor the common code (an abstract base is one option). ✔
+  - Consider what members Student and Employee should be unique to each type. ✔
 - Use the provided `ContactBook` class to store the contacts. ❌✔
 
 ### Equality
 
-- Two contacts with the same data are equal even though they have different `Id`s. ❌✔
-  - Records synthesize equality over every property, so decide how to keep `Id` out of it. ❌✔
-- A student and an employee with otherwise identical data are **not** equal. ❌✔
+- Two contacts with the same data are equal even though they have different `Id`s. ✔
+  - Records synthesize equality over every property, so decide how to keep `Id` out of it. ✔
+- A student and an employee with otherwise identical data are **not** equal. ✔
 
 ### ContactBook (must use `HashSet<IContact>`)
 
@@ -51,9 +51,9 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
 
 - Target all projects at .NET 10 (`net10.0`) with the latest `LangVersion`.
 - Be sure you enable:
-  - `Nullable` for all projects ❌✔
-  - Code analysis for all projects (`EnableNETAnalyzers`) ❌✔
-  - `EnforceCodeStyleInBuild` ❌✔
+  - `Nullable` for all projects ✔
+  - Code analysis for all projects (`EnableNETAnalyzers`) ✔
+  - `EnforceCodeStyleInBuild` ✔
 - **Ensure there are no errors or warnings (including code analysis warnings)** ❌✔
 - **All of the above should be unit tested** ❌✔
 - **Choose simplicity over complexity** ❌✔

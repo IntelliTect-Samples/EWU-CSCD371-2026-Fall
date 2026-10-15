@@ -1,26 +1,25 @@
 namespace Contacts;
 
 // I considered CLI-only validation, but that isn't very reusable.
-public record FullName
+public record class FullName
 {
-
     public string FirstName { get; }
     public string LastName { get; }
     public string? MiddleName { get; }
 
-    public FullName(string FirstName, string LastName, string? MiddleName = null)
+    public FullName(string firstName, string lastName, string? middleName = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(FirstName);
-        ArgumentException.ThrowIfNullOrWhiteSpace(LastName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
 
-        this.FirstName = FirstName;
-        this.LastName = LastName;
-        this.MiddleName = string.IsNullOrWhiteSpace(MiddleName) ? null : MiddleName;
+        FirstName = firstName;
+        LastName = lastName;
+        MiddleName = string.IsNullOrWhiteSpace(middleName) ? null : middleName;
     }
 
     public override string ToString()
     {
-        if (MiddleName == null)
+        if (MiddleName is null)
         {
             return $"{FirstName} {LastName}";
         }
