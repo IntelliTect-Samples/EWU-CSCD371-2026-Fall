@@ -11,6 +11,14 @@ _layout.cshtml
 *.user
 *.userosscache
 *.sln.docstates
+# folders and files to be ignored for this Assignment
+.devcontainer/**
+.vscode/**
+.github/**
+Docs/**
+Shared/**
+.Rhistory
+.editorconfig
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

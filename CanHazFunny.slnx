@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/Solution Items/" />
+  <Project Path="CanHazFunny.Tests/CanHazFunny.Tests.csproj" />
+  <Project Path="CanHazFunny/CanHazFunny.csproj" />
+</Solution>
