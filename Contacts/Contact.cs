@@ -10,6 +10,15 @@ public abstract record Contact(FullName Name, string Email, string? Phone = null
 
     public string? Phone { get; } = string.IsNullOrWhiteSpace(Phone) ? null : Phone.Trim();
 
+    public virtual bool Equals(Contact? other) =>
+        other is not null
+        && EqualityContract == other.EqualityContract
+        && Name == other.Name
+        && Email == other.Email
+        && Phone == other.Phone;
+
+    public override int GetHashCode() => HashCode.Combine(EqualityContract, Name, Email, Phone);
+
     protected static string Required(string value, string paramName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value, paramName);
