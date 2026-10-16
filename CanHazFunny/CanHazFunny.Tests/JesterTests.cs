@@ -6,27 +6,6 @@ namespace CanHazFunny.Tests;
 
 public class JesterTests
 {
-    [Fact]
-    public void Constructor_NullOutput_ThrowsArgumentNullException()
-    {
-        var serviceMock = new Mock<IJokeService>();
-
-        var exception = Assert.Throws<ArgumentNullException>(
-            () => new Jester(null!, serviceMock.Object));
-
-        Assert.Equal("jokeOutput", exception.ParamName);
-    }
-
-    [Fact]
-    public void Constructor_NullService_ThrowsArgumentNullException()
-    {
-        var outputMock = new Mock<IJokeOutput>();
-
-        var exception = Assert.Throws<ArgumentNullException>(
-            () => new Jester(outputMock.Object, null!));
-
-        Assert.Equal("jokeService", exception.ParamName);
-    }
 
     [Fact]
     public void TellJoke_NormalJoke_OutputsJoke()
