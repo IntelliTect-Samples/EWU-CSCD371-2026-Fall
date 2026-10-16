@@ -6,16 +6,22 @@ public class ContactBook
 
     public bool Add(IContact item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         return Entities.Add(item);
     }
 
-    public void Remove(IContact item)
+    public bool Remove(IContact item)
     {
-        Entities.Remove(item);
+        ArgumentNullException.ThrowIfNull(item);
+
+        return Entities.Remove(item);
     }
 
     public bool Contains(IContact item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+        
         return Entities.Contains(item);
     }
 

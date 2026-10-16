@@ -7,7 +7,7 @@ namespace Contacts.Tests;
 public class FullNameTests
 {
     [TestMethod]
-    public void Constructor_NullFirstName_ThrowsNullArgumentException()
+    public void Constructor_NullFirstName_ThrowsArgumentNullException()
     {
         Assert.ThrowsExactly<ArgumentNullException>(() => new FullName(null!, "ValidLast"));
     }
@@ -16,13 +16,13 @@ public class FullNameTests
     [DataRow("")]
     [DataRow(" ")]
     [DataRow("\t")]
-    public void Constructor_EmptyFirstName_ThrowsArgumentException(string firstName)
+    public void Constructor_EmptyOrWhiteSpaceFirstName_ThrowsArgumentException(string firstName)
     {
         Assert.ThrowsExactly<ArgumentException>(() => new FullName(firstName, "ValidLast"));
     }
 
     [TestMethod]
-    public void Constructor_NullLastName_ThrowsNullArgumentException()
+    public void Constructor_NullLastName_ThrowsArgumentNullException()
     {
         Assert.ThrowsExactly<ArgumentNullException>(() => new FullName("ValidFirst", null!));
     }
@@ -31,7 +31,7 @@ public class FullNameTests
     [DataRow("")]
     [DataRow(" ")]
     [DataRow("\t")]
-    public void Constructor_EmptyLastName_ThrowsArgumentException(string lastName)
+    public void Constructor_EmptyOrWhiteSpaceLastName_ThrowsArgumentException(string lastName)
     {
         Assert.ThrowsExactly<ArgumentException>(() => new FullName("ValidFirst", lastName));
     }
@@ -41,10 +41,40 @@ public class FullNameTests
     [DataRow("")]
     [DataRow(" ")]
     [DataRow("\t")]
-    public void Constructor_Normalization_StoredAsNull(string? middleName)
+    public void Constructor_NullOrWhiteSpaceMiddleName_StoresNull(string? middleName)
     {
         FullName name = new("ValidFirst", "ValidLast", middleName);
         Assert.IsNull(name.MiddleName);
+    }
+
+    [TestMethod]
+    public void Equals_IdenticalSeparateInstances_ReturnsTrue()
+    {
+        FullName originalName = new("ValidFirst", "ValidLast", "ValidMiddle");
+        FullName comparedName = new("ValidFirst", "ValidLast", "ValidMiddle");
+
+        Assert.IsTrue(Equals(originalName, comparedName));
+    }
+
+    [TestMethod]
+    [DataRow("DifferentFirst", "ValidLast", "ValidMiddle")]
+    [DataRow("ValidFirst", "DifferentLast", "ValidMiddle")]
+    [DataRow("ValidFirst", "ValidLast", "DifferentMiddle")]
+    public void Equals_OneNameComponentDiffers_ReturnsFalse(string firstName, string lastName, string middleName)
+    {
+        FullName originalName = new(firstName, lastName, middleName);
+        FullName comparedName = new("ValidFirst", "ValidLast", "ValidMiddle");
+
+        Assert.IsFalse(Equals(originalName, comparedName));
+    }
+
+    [TestMethod]
+    public void GetHashCode_IdenticalSeparateInstances_ReturnsEqualHashCodes()
+    {
+        FullName originalName = new("ValidFirst", "ValidLast", "ValidMiddle");
+        FullName comparedName = new("ValidFirst", "ValidLast", "ValidMiddle");
+
+        Assert.AreEqual(originalName.GetHashCode(), comparedName.GetHashCode());
     }
 
     [TestMethod]
@@ -56,40 +86,10 @@ public class FullNameTests
     }
 
     [TestMethod]
-    public void ToString_PassedMiddleName_ReturnsExpectedString()
+    public void ToString_ProvidedMiddleName_ReturnsExpectedString()
     {
         FullName name = new("ValidFirst", "ValidLast", "ValidMiddle");
 
         Assert.AreEqual("ValidFirst ValidMiddle ValidLast", name.ToString());
-    }
-
-    [TestMethod]
-    public void Equals_IdenticalSeparateInstances_ReturnsTrue()
-    {
-        FullName aName = new("ValidFirst", "ValidLast", "ValidMiddle");
-        FullName bName = new("ValidFirst", "ValidLast", "ValidMiddle");
-
-        Assert.IsTrue(Equals(aName, bName));
-    }
-
-    [TestMethod]
-    public void GetHashCode_IdenticalSeparateInstances_HaveEqualHashCodes()
-    {
-        FullName aName = new("ValidFirst", "ValidLast", "ValidMiddle");
-        FullName bName = new("ValidFirst", "ValidLast", "ValidMiddle");
-
-        Assert.AreEqual(aName.GetHashCode(), bName.GetHashCode());
-    }
-
-    [TestMethod]
-    [DataRow("DifferentFirst", "ValidLast", "ValidMiddle")]
-    [DataRow("ValidFirst", "DifferentLast", "ValidMiddle")]
-    [DataRow("ValidFirst", "ValidLast", "DifferentMiddle")]
-    public void Equals_OneNameComponentDiffers_ReturnsFalse(string firstName, string lastName, string middleName)
-    {
-        FullName aName = new(firstName, lastName, middleName);
-        FullName bName = new("ValidFirst", "ValidLast", "ValidMiddle");
-
-        Assert.IsFalse(Equals(aName, bName));
     }
 }

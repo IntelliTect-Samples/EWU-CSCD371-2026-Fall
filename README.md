@@ -30,7 +30,7 @@ Reference **Chapters 9 - Introducing Structs and Records & Chapter 10 - Well For
 
 - `ContactBook` must keep storing contacts in a `HashSet<IContact>` (a provided test checks this). ✔
 - Adding a contact equal to a stored one must not add a duplicate, and the caller must be able to tell. ✔
-- `Contains` and `Remove` must work with an equal but different instance. ❌✔
+- `Contains` and `Remove` must work with an equal but different instance. ✔
 - Add whatever else your CLI needs (for example, search or list). ❌✔
 
 The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode` through `IContact`, so a wrong implementation shows up as duplicate or "missing" contacts.
@@ -45,7 +45,7 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
 ### Tests
 
 - Unit test all appropriate code including `ContactBook`. ❌✔
-- Include tests showing a duplicate is rejected, a student and employee with the same data are both stored, and an equal-but-different instance is found and removed. ❌✔
+- Include tests showing a duplicate is rejected, a student and employee with the same data are both stored, and an equal-but-different instance is found and removed. ✔
 
 ## Fundamentals
 
