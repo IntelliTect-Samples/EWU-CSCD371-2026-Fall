@@ -9,21 +9,23 @@ public class Jester
 
     public Jester(IJokeOutput jokeOutput, IJokeService jokeService)
     {
-        _jokeOutput = jokeOutput
-            ?? throw new ArgumentNullException(nameof(jokeOutput));
-        _jokeService = jokeService
-            ?? throw new ArgumentNullException(nameof(jokeService));
+        _jokeOutput = jokeOutput;
+
+
+        _jokeService = jokeService;
+            
     }
 
 
     public void TellJoke()
     {
-        string joke = _jokeService.GetJoke();
+        string joke;
 
-        while(joke.Contains("Chuck Norris"))
+        do
         {
             joke = _jokeService.GetJoke();
         }
+        while(joke.Contains("Chuck Norris"));
 
         _jokeOutput.OutputJoke(joke);
     }
