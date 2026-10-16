@@ -4,9 +4,9 @@ public class ContactBook
 {
     private HashSet<IContact> Entities { get; } = [];
 
-    public void Add(IContact item)
+    public bool Add(IContact item)
     {
-        Entities.Add(item);
+        return Entities.Add(item);
     }
 
     public void Remove(IContact item)
