@@ -1,50 +1,105 @@
 using System.Text.Json;
-using static Contacts.ContactBase;
 
 namespace Contacts;
 
-
-
-public sealed record class FullName(string First, string Last, string? Middle) 
+public sealed record class FullName(string First, string Last, string? Middle)
 {
     public override string ToString()
         => Middle is null
             ? $"{First} {Last}"
             : $"{First} {Middle} {Last}";
 }
-public abstract record ContactBase(FullName Name) : IContact
+
+public abstract record ContactBase : IContact
 {
     private static int _nextID = 1;
 
+    protected ContactBase(FullName name, IReadOnlyList<string> emails)
+    {
+        this.name = name;
+        Emails = Array.AsReadOnly(emails.ToArray());
+    }
+
     public int ID { get; init; } = _nextID++;
 
-    public IReadOnlyList<string> Emails { get; init; } = new List<string>();
-    public FullName name { get; } = Name;
-}
-public sealed record class Student(FullName name, string Major, string grad_year, IReadOnlyList<String> emails) : ContactBase(name)
-{
-    public IReadOnlyList<String> Emails { get; set; } = emails;
-    
-}
-public sealed record class Employee(FullName name, string Department, string Company_Name, IReadOnlyList<String> emails) : ContactBase(name)
-{ 
-   
-    public IReadOnlyList<String> Emails { get; set; } = emails;
+    public FullName name { get; init; }
+
+    public IReadOnlyList<string> Emails { get; init; }
+
+    public virtual bool Equals(ContactBase? other) =>
+        other is not null &&
+        GetType() == other.GetType() &&
+        name == other.name &&
+        Emails.SequenceEqual(other.Emails, StringComparer.Ordinal);
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(GetType());
+        hash.Add(name);
+
+        foreach (var email in Emails)
+        {
+            hash.Add(email, StringComparer.Ordinal);
+        }
+
+        return hash.ToHashCode();
+    }
 }
 
+public sealed record Student : ContactBase
+{
+    public Student(
+        FullName name,
+        string major,
+        string graduationYear,
+        IReadOnlyList<string> emails) : base(name, emails)
+    {
+        Major = major;
+        GraduationYear = graduationYear;
+    }
+
+    public string Major { get; init; }
+
+    public string GraduationYear { get; init; }
+}
+
+public sealed record Employee : ContactBase
+{
+    public Employee(
+        FullName name,
+        string department,
+        string companyName,
+        IReadOnlyList<string> emails)
+        : base(name, emails)
+    {
+        Department = department;
+        CompanyName = companyName;
+    }
+
+    public string Department { get; init; }
+
+    public string CompanyName { get; init; }
+}
 
 public class ContactBook
 {
     private HashSet<IContact> Entities { get; } = [];
 
-    private const string FilePath = "contacts.json";
+    private readonly string _filePath;
+
+    public ContactBook(string filePath = "contacts.json")
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+        _filePath = Path.GetFullPath(filePath);
+    }
 
     public void Load()
     {
-        if (!File.Exists(FilePath))
+        if (!File.Exists(_filePath))
             return;
 
-        var json = File.ReadAllText(FilePath);
+        var json = File.ReadAllText(_filePath);
         var items = JsonSerializer.Deserialize<IContact[]>(json, JsonOptionGiver.Options);
 
         if (items is not null)
@@ -57,7 +112,7 @@ public class ContactBook
     public void Save()
     {
         var json = JsonSerializer.Serialize(Entities.ToArray(), JsonOptionGiver.Options);
-        File.WriteAllText(FilePath, json);
+        File.WriteAllText(_filePath, json);
     }
     public bool Add(IContact item)
     {
@@ -71,7 +126,7 @@ public class ContactBook
 
     public bool Contains(IContact item)
     {
-        
+
         return Entities.Contains(item);
     }
 
