@@ -129,7 +129,7 @@ public static class Program
         return new FullName(firstName, lastName, middleName);
     }
 
-    private static IReadOnlyList<string> ReadEmails()
+    private static List<string> ReadEmails()
     {
         var emails = new List<string>();
 
@@ -155,9 +155,9 @@ public static class Program
         DisplayContacts(book.GetAll());
     }
 
-    private static void DisplayContacts(IReadOnlyList<IContact> contacts)
+    private static void DisplayContacts(IContact[] contacts)
     {
-        if (contacts.Count == 0)
+        if (contacts.Length == 0)
         {
             Console.WriteLine("No contacts found.");
             return;
@@ -165,7 +165,7 @@ public static class Program
 
         Console.WriteLine("\nContacts:");
 
-        for (var index = 0; index < contacts.Count; index++)
+        for (var index = 0; index < contacts.Length; index++)
         {
             Console.WriteLine(
                 $"{index + 1}. {FormatContact(contacts[index])}");
