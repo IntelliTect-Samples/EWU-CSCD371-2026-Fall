@@ -14,17 +14,23 @@ public abstract record ContactBase : IContact
 {
     private static int _nextID = 1;
 
+    public int ID { get; init; } = _nextID++;
+
+    public FullName name { get; init; }
+
+    public IReadOnlyList<string> Emails { get; init; }
+
     protected ContactBase(FullName name, IReadOnlyList<string> emails)
     {
         this.name = name;
         Emails = Array.AsReadOnly(emails.ToArray());
     }
 
-    public int ID { get; init; } = _nextID++;
-
-    public FullName name { get; init; }
-
-    public IReadOnlyList<string> Emails { get; init; }
+    internal static void UpdateNextId(int existingId)
+    {
+        if (existingId >= _nextID)
+            _nextID = existingId + 1;
+    }
 
     public virtual bool Equals(ContactBase? other) =>
         other is not null &&
@@ -70,8 +76,7 @@ public sealed record Employee : ContactBase
         FullName name,
         string department,
         string companyName,
-        IReadOnlyList<string> emails)
-        : base(name, emails)
+        IReadOnlyList<string> emails) : base(name, emails)
     {
         Department = department;
         CompanyName = companyName;
@@ -105,7 +110,7 @@ public class ContactBook
         if (items is not null)
         {
             foreach (var item in items)
-                Entities.Add(item);
+                Add(item);
         }
     }
 
@@ -114,8 +119,10 @@ public class ContactBook
         var json = JsonSerializer.Serialize(Entities.ToArray(), JsonOptionGiver.Options);
         File.WriteAllText(_filePath, json);
     }
+
     public bool Add(IContact item)
     {
+        ContactBase.UpdateNextId(item.ID); // Check and update the next ID if necessary
         return Entities.Add(item);
     }
 
@@ -126,7 +133,6 @@ public class ContactBook
 
     public bool Contains(IContact item)
     {
-
         return Entities.Contains(item);
     }
 

@@ -189,4 +189,25 @@ public class ContactBookTests
 
         Assert.AreEqual(1, book.GetAll().Length);
     }
+
+    [TestMethod]
+    public void Load_AdvancesNextIdBeyondHighestPersistedId()
+    {
+        var seed = CreateStudent();
+        var highestId = seed.ID + 10_000;
+        var savedContact = seed with { ID = highestId };
+
+        var json = JsonSerializer.Serialize<IContact[]>(
+            [savedContact],
+            JsonOptionGiver.Options);
+
+        File.WriteAllText(FilePath, json);
+
+        var book = new ContactBook(FilePath);
+        book.Load();
+
+        var newContact = CreateEmployee();
+
+        Assert.IsTrue(newContact.ID > highestId);
+    }
 }
