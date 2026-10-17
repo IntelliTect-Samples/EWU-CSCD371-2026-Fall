@@ -253,9 +253,8 @@ public class ProgramTests
             Assert.AreEqual(original.ID, edited.ID);
             Assert.AreEqual("Mathematics", edited.Major);
             Assert.AreEqual("2029", edited.GraduationYear);
-            CollectionAssert.AreEqual(
-                new[] { "alex.new@example.com" },
-                edited.Emails.ToArray());
+            Assert.AreEqual(1, edited.Emails.Count);
+            Assert.AreEqual("alex.new@example.com", edited.Emails[0]);
 
             StringAssert.Contains(output, "Contact updated.");
             StringAssert.Contains(output, "Major: Mathematics");
@@ -298,9 +297,8 @@ public class ProgramTests
             Assert.AreEqual(original.ID, edited.ID);
             Assert.AreEqual("Security", edited.Department);
             Assert.AreEqual("Fabrikam", edited.CompanyName);
-            CollectionAssert.AreEqual(
-                new[] { "jamie.new@example.com" },
-                edited.Emails.ToArray());
+            Assert.AreEqual(1, edited.Emails.Count);
+            Assert.AreEqual("jamie.new@example.com", edited.Emails[0]);
 
             StringAssert.Contains(output, "Contact updated.");
         }
