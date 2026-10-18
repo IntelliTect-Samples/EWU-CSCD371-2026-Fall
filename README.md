@@ -18,7 +18,7 @@ Reference **Chapters 9 - Introducing Structs and Records & Chapter 10 - Well For
 - Define student and employee records, both with contact capabilities. ✔
   - Consider what Student and Employee share, and refactor the common code (an abstract base is one option). ✔
   - Consider what members Student and Employee should be unique to each type. ✔
-- Use the provided `ContactBook` class to store the contacts. ❌✔
+- Use the provided `ContactBook` class to store the contacts. ✔
 
 ### Equality
 
@@ -31,20 +31,20 @@ Reference **Chapters 9 - Introducing Structs and Records & Chapter 10 - Well For
 - `ContactBook` must keep storing contacts in a `HashSet<IContact>` (a provided test checks this). ✔
 - Adding a contact equal to a stored one must not add a duplicate, and the caller must be able to tell. ✔
 - `Contains` and `Remove` must work with an equal but different instance. ✔
-- Add whatever else your CLI needs (for example, search or list). ❌✔
+- Add whatever else your CLI needs (for example, search or list). ✔
 
 The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode` through `IContact`, so a wrong implementation shows up as duplicate or "missing" contacts.
 
 ### CLI
 
-- Let the user add students and employees, list contacts, and remove a contact. ❌✔
-- Adding a duplicate contact is reported to the user, not silently ignored. ❌✔
-- Bad input must not crash the program. ❌✔
-- Keep your code testable. ❌✔
+- Let the user add students and employees, list contacts, and remove a contact. ✔
+- Adding a duplicate contact is reported to the user, not silently ignored. ✔
+- Bad input must not crash the program. ✔
+- Keep your code testable. ✔
 
 ### Tests
 
-- Unit test all appropriate code including `ContactBook`. ❌✔
+- Unit test all appropriate code including `ContactBook`. ✔
 - Include tests showing a duplicate is rejected, a student and employee with the same data are both stored, and an equal-but-different instance is found and removed. ✔
 
 ## Fundamentals
@@ -55,8 +55,8 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
   - Code analysis for all projects (`EnableNETAnalyzers`) ✔
   - `EnforceCodeStyleInBuild` ✔
 - **Ensure there are no errors or warnings (including code analysis warnings)** ❌✔
-- **All of the above should be unit tested** ❌✔
-- **Choose simplicity over complexity** ❌✔
+- **All of the above should be unit tested** ✔
+- **Choose simplicity over complexity** ✔
 
 ## Extra Credit
 
