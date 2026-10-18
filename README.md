@@ -40,12 +40,12 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
 - Let the user add students and employees, list contacts, and remove a contact. ✔
 - Adding a duplicate contact is reported to the user, not silently ignored. ✔
 - Bad input must not crash the program. ✔
-- Keep your code testable. ❌✔
+- Keep your code testable. ✔
 
 ### Tests
 
 - Unit test all appropriate code including `ContactBook`. ❌✔
-- Include tests showing a duplicate is rejected, a student and employee with the same data are both stored, and an equal-but-different instance is found and removed. ❌✔
+- Include tests showing a duplicate is rejected, a student and employee with the same data are both stored, and an equal-but-different instance is found and removed. ✔
 
 ## Fundamentals
 
@@ -54,14 +54,14 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
   - `Nullable` for all projects ✔
   - Code analysis for all projects (`EnableNETAnalyzers`) ✔
   - `EnforceCodeStyleInBuild` ✔
-- **Ensure there are no errors or warnings (including code analysis warnings)** ❌✔
+- **Ensure there are no errors or warnings (including code analysis warnings)** ✔
 - **All of the above should be unit tested** ❌✔
-- **Choose simplicity over complexity** ❌✔
+- **Choose simplicity over complexity** ✔
 
 ## Extra Credit
 
 - Persist the contact list to a JSON file with `System.Text.Json`, loading it at startup. ❌✔
-- Implement editing an existing user. ❌✔
+- Implement editing an existing user. ✔
 - Allow contacts to store an arbitrary number of email addresses. Ensure all equality rules above remain in place. ❌✔
 
 ## Relevant APIs and Docs to know about

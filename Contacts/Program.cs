@@ -19,6 +19,7 @@ public static class Program
             output.WriteLine("2) Add employee");
             output.WriteLine("3) List contacts");
             output.WriteLine("4) Remove contact");
+            output.WriteLine("5) Edit contact");
             output.WriteLine("0) Quit");
             output.Write("Choose: ");
 
@@ -42,6 +43,9 @@ public static class Program
                     break;
                 case "4":
                     RemoveContact(book, input, output);
+                    break;
+                case "5":
+                    EditContact(book, input, output);
                     break;
                 default:
                     output.WriteLine("Invalid choice.");
@@ -102,25 +106,73 @@ public static class Program
 
     private static void RemoveContact(ContactBook book, TextReader input, TextWriter output)
     {
+        IContact? contact = ChooseContact(book, "Number to remove: ", input, output);
+
+        if (contact is null)
+        {
+            return;
+        }
+
+        output.WriteLine(book.Remove(contact) ? "Contact removed." : "Contact not found.");
+    }
+
+    private static void EditContact(ContactBook book, TextReader input, TextWriter output)
+    {
+        IContact? existing = ChooseContact(book, "Number to edit: ", input, output);
+
+        if (existing is null)
+        {
+            return;
+        }
+
+        output.WriteLine("Press Enter to keep a value, or - to clear an optional one.");
+
+        try
+        {
+            IContact updated = existing switch
+            {
+                Student student => new Student(
+                    EditName(student.Name, input, output),
+                    Keep("Email", student.Email, input, output),
+                    Keep("Major", student.Major, input, output),
+                    KeepOptional("Phone", student.Phone, input, output)) { Id = student.Id },
+                Employee employee => new Employee(
+                    EditName(employee.Name, input, output),
+                    Keep("Email", employee.Email, input, output),
+                    Keep("Job title", employee.JobTitle, input, output),
+                    KeepOptional("Phone", employee.Phone, input, output)) { Id = employee.Id },
+                _ => throw new InvalidOperationException($"Cannot edit a {existing.GetType().Name}."),
+            };
+
+            output.WriteLine(book.Replace(existing, updated) ? "Contact updated." : "That contact already exists.");
+        }
+        catch (ArgumentException ex)
+        {
+            output.WriteLine($"Invalid input: {ex.Message}");
+        }
+    }
+
+    private static IContact? ChooseContact(ContactBook book, string label, TextReader input, TextWriter output)
+    {
         IContact[] contacts = book.GetAll();
 
         if (contacts.Length == 0)
         {
             output.WriteLine("No contacts.");
-            return;
+            return null;
         }
 
         ListContacts(book, output);
 
-        string number = Prompt("Number to remove: ", input, output);
+        string number = Prompt(label, input, output);
 
         if (!int.TryParse(number, out int index) || index < 1 || index > contacts.Length)
         {
             output.WriteLine("Invalid number.");
-            return;
+            return null;
         }
 
-        output.WriteLine(book.Remove(contacts[index - 1]) ? "Contact removed." : "Contact not found.");
+        return contacts[index - 1];
     }
 
     private static void ReportAdd(bool added, TextWriter output)
@@ -141,5 +193,32 @@ public static class Program
         string last = Prompt("Last name: ", input, output);
 
         return new FullName(first, last, middle);
+    }
+
+    private static FullName EditName(FullName name, TextReader input, TextWriter output)
+    {
+        string first = Keep("First name", name.FirstName, input, output);
+        string? middle = KeepOptional("Middle name", name.MiddleName, input, output);
+        string last = Keep("Last name", name.LastName, input, output);
+
+        return new FullName(first, last, middle);
+    }
+
+    private static string Keep(string label, string current, TextReader input, TextWriter output)
+    {
+        string value = Prompt($"{label} [{current}]: ", input, output);
+        return string.IsNullOrWhiteSpace(value) ? current : value;
+    }
+
+    private static string? KeepOptional(string label, string? current, TextReader input, TextWriter output)
+    {
+        string value = Prompt($"{label} [{current}]: ", input, output);
+
+        if (value.Trim() == "-")
+        {
+            return null;
+        }
+
+        return string.IsNullOrWhiteSpace(value) ? current : value;
     }
 }

@@ -14,6 +14,22 @@ public class ContactBook
         return Entities.Remove(item);
     }
 
+    public bool Replace(IContact existing, IContact updated)
+    {
+        if (!Entities.Remove(existing))
+        {
+            return false;
+        }
+
+        if (Entities.Add(updated))
+        {
+            return true;
+        }
+
+        Entities.Add(existing);
+        return false;
+    }
+
     public bool Contains(IContact item)
     {
         return Entities.Contains(item);
