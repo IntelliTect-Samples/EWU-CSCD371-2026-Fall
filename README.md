@@ -37,9 +37,9 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
 
 ### CLI
 
-- Let the user add students and employees, list contacts, and remove a contact. ❌✔
-- Adding a duplicate contact is reported to the user, not silently ignored. ❌✔
-- Bad input must not crash the program. ❌✔
+- Let the user add students and employees, list contacts, and remove a contact. ✔
+- Adding a duplicate contact is reported to the user, not silently ignored. ✔
+- Bad input must not crash the program. ✔
 - Keep your code testable. ❌✔
 
 ### Tests
