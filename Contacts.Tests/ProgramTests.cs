@@ -73,7 +73,7 @@ public class ProgramTests
     {
         string output = RunWith(new ContactBook(), [.. AddStudent(), "3", "0"]);
 
-        StringAssert.Contains(output, "1) Ada Lovelace - ada@example.com");
+        StringAssert.Contains(output, "1) Ada Lovelace - ada@example.com (Student, CS)");
     }
 
     [TestMethod]
@@ -122,14 +122,14 @@ public class ProgramTests
     }
 
     [TestMethod]
-    public void Run_EndOfInputWhileAdding_DoesNotCrash()
+    public void Run_EndOfInputWhileAdding_ExitsCleanly()
     {
         ContactBook book = new();
         StringWriter output = new();
 
         Program.Run(book, new StringReader("1\nAda\n"), output);
 
-        StringAssert.Contains(output.ToString(), "Invalid input");
+        Assert.AreEqual(1, output.ToString().Split("Choose: ").Length - 1);
         Assert.IsEmpty(book.GetAll());
     }
 
@@ -186,7 +186,20 @@ public class ProgramTests
 
         string output = RunWith(book, "3", "0");
 
-        StringAssert.Contains(output, "1) Ada Lovelace - ada@example.com, ada@ewu.edu");
+        StringAssert.Contains(output, "1) Ada Lovelace - ada@example.com, ada@ewu.edu (Student, CS)");
+    }
+
+    [TestMethod]
+    public void Run_ListStudentAndEmployeeWithSameData_ShowsEachType()
+    {
+        ContactBook book = new();
+        book.Add(new Student(Ada, ["ada@example.com"], "Engineer"));
+        book.Add(new Employee(Ada, ["ada@example.com"], "Engineer"));
+
+        string output = RunWith(book, "3", "0");
+
+        StringAssert.Contains(output, "Ada Lovelace - ada@example.com (Student, Engineer)");
+        StringAssert.Contains(output, "Ada Lovelace - ada@example.com (Employee, Engineer)");
     }
 
     [TestMethod]

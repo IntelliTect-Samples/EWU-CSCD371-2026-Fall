@@ -65,26 +65,33 @@ public static class Program
                 return;
             }
 
-            switch (choice)
+            try
             {
-                case "1":
-                    AddStudent(book, input, output);
-                    break;
-                case "2":
-                    AddEmployee(book, input, output);
-                    break;
-                case "3":
-                    ListContacts(book, output);
-                    break;
-                case "4":
-                    RemoveContact(book, input, output);
-                    break;
-                case "5":
-                    EditContact(book, input, output);
-                    break;
-                default:
-                    output.WriteLine("Invalid choice.");
-                    break;
+                switch (choice)
+                {
+                    case "1":
+                        AddStudent(book, input, output);
+                        break;
+                    case "2":
+                        AddEmployee(book, input, output);
+                        break;
+                    case "3":
+                        ListContacts(book, output);
+                        break;
+                    case "4":
+                        RemoveContact(book, input, output);
+                        break;
+                    case "5":
+                        EditContact(book, input, output);
+                        break;
+                    default:
+                        output.WriteLine("Invalid choice.");
+                        break;
+                }
+            }
+            catch (EndOfInputException)
+            {
+                return;
             }
         }
     }
@@ -135,9 +142,16 @@ public static class Program
 
         for (int i = 0; i < contacts.Length; i++)
         {
-            output.WriteLine($"{i + 1}) {contacts[i].Name} - {string.Join(", ", contacts[i].Emails)}");
+            output.WriteLine($"{i + 1}) {contacts[i].Name} - {string.Join(", ", contacts[i].Emails)} ({Describe(contacts[i])})");
         }
     }
+
+    private static string Describe(IContact contact) => contact switch
+    {
+        Student student => $"Student, {student.Major}",
+        Employee employee => $"Employee, {employee.JobTitle}",
+        _ => contact.GetType().Name,
+    };
 
     private static void RemoveContact(ContactBook book, TextReader input, TextWriter output)
     {
@@ -218,7 +232,7 @@ public static class Program
     private static string Prompt(string label, TextReader input, TextWriter output)
     {
         output.Write(label);
-        return input.ReadLine() ?? "";
+        return input.ReadLine() ?? throw new EndOfInputException();
     }
 
     private static FullName ReadName(TextReader input, TextWriter output)
@@ -264,5 +278,9 @@ public static class Program
         }
 
         return string.IsNullOrWhiteSpace(value) ? current : value;
+    }
+
+    private sealed class EndOfInputException : Exception
+    {
     }
 }
