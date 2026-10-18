@@ -44,7 +44,7 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
 
 ### Tests
 
-- Unit test all appropriate code including `ContactBook`. ❌✔
+- Unit test all appropriate code including `ContactBook`. ✔
 - Include tests showing a duplicate is rejected, a student and employee with the same data are both stored, and an equal-but-different instance is found and removed. ✔
 
 ## Fundamentals
@@ -55,12 +55,12 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
   - Code analysis for all projects (`EnableNETAnalyzers`) ✔
   - `EnforceCodeStyleInBuild` ✔
 - **Ensure there are no errors or warnings (including code analysis warnings)** ✔
-- **All of the above should be unit tested** ❌✔
+- **All of the above should be unit tested** ✔
 - **Choose simplicity over complexity** ✔
 
 ## Extra Credit
 
-- Persist the contact list to a JSON file with `System.Text.Json`, loading it at startup. ❌✔
+- Persist the contact list to a JSON file with `System.Text.Json`, loading it at startup. ✔
 - Implement editing an existing user. ✔
 - Allow contacts to store an arbitrary number of email addresses. Ensure all equality rules above remain in place. ✔
 
