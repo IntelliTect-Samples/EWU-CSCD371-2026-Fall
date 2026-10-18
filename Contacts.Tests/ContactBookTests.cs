@@ -10,8 +10,8 @@ public class ContactBookTests
     {
         ContactBook book = new();
 
-        bool firstAdded = book.Add(new Student(Ada, "ada@example.com", "CS"));
-        bool secondAdded = book.Add(new Student(Ada, "ada@example.com", "CS"));
+        bool firstAdded = book.Add(new Student(Ada, ["ada@example.com"], "CS"));
+        bool secondAdded = book.Add(new Student(Ada, ["ada@example.com"], "CS"));
 
         Assert.IsTrue(firstAdded);
         Assert.IsFalse(secondAdded);
@@ -23,8 +23,8 @@ public class ContactBookTests
     {
         ContactBook book = new();
 
-        bool studentAdded = book.Add(new Student(Ada, "ada@example.com", "Engineer"));
-        bool employeeAdded = book.Add(new Employee(Ada, "ada@example.com", "Engineer"));
+        bool studentAdded = book.Add(new Student(Ada, ["ada@example.com"], "Engineer"));
+        bool employeeAdded = book.Add(new Employee(Ada, ["ada@example.com"], "Engineer"));
 
         Assert.IsTrue(studentAdded);
         Assert.IsTrue(employeeAdded);
@@ -35,18 +35,18 @@ public class ContactBookTests
     public void Contains_EqualButDifferentInstance_ReturnsTrue()
     {
         ContactBook book = new();
-        book.Add(new Student(Ada, "ada@example.com", "CS"));
+        book.Add(new Student(Ada, ["ada@example.com"], "CS"));
 
-        Assert.IsTrue(book.Contains(new Student(Ada, "ada@example.com", "CS")));
+        Assert.IsTrue(book.Contains(new Student(Ada, ["ada@example.com"], "CS")));
     }
 
     [TestMethod]
     public void Remove_EqualButDifferentInstance_RemovesTheStoredContact()
     {
         ContactBook book = new();
-        book.Add(new Student(Ada, "ada@example.com", "CS"));
+        book.Add(new Student(Ada, ["ada@example.com"], "CS"));
 
-        bool removed = book.Remove(new Student(Ada, "ada@example.com", "CS"));
+        bool removed = book.Remove(new Student(Ada, ["ada@example.com"], "CS"));
 
         Assert.IsTrue(removed);
         Assert.IsEmpty(book.GetAll());
@@ -57,6 +57,6 @@ public class ContactBookTests
     {
         ContactBook book = new();
 
-        Assert.IsFalse(book.Remove(new Student(Ada, "ada@example.com", "CS")));
+        Assert.IsFalse(book.Remove(new Student(Ada, ["ada@example.com"], "CS")));
     }
 }

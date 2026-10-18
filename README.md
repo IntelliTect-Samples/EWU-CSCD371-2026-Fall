@@ -62,7 +62,7 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
 
 - Persist the contact list to a JSON file with `System.Text.Json`, loading it at startup. ❌✔
 - Implement editing an existing user. ✔
-- Allow contacts to store an arbitrary number of email addresses. Ensure all equality rules above remain in place. ❌✔
+- Allow contacts to store an arbitrary number of email addresses. Ensure all equality rules above remain in place. ✔
 
 ## Relevant APIs and Docs to know about
 

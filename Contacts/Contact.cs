@@ -1,12 +1,16 @@
+using System.Collections.ObjectModel;
+
 namespace Contacts;
 
-public abstract record Contact(FullName Name, string Email, string? Phone = null) : IContact
+public abstract record Contact(FullName Name, IReadOnlyList<string> Emails, string? Phone = null) : IContact
 {
+    private static readonly StringComparer EmailComparer = StringComparer.OrdinalIgnoreCase;
+
     public Guid Id { get; init; } = Guid.NewGuid();
 
     public FullName Name { get; } = Name ?? throw new ArgumentNullException(nameof(Name));
 
-    public string Email { get; } = Required(Email, nameof(Email));
+    public IReadOnlyList<string> Emails { get; } = RequiredEmails(Emails, nameof(Emails));
 
     public string? Phone { get; } = string.IsNullOrWhiteSpace(Phone) ? null : Phone.Trim();
 
@@ -14,14 +18,43 @@ public abstract record Contact(FullName Name, string Email, string? Phone = null
         other is not null
         && EqualityContract == other.EqualityContract
         && Name == other.Name
-        && Email == other.Email
+        && SortedEmails().SequenceEqual(other.SortedEmails(), EmailComparer)
         && Phone == other.Phone;
 
-    public override int GetHashCode() => HashCode.Combine(EqualityContract, Name, Email, Phone);
+    public override int GetHashCode()
+    {
+        HashCode hash = new();
+        hash.Add(EqualityContract);
+        hash.Add(Name);
+        hash.Add(Phone);
+
+        foreach (string email in SortedEmails())
+        {
+            hash.Add(email, EmailComparer);
+        }
+
+        return hash.ToHashCode();
+    }
 
     protected static string Required(string value, string paramName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value, paramName);
         return value.Trim();
+    }
+
+    private IEnumerable<string> SortedEmails() => Emails.Order(EmailComparer);
+
+    private static ReadOnlyCollection<string> RequiredEmails(IReadOnlyList<string> emails, string paramName)
+    {
+        ArgumentNullException.ThrowIfNull(emails, paramName);
+
+        string[] cleaned = [.. emails.Select(email => Required(email, paramName)).Distinct(EmailComparer)];
+
+        if (cleaned.Length == 0)
+        {
+            throw new ArgumentException("At least one email is required.", paramName);
+        }
+
+        return Array.AsReadOnly(cleaned);
     }
 }

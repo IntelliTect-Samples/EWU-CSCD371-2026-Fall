@@ -1,10 +1,45 @@
+using System.Text.Json;
+
 namespace Contacts;
 
 public static class Program
 {
     public static void Main()
     {
-        Run(new ContactBook(), Console.In, Console.Out);
+        string path = Path.Combine(AppContext.BaseDirectory, "contacts.json");
+
+        ContactBook book = Load(path, Console.Out);
+        Run(book, Console.In, Console.Out);
+        Save(book, path, Console.Out);
+    }
+
+    public static ContactBook Load(string path, TextWriter output)
+    {
+        ArgumentNullException.ThrowIfNull(output);
+
+        try
+        {
+            return ContactStorage.Load(path);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or ArgumentException)
+        {
+            output.WriteLine($"Could not load contacts, starting empty: {ex.Message}");
+            return new ContactBook();
+        }
+    }
+
+    public static void Save(ContactBook book, string path, TextWriter output)
+    {
+        ArgumentNullException.ThrowIfNull(output);
+
+        try
+        {
+            ContactStorage.Save(book, path);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            output.WriteLine($"Could not save contacts: {ex.Message}");
+        }
     }
 
     public static void Run(ContactBook book, TextReader input, TextWriter output)
@@ -59,11 +94,11 @@ public static class Program
         try
         {
             FullName name = ReadName(input, output);
-            string email = Prompt("Email: ", input, output);
+            string[] emails = SplitEmails(Prompt("Emails (comma-separated): ", input, output));
             string major = Prompt("Major: ", input, output);
             string phone = Prompt("Phone (optional): ", input, output);
 
-            ReportAdd(book.Add(new Student(name, email, major, phone)), output);
+            ReportAdd(book.Add(new Student(name, emails, major, phone)), output);
         }
         catch (ArgumentException ex)
         {
@@ -76,11 +111,11 @@ public static class Program
         try
         {
             FullName name = ReadName(input, output);
-            string email = Prompt("Email: ", input, output);
+            string[] emails = SplitEmails(Prompt("Emails (comma-separated): ", input, output));
             string jobTitle = Prompt("Job title: ", input, output);
             string phone = Prompt("Phone (optional): ", input, output);
 
-            ReportAdd(book.Add(new Employee(name, email, jobTitle, phone)), output);
+            ReportAdd(book.Add(new Employee(name, emails, jobTitle, phone)), output);
         }
         catch (ArgumentException ex)
         {
@@ -100,7 +135,7 @@ public static class Program
 
         for (int i = 0; i < contacts.Length; i++)
         {
-            output.WriteLine($"{i + 1}) {contacts[i].Name} - {contacts[i].Email}");
+            output.WriteLine($"{i + 1}) {contacts[i].Name} - {string.Join(", ", contacts[i].Emails)}");
         }
     }
 
@@ -133,12 +168,12 @@ public static class Program
             {
                 Student student => new Student(
                     EditName(student.Name, input, output),
-                    Keep("Email", student.Email, input, output),
+                    KeepEmails(student.Emails, input, output),
                     Keep("Major", student.Major, input, output),
                     KeepOptional("Phone", student.Phone, input, output)) { Id = student.Id },
                 Employee employee => new Employee(
                     EditName(employee.Name, input, output),
-                    Keep("Email", employee.Email, input, output),
+                    KeepEmails(employee.Emails, input, output),
                     Keep("Job title", employee.JobTitle, input, output),
                     KeepOptional("Phone", employee.Phone, input, output)) { Id = employee.Id },
                 _ => throw new InvalidOperationException($"Cannot edit a {existing.GetType().Name}."),
@@ -209,6 +244,15 @@ public static class Program
         string value = Prompt($"{label} [{current}]: ", input, output);
         return string.IsNullOrWhiteSpace(value) ? current : value;
     }
+
+    private static string[] KeepEmails(IReadOnlyList<string> current, TextReader input, TextWriter output)
+    {
+        string value = Keep("Emails (comma-separated)", string.Join(", ", current), input, output);
+        return SplitEmails(value);
+    }
+
+    private static string[] SplitEmails(string value) =>
+        value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     private static string? KeepOptional(string label, string? current, TextReader input, TextWriter output)
     {
