@@ -61,6 +61,8 @@ public abstract record class Contact : IContact
             return;
         }
 
-        builder.AppendLine($"{label}: {value}");
+        builder.Append(label);
+        builder.Append(": ");
+        builder.AppendLine(value);
     }
 }
