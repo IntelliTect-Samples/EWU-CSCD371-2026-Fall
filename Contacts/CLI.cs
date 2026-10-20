@@ -20,13 +20,15 @@ public class CLI
 
     internal static string? FormatContact(IContact contact) => contact switch
     {
-        Employee e => $"{e.Name,20} | {e.Email,20} | {e.Company,30} | {e.JobTitle,30} | {e.Phone??""}",
-        Student s => $"{s.Name,20} | {s.Email,20} | {s.School,30} | {s.Major,30} | {s.Phone??""}",
+        Employee e => $"{e.Name,20} | {e.Email,20} | {e.Company,30} | {e.JobTitle,20} | {e.Phone??""}",
+        Student s => $"{s.Name,20} | {s.Email,20} | {s.School,30} | {s.Major,20} | {s.Phone??""}",
         _ => null
     };
 
     public void List()
     {
+        _out.WriteLine("Contacts");
+        _out.WriteLine("---------------------------------------------------------------------------------------------");
         foreach (IContact? contact in _contactBook.GetAll().OrderBy(c => c.Name.lastName))
         {
             string? contactString = FormatContact(contact);
@@ -39,13 +41,13 @@ public class CLI
 
     public FullName EnterName()
     {
-        string firstName = PromptUser("Please enter your contact's first name\n> "
-            , "Error! Your contact's first name must have at least 1 character!\n" +
+        string firstName = PromptUser("Please enter your contact's first name"
+            , "Error! Your contact's first name must have at least 1 character!" +
               "Please try again...")!.Trim(); // reprompts until not null
 
-        string? middleName = PromptUser("Please enter your contact's middle name (optional)\n>");
+        string? middleName = PromptUser("Please enter your contact's middle name (optional)>");
 
-        string lastName = PromptUser("Please enter your contact's last name\n> "
+        string lastName = PromptUser("Please enter your contact's last name "
             , "Error! Your contact's last name must have at least 1 character!\n" +
               "Please try again...")!.Trim();
 
@@ -95,6 +97,33 @@ public class CLI
         string? phone = PromptUser("Please enter your contact's phone number(optional)");
 
         return new(name, email, school, major, phone);
+    }
+    public void EnterRemoveFromList()
+    {
+        var contactList = _contactBook.GetAll().OrderBy(c => c.Name).ToList();
+
+        if (contactList.Count == 0)
+        {
+            _out.WriteLine("Contact list is empty...");
+            return;
+        }
+
+        for (int i = 0; i < contactList.Count; i++)
+        {
+            _out.WriteLine($"{i} -> {FormatContact(contactList[i])}");
+        }
+
+        _out.WriteLine("Enter the corresponding number to remove... ");
+        IContact contact;
+
+        bool isValid = int.TryParse(_in.ReadLine(), out int id) && id >= 0 && id < contactList.Count();
+
+        if (isValid)
+        {
+            contact = contactList[id];
+            _contactBook.Remove(contact);
+        }
+
     }
 
     public string? PromptUser(string prompt, string? reprompt = null)
@@ -165,10 +194,11 @@ public class CLI
                     }
                     break;
                 case "Remove":
-                    if (!_contactBook.Remove(EnterContact()))
-                    {
-                        _out.WriteLine($"Contact does not exist...");
-                    }
+                    EnterRemoveFromList();
+                    //if (!_contactBook.Remove(EnterContact()))
+                    //{
+                    //    _out.WriteLine($"Contact does not exist...");
+                    //}
                     break;
                 case "Exit":
                     running = false;
