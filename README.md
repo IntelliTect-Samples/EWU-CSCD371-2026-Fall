@@ -14,9 +14,9 @@ Reference the material on generics, collections, and graph traversal covered in 
 
 ### Project setup
 
-- Create a class library project named `Dag` in the `Dag` directory. ❌✔
-- Add the `Dag` project to `Dag.slnx`. ❌✔
-- Ensure the `Dag.Tests` project references the `Dag` project. ❌✔
+- Create a class library project named `Dag` in the `Dag` directory. ✔
+- Add the `Dag` project to `Dag.slnx`. ✔
+- Ensure the `Dag.Tests` project references the `Dag` project. ✔
 
 ### `Dag<T>`
 
@@ -45,8 +45,8 @@ Reference the material on generics, collections, and graph traversal covered in 
 ## Fundamentals
 
 - Target all projects at .NET 10 (`net10.0`) and use the latest `LangVersion`.
-- Enable nullable reference types for all projects. ❌✔
-- Enable .NET analyzers and enforce code style during builds for all projects. ❌✔
+- Enable nullable reference types for all projects. ✔
+- Enable .NET analyzers and enforce code style during builds for all projects. ✔
 - Ensure there are no build errors or warnings, including code analysis warnings. ❌✔
 - Unit test the behavior required above. ❌✔
 - Choose simplicity over complexity. ❌✔
