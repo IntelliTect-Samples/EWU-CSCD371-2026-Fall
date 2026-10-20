@@ -116,7 +116,7 @@ public class CLI
         _out.WriteLine("Enter the corresponding number to remove... ");
         IContact contact;
 
-        bool isValid = int.TryParse(_in.ReadLine(), out int id) && id >= 0 && id < contactList.Count();
+        bool isValid = int.TryParse(_in.ReadLine(), out int id) && id >= 0 && id < contactList.Count;
 
         if (isValid)
         {
