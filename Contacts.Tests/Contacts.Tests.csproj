@@ -1,11 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <OutputType>Exe</OutputType>
-    <IsPackable>false</IsPackable>
-    <EnableMSTestRunner>true</EnableMSTestRunner>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+	  <TargetFramework>net10.0</TargetFramework>
+	  <OutputType>Exe</OutputType>
+	  <IsPackable>false</IsPackable>
+	  <Nullable>enable</Nullable>
+	  <LangVersion>latest</LangVersion>
+	  <EnableNETAnalyzers>true</EnableNETAnalyzers>
+	  <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+	  <EnableMSTestRunner>true</EnableMSTestRunner>
+	  <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <ItemGroup>
