@@ -48,11 +48,11 @@ public sealed record FullName
 
     public FullName(string first, string last, string? middle = null)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(firstName);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(lastName);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(first);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(last);
         firstName = first.Trim();
         middleName = string.IsNullOrWhiteSpace(middle) ? null : middle.Trim();
-        lastName = last; 
+        lastName = last.Trim(); 
     }
     public string firstName { get; init; }
     public string? middleName { get; init; }
