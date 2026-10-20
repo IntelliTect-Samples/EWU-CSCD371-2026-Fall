@@ -122,6 +122,7 @@ public class CLI
         {
             contact = contactList[id];
             _contactBook.Remove(contact);
+            _out.WriteLine("removed");
         }
 
     }
@@ -195,10 +196,6 @@ public class CLI
                     break;
                 case "Remove":
                     EnterRemoveFromList();
-                    //if (!_contactBook.Remove(EnterContact()))
-                    //{
-                    //    _out.WriteLine($"Contact does not exist...");
-                    //}
                     break;
                 case "Exit":
                     running = false;
