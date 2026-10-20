@@ -48,7 +48,8 @@ public class CLITests
         Assert.AreEqual("hello", result);
         StringAssert.Contains(output.ToString(), testPrompt);
         StringAssert.Contains(output.ToString(), testPrompt2);
-        int count = Regex.Matches(output.ToString(), Regex.Escape(testPrompt2)).Count;
+        int v = Regex.Count(output.ToString(), Regex.Escape(testPrompt2));
+        int count = v;
         Assert.AreEqual(2, count);
 
     }
@@ -223,7 +224,7 @@ public class CLITests
         var result = cli.EnterContact();
 
         //Assert
-        Assert.IsInstanceOfType(result,typeof(Employee));
+        Assert.IsInstanceOfType<Employee>(result);
     }
 
     [TestMethod]
@@ -237,7 +238,7 @@ public class CLITests
         string school = "Cool Company";
         string major = "Test Employee";
 
-        string inString = type + "\n" + firstName
+        string inString = "\n" + type + "\n" + firstName
             + "\n\n"
             + lastName
             + "\n"
@@ -259,7 +260,7 @@ public class CLITests
 
         //Assert
         StringAssert.Contains(output.ToString(), "Invalid input! Try again...");
-        Assert.IsInstanceOfType(result, typeof(Student));
+        Assert.IsInstanceOfType<Student>(result);
     }
 }
 
