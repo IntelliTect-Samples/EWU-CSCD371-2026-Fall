@@ -3,6 +3,10 @@ namespace Contacts.Tests;
 [TestClass]
 public class ProgramTests
 {
+    private static readonly string[] GraceEmails = ["grace@example.com", "grace@navy.mil"];
+
+    private static readonly string[] EditedEmails = ["new@example.com", "other@example.com"];
+
     private static string RunWith(ContactBook book, params string[] lines)
     {
         StringWriter output = new();
@@ -143,7 +147,7 @@ public class ProgramTests
         StringAssert.Contains(output, "Contact added.");
         Employee employee = (Employee)book.GetAll().Single();
         Assert.AreEqual(new FullName("Grace", "Hopper", "Brewster"), employee.Name);
-        CollectionAssert.AreEqual(new[] { "grace@example.com", "grace@navy.mil" }, employee.Emails.ToArray());
+        CollectionAssert.AreEqual(GraceEmails, employee.Emails.ToArray());
         Assert.AreEqual("Admiral", employee.JobTitle);
         Assert.AreEqual("555-0100", employee.Phone);
     }
@@ -262,7 +266,7 @@ public class ProgramTests
         Student edited = (Student)book.GetAll().Single();
         Assert.AreEqual(student.Id, edited.Id);
         Assert.AreEqual(new FullName("Augusta", "Byron"), edited.Name);
-        CollectionAssert.AreEqual(new[] { "new@example.com", "other@example.com" }, edited.Emails.ToArray());
+        CollectionAssert.AreEqual(EditedEmails, edited.Emails.ToArray());
         Assert.AreEqual("Math", edited.Major);
         Assert.AreEqual("555-0199", edited.Phone);
     }

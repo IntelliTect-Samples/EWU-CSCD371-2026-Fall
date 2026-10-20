@@ -5,6 +5,10 @@ public class ContactTests
 {
     private static FullName Ada => new("Ada", "Lovelace");
 
+    private static readonly string[] AdaEmail = ["ada@example.com"];
+
+    private static readonly string[] AdaEmails = ["ada@example.com", "ada@ewu.edu"];
+
     [TestMethod]
     public void Equals_SameDataDifferentIds_AreEqual()
     {
@@ -45,7 +49,7 @@ public class ContactTests
         Student student = new(Ada, ["ada@example.com"], "CS", "555-0100");
 
         Assert.AreEqual(Ada, student.Name);
-        CollectionAssert.AreEqual(new[] { "ada@example.com" }, student.Emails.ToArray());
+        CollectionAssert.AreEqual(AdaEmail, student.Emails.ToArray());
         Assert.AreEqual("CS", student.Major);
         Assert.AreEqual("555-0100", student.Phone);
         Assert.AreNotEqual(Guid.Empty, student.Id);
@@ -57,7 +61,7 @@ public class ContactTests
         Employee employee = new(Ada, ["ada@example.com"], "Engineer", "555-0100");
 
         Assert.AreEqual(Ada, employee.Name);
-        CollectionAssert.AreEqual(new[] { "ada@example.com" }, employee.Emails.ToArray());
+        CollectionAssert.AreEqual(AdaEmail, employee.Emails.ToArray());
         Assert.AreEqual("Engineer", employee.JobTitle);
         Assert.AreEqual("555-0100", employee.Phone);
         Assert.AreNotEqual(Guid.Empty, employee.Id);
@@ -188,7 +192,7 @@ public class ContactTests
     {
         Student student = new(Ada, ["ada@example.com", "ada@ewu.edu"], "CS");
 
-        CollectionAssert.AreEqual(new[] { "ada@example.com", "ada@ewu.edu" }, student.Emails.ToArray());
+        CollectionAssert.AreEqual(AdaEmails, student.Emails.ToArray());
     }
 
     [TestMethod]
@@ -196,7 +200,7 @@ public class ContactTests
     {
         Student student = new(Ada, [" ada@example.com ", "ada@example.com", "ADA@example.com"], "CS");
 
-        CollectionAssert.AreEqual(new[] { "ada@example.com" }, student.Emails.ToArray());
+        CollectionAssert.AreEqual(AdaEmail, student.Emails.ToArray());
     }
 
     [TestMethod]
