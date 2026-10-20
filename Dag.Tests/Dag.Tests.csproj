@@ -11,4 +11,8 @@
     <PackageReference Include="MSTest" Version="4.5.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Dag\Dag.csproj" />
+  </ItemGroup>
+
 </Project>
