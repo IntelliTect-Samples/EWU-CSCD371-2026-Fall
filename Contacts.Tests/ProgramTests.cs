@@ -104,12 +104,99 @@ public class ProgramTests
         StringAssert.Contains(output, "Name: Alice Smith");
     }
 
+    [TestMethod]
+    public void Run_LoadsContactsFromPreviousRun()
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            string addOutput = RunWithStoragePath(storagePath,
+                "1", "Alice", "Smith", "", "alice@example.com", "", "", "", "", "0");
+            string listOutput = RunWithStoragePath(storagePath, "3", "0");
+
+            StringAssert.Contains(addOutput, "Contact added.");
+            StringAssert.Contains(listOutput, "1. Student");
+            StringAssert.Contains(listOutput, "Name: Alice Smith");
+        }
+        finally
+        {
+            if (File.Exists(storagePath))
+            {
+                File.Delete(storagePath);
+            }
+        }
+    }
+
+    [TestMethod]
+    public void Run_PersistsContactRemoval()
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                "1", "Alice", "Smith", "", "alice@example.com", "", "", "", "", "0");
+            string removeOutput = RunWithStoragePath(storagePath, "4", "1", "0");
+            string listOutput = RunWithStoragePath(storagePath, "3", "0");
+
+            StringAssert.Contains(removeOutput, "Contact removed.");
+            StringAssert.Contains(listOutput, "No contacts found.");
+        }
+        finally
+        {
+            if (File.Exists(storagePath))
+            {
+                File.Delete(storagePath);
+            }
+        }
+    }
+
+    [TestMethod]
+    public void Run_InvalidStoredJson_ReportsLoadError()
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            File.WriteAllText(storagePath, "not json");
+
+            string output = RunWithStoragePath(storagePath, "0");
+
+            StringAssert.Contains(output, "Could not load contacts:");
+        }
+        finally
+        {
+            if (File.Exists(storagePath))
+            {
+                File.Delete(storagePath);
+            }
+        }
+    }
+
     private static string RunWithInput(params string[] lines)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            return RunWithStoragePath(storagePath, lines);
+        }
+        finally
+        {
+            if (File.Exists(storagePath))
+            {
+                File.Delete(storagePath);
+            }
+        }
+    }
+
+    private static string RunWithStoragePath(string storagePath, params string[] lines)
     {
         using StringReader input = new(string.Join(Environment.NewLine, lines) + Environment.NewLine);
         using StringWriter output = new();
 
-        Program.Run(input, output);
+        Program.Run(input, output, storagePath);
 
         return output.ToString();
     }

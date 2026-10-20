@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Contacts.Tests;
@@ -104,5 +106,45 @@ public class ContactBookTests
         Assert.IsFalse(contactBook.Remove(absentStudent));
         IContact remainingContact = Assert.ContainsSingle(contactBook.GetAll());
         Assert.AreSame(storedStudent, remainingContact);
+    }
+
+    [TestMethod]
+    public void SaveToFile_ThenLoadFromFile_PreservesContactsAndIds()
+    {
+        string filePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+        Student student = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail", schoolName: "ValidSchool");
+        Employee employee = new(new FullName("OtherFirst", "OtherLast"), "OtherEmail", employer: "ValidEmployer");
+        ContactBook contactBook = new();
+        contactBook.Add(student);
+        contactBook.Add(employee);
+
+        try
+        {
+            contactBook.SaveToFile(filePath);
+
+            ContactBook loadedContactBook = ContactBook.LoadFromFile(filePath);
+            Assert.HasCount(2, loadedContactBook.GetAll());
+            Assert.IsTrue(loadedContactBook.Contains(student));
+            Assert.IsTrue(loadedContactBook.Contains(employee));
+            Assert.AreEqual(student.Id, loadedContactBook.GetAll().OfType<Student>().Single().Id);
+            Assert.AreEqual(employee.Id, loadedContactBook.GetAll().OfType<Employee>().Single().Id);
+        }
+        finally
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+    }
+
+    [TestMethod]
+    public void LoadFromFile_MissingFile_ReturnsEmptyContactBook()
+    {
+        string filePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        ContactBook contactBook = ContactBook.LoadFromFile(filePath);
+
+        Assert.IsEmpty(contactBook.GetAll());
     }
 }

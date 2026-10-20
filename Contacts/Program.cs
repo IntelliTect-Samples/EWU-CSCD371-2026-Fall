@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Contacts;
 
 public static class Program
@@ -9,10 +11,29 @@ public static class Program
 
     public static void Run(TextReader input, TextWriter output)
     {
+        Run(input, output, "contacts.json");
+    }
+
+    public static void Run(TextReader input, TextWriter output, string storagePath)
+    {
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(output);
+        ArgumentException.ThrowIfNullOrWhiteSpace(storagePath);
 
-        ContactBook contactBook = new();
+        ContactBook contactBook;
+        try
+        {
+            contactBook = ContactBook.LoadFromFile(storagePath);
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or NotSupportedException
+            or ArgumentException)
+        {
+            output.WriteLine($"Could not load contacts: {exception.Message}");
+            return;
+        }
 
         while (true)
         {
@@ -35,16 +56,16 @@ public static class Program
             switch (choice)
             {
                 case "1":
-                    AddStudent(input, output, contactBook);
+                    AddStudent(input, output, contactBook, storagePath);
                     break;
                 case "2":
-                    AddEmployee(input, output, contactBook);
+                    AddEmployee(input, output, contactBook, storagePath);
                     break;
                 case "3":
                     ListContacts(output, contactBook);
                     break;
                 case "4":
-                    RemoveContact(input, output, contactBook);
+                    RemoveContact(input, output, contactBook, storagePath);
                     break;
                 default:
                     output.WriteLine("Invalid option. Please choose 0-4.");
@@ -53,7 +74,11 @@ public static class Program
         }
     }
 
-    private static void AddStudent(TextReader input, TextWriter output, ContactBook contactBook)
+    private static void AddStudent(
+        TextReader input,
+        TextWriter output,
+        ContactBook contactBook,
+        string storagePath)
     {
         if (!TryReadName(input, output, out FullName? name)
             || name is null
@@ -68,7 +93,8 @@ public static class Program
 
         try
         {
-            AddContact(output, contactBook, new Student(name, email, phoneNumber, address, schoolName, major));
+            AddContact(output, contactBook, new Student(name, email, phoneNumber, address, schoolName, major),
+                storagePath);
         }
         catch (ArgumentException exception)
         {
@@ -76,7 +102,11 @@ public static class Program
         }
     }
 
-    private static void AddEmployee(TextReader input, TextWriter output, ContactBook contactBook)
+    private static void AddEmployee(
+        TextReader input,
+        TextWriter output,
+        ContactBook contactBook,
+        string storagePath)
     {
         if (!TryReadName(input, output, out FullName? name)
             || name is null
@@ -91,7 +121,8 @@ public static class Program
 
         try
         {
-            AddContact(output, contactBook, new Employee(name, email, phoneNumber, address, employer, jobTitle));
+            AddContact(output, contactBook, new Employee(name, email, phoneNumber, address, employer, jobTitle),
+                storagePath);
         }
         catch (ArgumentException exception)
         {
@@ -155,16 +186,25 @@ public static class Program
         return line is not null;
     }
 
-    private static void AddContact(TextWriter output, ContactBook contactBook, IContact contact)
+    private static void AddContact(
+        TextWriter output,
+        ContactBook contactBook,
+        IContact contact,
+        string storagePath)
     {
-        if (contactBook.Add(contact))
-        {
-            output.WriteLine("Contact added.");
-        }
-        else
+        if (!contactBook.Add(contact))
         {
             output.WriteLine("A contact with the same information already exists.");
+            return;
         }
+
+        if (!TrySaveContacts(output, contactBook, storagePath))
+        {
+            contactBook.Remove(contact);
+            return;
+        }
+
+        output.WriteLine("Contact added.");
     }
 
     private static void ListContacts(TextWriter output, ContactBook contactBook)
@@ -190,7 +230,11 @@ public static class Program
         }
     }
 
-    private static void RemoveContact(TextReader input, TextWriter output, ContactBook contactBook)
+    private static void RemoveContact(
+        TextReader input,
+        TextWriter output,
+        ContactBook contactBook,
+        string storagePath)
     {
         IContact[] contacts = contactBook.GetAll();
         if (contacts.Length == 0)
@@ -217,7 +261,31 @@ public static class Program
 
         if (contactBook.Remove(contacts[contactNumber - 1]))
         {
+            if (!TrySaveContacts(output, contactBook, storagePath))
+            {
+                contactBook.Add(contacts[contactNumber - 1]);
+                return;
+            }
+
             output.WriteLine("Contact removed.");
+        }
+    }
+
+    private static bool TrySaveContacts(TextWriter output, ContactBook contactBook, string storagePath)
+    {
+        try
+        {
+            contactBook.SaveToFile(storagePath);
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or NotSupportedException
+            or ArgumentException)
+        {
+            output.WriteLine($"Could not save contacts: {exception.Message}");
+            return false;
         }
     }
 }

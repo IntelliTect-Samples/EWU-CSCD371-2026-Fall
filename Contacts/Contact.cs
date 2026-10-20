@@ -1,10 +1,15 @@
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Contacts;
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(Student), "student")]
+[JsonDerivedType(typeof(Employee), "employee")]
 public abstract record class Contact : IContact
 {
-    public Guid Id { get; }
+    [JsonInclude]
+    public Guid Id { get; private set; }
     public FullName Name { get; }
     public string? Email { get; }
     public string? PhoneNumber { get; }
