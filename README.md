@@ -51,9 +51,9 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
 
 - Target all projects at .NET 10 (`net10.0`) with the latest `LangVersion`.
 - Be sure you enable:
-  - `Nullable` for all projects ❌✔
-  - Code analysis for all projects (`EnableNETAnalyzers`) ❌✔
-  - `EnforceCodeStyleInBuild` ❌✔
+  - `Nullable` for all projects ✔
+  - Code analysis for all projects (`EnableNETAnalyzers`) ✔
+  - `EnforceCodeStyleInBuild` ✔
 - **Ensure there are no errors or warnings (including code analysis warnings)** ❌✔
 - **All of the above should be unit tested** ❌✔
 - **Choose simplicity over complexity** ❌✔

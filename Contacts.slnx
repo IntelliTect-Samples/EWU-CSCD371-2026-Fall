@@ -8,6 +8,9 @@
     <File Path="global.json" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="Application/Application.csproj" />
   <Project Path="Contacts.Tests/Contacts.Tests.csproj" />
   <Project Path="Contacts/Contacts.csproj" />
+  <Project Path="Persistence.Tests/Persistence.Tests.csproj" />
+  <Project Path="Persistence/Persistence.csproj" />
 </Solution>
