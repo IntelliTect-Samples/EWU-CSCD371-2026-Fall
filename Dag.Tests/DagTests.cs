@@ -28,4 +28,34 @@ public class DagTests
 
         Assert.IsFalse(dag.AddNode("CSCD 211"));
     }
+
+    [TestMethod]
+    public void RemoveNode_ExistingNode_ReturnsTrueAndRemovesNode()
+    {
+        Dag<string> dag = new();
+        dag.AddNode("CSCD 211");
+
+        Assert.IsTrue(dag.RemoveNode("CSCD 211"));
+        Assert.IsTrue(dag.AddNode("CSCD 211"));
+    }
+
+    [TestMethod]
+    public void RemoveNode_MissingNode_ReturnsFalse()
+    {
+        Dag<string> dag = new();
+
+        Assert.IsFalse(dag.RemoveNode("CSCD 211"));
+    }
+
+    [TestMethod]
+    public void RemoveNode_OtherNodes_RemainInGraph()
+    {
+        Dag<string> dag = new();
+        dag.AddNode("CSCD 211");
+        dag.AddNode("CSCD 300");
+
+        dag.RemoveNode("CSCD 211");
+
+        Assert.IsFalse(dag.AddNode("CSCD 300"));
+    }
 }
