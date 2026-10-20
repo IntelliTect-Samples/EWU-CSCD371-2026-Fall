@@ -1,26 +1,8 @@
 namespace Dag;
 
-public class Dag<T> where T : notnull
+public class Dag<T>(IEqualityComparer<T>? comparer = null) where T : notnull
 {
-    private readonly IEqualityComparer<T> _comparer;
-    private readonly Dictionary<T, HashSet<T>> _dependencies;
-    private readonly Dictionary<T, HashSet<T>> _dependents;
+    private readonly Dictionary<T, HashSet<T>> _dependencies = new(comparer);
 
-    public Dag(IEqualityComparer<T>? comparer = null)
-    {
-        _comparer = comparer ?? EqualityComparer<T>.Default;
-        _dependencies = new Dictionary<T, HashSet<T>>(_comparer);
-        _dependents = new Dictionary<T, HashSet<T>>(_comparer);
-    }
-
-    public bool AddNode(T value)
-    {
-        if (!_dependencies.TryAdd(value, new HashSet<T>(_comparer)))
-        {
-            return false;
-        }
-
-        _dependents.Add(value, new HashSet<T>(_comparer));
-        return true;
-    }
+    public bool AddNode(T value) => _dependencies.TryAdd(value, new(_dependencies.Comparer));
 }
