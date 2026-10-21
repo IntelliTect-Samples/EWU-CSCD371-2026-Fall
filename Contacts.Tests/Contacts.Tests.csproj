@@ -2,10 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
     <EnableMSTestRunner>true</EnableMSTestRunner>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
