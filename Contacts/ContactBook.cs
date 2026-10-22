@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Contacts;
 
-public sealed record class FullName(string First, string Last, string? Middle)
+public sealed record class FullName(string First, string Last, string? Middle = null)
 {
     public override string ToString()
         => Middle is null
