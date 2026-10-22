@@ -129,29 +129,39 @@ public static class Program
         return new FullName(firstName, lastName, middle);
     }
 
+
     private static List<string> ReadEmails()
     {
         var emails = new List<string>();
-
+    
         Console.WriteLine(
             "Enter email addresses (blank line to finish):");
-
+    
         while (true)
         {
             Console.Write("Email: ");
             var input = Console.ReadLine();
-
+    
             if (string.IsNullOrWhiteSpace(input))
-                break;
-            else if (!input.Contains("@") && !input.Contains(".")) {
-                Console.WriteLine("Email does not contain @ and/or . in it, and is not valid.");
+            {
                 break;
             }
-            emails.Add(input.Trim());
+    
+            input = input.Trim();
+    
+            if (!input.Contains('@') || !input.Contains('.'))
+            {
+                Console.WriteLine(
+                    "Invalid email. It must contain both @ and .");
+                continue;
+            }
+    
+            emails.Add(input);
         }
-
+    
         return emails;
     }
+
 
     private static void ListContacts(ContactBook book)
     {
