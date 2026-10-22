@@ -1,14 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <OutputType>Exe</OutputType>
-    <IsPackable>false</IsPackable>
-    <EnableMSTestRunner>true</EnableMSTestRunner>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
-  </PropertyGroup>
+<PropertyGroup>
+  <TargetFramework>net10.0</TargetFramework>
+  <OutputType>Exe</OutputType>
+  <IsPackable>false</IsPackable>
+  <Nullable>enable</Nullable>
+  <LangVersion>latest</LangVersion>
+  <ImplicitUsings>enable</ImplicitUsings>
+  <EnableNETAnalyzers>true</EnableNETAnalyzers>
+  <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  <EnableMSTestRunner>true</EnableMSTestRunner>
+  <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+</PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="coverlet.MTP" Version="10.1.0" />
     <PackageReference Include="MSTest" Version="4.5.1" />
   </ItemGroup>
 

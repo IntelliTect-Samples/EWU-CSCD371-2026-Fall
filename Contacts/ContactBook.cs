@@ -1,17 +1,141 @@
+using System.Text.Json;
+
 namespace Contacts;
+
+public sealed record class FullName(string First, string Last, string? Middle = null)
+{
+    public override string ToString()
+        => Middle is null
+            ? $"{First} {Last}"
+            : $"{First} {Middle} {Last}";
+}
+
+public abstract record ContactBase : IContact
+{
+    private static int _nextID = 1;
+
+    public int ID { get; set; } = _nextID++;
+
+    public FullName name { get; init; }
+
+    public IReadOnlyList<string> Emails { get; init; }
+
+    protected ContactBase(FullName name, IReadOnlyList<string> emails)
+    {
+        this.name = name;
+        Emails = Array.AsReadOnly(emails.ToArray());
+    }
+
+    internal static void UpdateNextId(int existingId)
+    {
+        if (existingId >= _nextID)
+            _nextID = existingId + 1;
+    }
+
+    public virtual bool Equals(ContactBase? other) =>
+        other is not null &&
+        GetType() == other.GetType() &&
+        name == other.name &&
+        Emails.SequenceEqual(other.Emails, StringComparer.Ordinal);
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(GetType());
+        hash.Add(name);
+
+        foreach (var email in Emails)
+        {
+            hash.Add(email, StringComparer.Ordinal);
+        }
+
+        return hash.ToHashCode();
+    }
+}
+
+public sealed record Student : ContactBase
+{
+    public Student(
+        FullName name,
+        string major,
+        string graduationYear,
+        IReadOnlyList<string> emails) : base(name, emails)
+    {
+        Major = major;
+        GraduationYear = graduationYear;
+    }
+
+    public string Major { get; init; }
+
+    public string GraduationYear { get; init; }
+}
+
+public sealed record Employee : ContactBase
+{
+    public Employee(
+        FullName name,
+        string department,
+        string companyName,
+        IReadOnlyList<string> emails) : base(name, emails)
+    {
+        Department = department;
+        CompanyName = companyName;
+    }
+
+    public string Department { get; init; }
+
+    public string CompanyName { get; init; }
+}
 
 public class ContactBook
 {
     private HashSet<IContact> Entities { get; } = [];
 
-    public void Add(IContact item)
+    private readonly string _filePath;
+
+    public ContactBook(string filePath = "contacts.json")
     {
-        Entities.Add(item);
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+        _filePath = Path.GetFullPath(filePath);
     }
 
-    public void Remove(IContact item)
+    public void Load()
     {
-        Entities.Remove(item);
+        if (!File.Exists(_filePath))
+            return;
+
+        var json = File.ReadAllText(_filePath);
+        var items = JsonSerializer.Deserialize<IContact[]>(json, JsonOptionGiver.Options);
+
+        if (items is not null)
+        {
+            foreach (var item in items) {
+                if (Entities.Contains(item))
+                {
+                    Console.WriteLine($"Item {item} given from JsonOptionGiver already exists in Contacts. Skipping it now.");
+                }
+                else {
+                    Add(item);
+                }
+            }
+        }
+    }
+
+    public void Save()
+    {
+        var json = JsonSerializer.Serialize(Entities.ToArray(), JsonOptionGiver.Options);
+        File.WriteAllText(_filePath, json);
+    }
+
+    public bool Add(IContact item)
+    {
+        ContactBase.UpdateNextId(item.ID); // Check and update the next ID if necessary
+        return Entities.Add(item);
+    }
+
+    public bool Remove(IContact item)
+    {
+        return Entities.Remove(item);
     }
 
     public bool Contains(IContact item)
