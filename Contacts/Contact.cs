@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace Contacts;
 
 public abstract record Contact(FullName Name, IReadOnlyList<string> Emails, string? Phone = null) : IContact
@@ -44,7 +42,7 @@ public abstract record Contact(FullName Name, IReadOnlyList<string> Emails, stri
 
     private IEnumerable<string> SortedEmails() => Emails.Order(EmailComparer);
 
-    private static ReadOnlyCollection<string> RequiredEmails(IReadOnlyList<string> emails, string paramName)
+    private static string[] RequiredEmails(IReadOnlyList<string> emails, string paramName)
     {
         ArgumentNullException.ThrowIfNull(emails, paramName);
 
@@ -55,6 +53,6 @@ public abstract record Contact(FullName Name, IReadOnlyList<string> Emails, stri
             throw new ArgumentException("At least one email is required.", paramName);
         }
 
-        return Array.AsReadOnly(cleaned);
+        return cleaned;
     }
 }
