@@ -121,7 +121,7 @@ public static class Program
         var lastName = Console.ReadLine() ?? string.Empty;
 
         Console.Write("Middle name (optional): ");
-        var middle = Console.ReadLine();
+        var middle = Console.ReadLine()?.Trim();
 
         if (string.IsNullOrWhiteSpace(middle))
             middle = null;
