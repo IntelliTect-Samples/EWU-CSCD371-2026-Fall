@@ -4,14 +4,30 @@ public class ContactBook
 {
     private HashSet<IContact> Entities { get; } = [];
 
-    public void Add(IContact item)
+    public bool Add(IContact item)
     {
-        Entities.Add(item);
+        return Entities.Add(item);
     }
 
-    public void Remove(IContact item)
+    public bool Remove(IContact item)
     {
-        Entities.Remove(item);
+        return Entities.Remove(item);
+    }
+
+    public bool Replace(IContact existing, IContact updated)
+    {
+        if (!Entities.Remove(existing))
+        {
+            return false;
+        }
+
+        if (Entities.Add(updated))
+        {
+            return true;
+        }
+
+        Entities.Add(existing);
+        return false;
     }
 
     public bool Contains(IContact item)
