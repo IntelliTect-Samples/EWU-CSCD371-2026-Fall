@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Contacts;
 
@@ -42,30 +41,7 @@ public class ContactBook
         try
         {
             using FileStream stream = File.OpenRead(filePath);
-            JsonNode? contents = JsonNode.Parse(stream);
-            if (contents is JsonArray entries)
-            {
-                foreach (JsonObject entry in entries.OfType<JsonObject>())
-                {
-                    // Convert the previous single-email format before deserializing.
-                    if (!entry.ContainsKey(nameof(IContact.Emails))
-                        && entry.TryGetPropertyValue("Email", out JsonNode? email))
-                    {
-                        entry[nameof(IContact.Emails)] = email is null ? new JsonArray() : new JsonArray(email.DeepClone());
-                    }
-                }
-            }
-
-            IContact[]? contacts;
-            try
-            {
-                contacts = contents?.Deserialize<IContact[]>(JsonOptions);
-            }
-            catch (InvalidOperationException exception)
-            {
-                throw new JsonException("The contacts file contains invalid text.", exception);
-            }
-
+            IContact[]? contacts = JsonSerializer.Deserialize<IContact[]>(stream, JsonOptions);
             if (contacts is null)
             {
                 throw new JsonException("The contacts file must contain a JSON array.");
