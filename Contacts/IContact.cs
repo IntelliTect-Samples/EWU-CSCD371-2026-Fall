@@ -9,7 +9,7 @@ public interface IContact
 {
     Guid Id { get; }
     FullName Name { get; }
-    string? Email { get; }
+    IReadOnlyList<string> Emails { get; }
     string? PhoneNumber { get; }
     string? Address { get; }
 }

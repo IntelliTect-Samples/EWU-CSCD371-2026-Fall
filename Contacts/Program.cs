@@ -43,6 +43,7 @@ public static class Program
             output.WriteLine("2. Add employee");
             output.WriteLine("3. List contacts");
             output.WriteLine("4. Remove contact");
+            output.WriteLine("5. Edit contact");
             output.WriteLine("0. Exit");
             output.Write("Select an option: ");
 
@@ -67,8 +68,11 @@ public static class Program
                 case "4":
                     RemoveContact(input, output, contactBook, storagePath);
                     break;
+                case "5":
+                    EditContact(input, output, contactBook, storagePath);
+                    break;
                 default:
-                    output.WriteLine("Invalid option. Please choose 0-4.");
+                    output.WriteLine("Invalid option. Please choose 0-5.");
                     break;
             }
         }
@@ -82,7 +86,7 @@ public static class Program
     {
         if (!TryReadName(input, output, out FullName? name)
             || name is null
-            || !TryReadOptional(input, output, "Email (optional): ", out string? email)
+            || !TryReadOptional(input, output, "Emails (comma-separated, optional): ", out string? emails)
             || !TryReadOptional(input, output, "Phone number (optional): ", out string? phoneNumber)
             || !TryReadOptional(input, output, "Address (optional): ", out string? address)
             || !TryReadOptional(input, output, "School name (optional): ", out string? schoolName)
@@ -93,7 +97,7 @@ public static class Program
 
         try
         {
-            AddContact(output, contactBook, new Student(name, email, phoneNumber, address, schoolName, major),
+            AddContact(output, contactBook, new Student(name, SplitEmails(emails), phoneNumber, address, schoolName, major),
                 storagePath);
         }
         catch (ArgumentException exception)
@@ -110,7 +114,7 @@ public static class Program
     {
         if (!TryReadName(input, output, out FullName? name)
             || name is null
-            || !TryReadOptional(input, output, "Email (optional): ", out string? email)
+            || !TryReadOptional(input, output, "Emails (comma-separated, optional): ", out string? emails)
             || !TryReadOptional(input, output, "Phone number (optional): ", out string? phoneNumber)
             || !TryReadOptional(input, output, "Address (optional): ", out string? address)
             || !TryReadOptional(input, output, "Employer (optional): ", out string? employer)
@@ -121,7 +125,7 @@ public static class Program
 
         try
         {
-            AddContact(output, contactBook, new Employee(name, email, phoneNumber, address, employer, jobTitle),
+            AddContact(output, contactBook, new Employee(name, SplitEmails(emails), phoneNumber, address, employer, jobTitle),
                 storagePath);
         }
         catch (ArgumentException exception)
@@ -185,6 +189,9 @@ public static class Program
         value = string.IsNullOrWhiteSpace(line) ? null : line;
         return line is not null;
     }
+
+    private static string[] SplitEmails(string? emails) =>
+        emails?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
 
     private static void AddContact(
         TextWriter output,
@@ -269,6 +276,122 @@ public static class Program
 
             output.WriteLine("Contact removed.");
         }
+    }
+
+    private static void EditContact(
+        TextReader input,
+        TextWriter output,
+        ContactBook contactBook,
+        string storagePath)
+    {
+        IContact[] contacts = contactBook.GetAll();
+        if (contacts.Length == 0)
+        {
+            output.WriteLine("No contacts to edit.");
+            return;
+        }
+
+        ListContacts(output, contactBook);
+        output.Write("Enter the number of the contact to edit: ");
+        string? selection = input.ReadLine();
+        if (selection is null)
+        {
+            return;
+        }
+
+        if (!int.TryParse(selection, out int contactNumber)
+            || contactNumber < 1
+            || contactNumber > contacts.Length)
+        {
+            output.WriteLine("Invalid contact number.");
+            return;
+        }
+
+        IContact original = contacts[contactNumber - 1];
+        output.WriteLine("Press Enter to keep a value, or enter - to clear an optional field.");
+
+        if (!TryReadEdit(input, output, "First name", original.Name.FirstName, out string? firstName, allowClear: false)
+            || firstName is null
+            || !TryReadEdit(input, output, "Last name", original.Name.LastName, out string? lastName, allowClear: false)
+            || lastName is null
+            || !TryReadEdit(input, output, "Middle name", original.Name.MiddleName, out string? middleName)
+            || !TryReadEdit(input, output, "Emails (comma-separated)", string.Join(", ", original.Emails), out string? emails)
+            || !TryReadEdit(input, output, "Phone number", original.PhoneNumber, out string? phoneNumber)
+            || !TryReadEdit(input, output, "Address", original.Address, out string? address))
+        {
+            return;
+        }
+
+        try
+        {
+            FullName name = new(firstName, lastName, middleName);
+            Contact updated;
+            switch (original)
+            {
+                case Student student:
+                    if (!TryReadEdit(input, output, "School name", student.SchoolName, out string? schoolName)
+                        || !TryReadEdit(input, output, "Major", student.Major, out string? major))
+                    {
+                        return;
+                    }
+
+                    updated = new Student(name, SplitEmails(emails), phoneNumber, address, schoolName, major);
+                    break;
+                case Employee employee:
+                    if (!TryReadEdit(input, output, "Employer", employee.Employer, out string? employer)
+                        || !TryReadEdit(input, output, "Job title", employee.JobTitle, out string? jobTitle))
+                    {
+                        return;
+                    }
+
+                    updated = new Employee(name, SplitEmails(emails), phoneNumber, address, employer, jobTitle);
+                    break;
+                default:
+                    output.WriteLine("This contact type cannot be edited.");
+                    return;
+            }
+
+            updated.Id = original.Id;
+            contactBook.Remove(original);
+            if (!contactBook.Add(updated))
+            {
+                contactBook.Add(original);
+                output.WriteLine("A contact with the same information already exists.");
+                return;
+            }
+
+            if (!TrySaveContacts(output, contactBook, storagePath))
+            {
+                contactBook.Remove(updated);
+                contactBook.Add(original);
+                return;
+            }
+
+            output.WriteLine("Contact updated.");
+        }
+        catch (ArgumentException exception)
+        {
+            output.WriteLine($"Could not edit contact: {exception.Message}");
+        }
+    }
+
+    private static bool TryReadEdit(
+        TextReader input,
+        TextWriter output,
+        string label,
+        string? current,
+        out string? value,
+        bool allowClear = true)
+    {
+        output.Write($"{label} [{current}]: ");
+        string? line = input.ReadLine();
+        value = string.IsNullOrWhiteSpace(line) ? current : line;
+        if (allowClear && line?.Trim() == "-")
+        {
+            value = null;
+        }
+
+        return line is not null;
     }
 
     private static bool TrySaveContacts(TextWriter output, ContactBook contactBook, string storagePath)

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Contacts.Tests;
@@ -53,8 +54,8 @@ public class ProgramTests
     public void Run_ReportsDuplicateContact()
     {
         string output = RunWithInput(
-            "1", "Alice", "Smith", "", "alice@example.com", "", "", "", "",
-            "1", "Alice", "Smith", "", "alice@example.com", "", "", "", "",
+            "1", "Alice", "Smith", "", "alice@example.com, alice@school.edu", "", "", "", "",
+            "1", "Alice", "Smith", "", "alice@school.edu, alice@example.com", "", "", "", "",
             "3", "0");
 
         StringAssert.Contains(output, "A contact with the same information already exists.");
@@ -201,7 +202,7 @@ public class ProgramTests
         try
         {
             ContactBook contactBook = new();
-            contactBook.Add(new Student(new FullName("Alice", "Smith"), "alice@example.com"));
+            contactBook.Add(new Student(new FullName("Alice", "Smith"), ["alice@example.com"]));
             contactBook.SaveToFile(storagePath);
 
             using BeforeFirstReadReader input = new("4\n1\n3\n0", () =>
@@ -235,7 +236,7 @@ public class ProgramTests
         try
         {
             ContactBook contactBook = new();
-            contactBook.Add(new Employee(new FullName("Bob", "Jones"), "bob@example.com"));
+            contactBook.Add(new Employee(new FullName("Bob", "Jones"), ["bob@example.com"]));
             contactBook.SaveToFile(storagePath);
             string originalJson = File.ReadAllText(storagePath);
 
@@ -245,6 +246,436 @@ public class ProgramTests
             StringAssert.Contains(output, "Goodbye.");
             Assert.IsFalse(output.Contains("Contact added.", StringComparison.Ordinal));
             Assert.AreEqual(originalJson, File.ReadAllText(storagePath));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_EditContact_UpdatesFieldsAndPreservesId(string menuOption)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "Ann", "alice@example.com, alice@school.edu", "555-0100", "Old address",
+                "Old organization", "Old role", "0");
+            IContact original = Assert.ContainsSingle(ContactBook.LoadFromFile(storagePath).GetAll());
+
+            string output = RunWithStoragePath(storagePath,
+                "5", "1", "Alicia", "Johnson", "-", "updated@example.com, other@example.com", "-", "New address",
+                "New organization", "New role", "3", "0");
+
+            Contact expected = menuOption == "1"
+                ? new Student(new FullName("Alicia", "Johnson"), ["updated@example.com", "other@example.com"], address: "New address",
+                    schoolName: "New organization", major: "New role")
+                : new Employee(new FullName("Alicia", "Johnson"), ["updated@example.com", "other@example.com"], address: "New address",
+                    employer: "New organization", jobTitle: "New role");
+            IContact updated = Assert.ContainsSingle(ContactBook.LoadFromFile(storagePath).GetAll());
+
+            StringAssert.Contains(output, "Contact updated.");
+            StringAssert.Contains(output, "Name: Alicia Johnson");
+            Assert.AreEqual(expected, updated);
+            Assert.AreEqual(original.Id, updated.Id);
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_EditContactWithBlankFields_KeepsValuesAndId(string menuOption)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "Ann", "alice@example.com, alice@school.edu", "555-0100", "Old address",
+                "Old organization", "Old role", "0");
+            IContact original = Assert.ContainsSingle(ContactBook.LoadFromFile(storagePath).GetAll());
+
+            string output = RunWithStoragePath(storagePath,
+                "5", "1", "", "", "", "", "", "", "", "", "0");
+            IContact updated = Assert.ContainsSingle(ContactBook.LoadFromFile(storagePath).GetAll());
+
+            StringAssert.Contains(output, "Contact updated.");
+            Assert.AreEqual(original, updated);
+            Assert.AreEqual(original.Id, updated.Id);
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_EditContactWithDashes_ClearsOptionalFields(string menuOption)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "Ann", "alice@example.com, alice@school.edu", "555-0100", "Old address",
+                "Old organization", "Old role", "0");
+
+            string output = RunWithStoragePath(storagePath,
+                "5", "1", "", "", "-", "-", "", "-", "-", "-", "0");
+
+            Contact expected = menuOption == "1"
+                ? new Student(new FullName("Alice", "Smith"), phoneNumber: "555-0100")
+                : new Employee(new FullName("Alice", "Smith"), phoneNumber: "555-0100");
+            IContact updated = Assert.ContainsSingle(ContactBook.LoadFromFile(storagePath).GetAll());
+
+            StringAssert.Contains(output, "Contact updated.");
+            Assert.AreEqual(expected, updated);
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_EditIntoDuplicate_ReportsDuplicateAndPreservesContacts(string menuOption)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "", "alice@example.com, alice@school.edu", "", "", "", "",
+                menuOption, "Bob", "Jones", "", "bob@example.com, bob@school.edu", "", "", "", "", "0");
+            IContact[] originals = ContactBook.LoadFromFile(storagePath).GetAll();
+            string originalJson = File.ReadAllText(storagePath);
+
+            string output = RunWithStoragePath(storagePath,
+                "5", "2", "Alice", "Smith", "", "alice@school.edu, alice@example.com", "", "", "", "", "3", "0");
+
+            StringAssert.Contains(output, "A contact with the same information already exists.");
+            Assert.AreEqual(2, output.Split("Name: Alice Smith").Length - 1);
+            Assert.AreEqual(2, output.Split("Name: Bob Jones").Length - 1);
+            Assert.IsFalse(output.Contains("Contact updated.", StringComparison.Ordinal));
+            Assert.AreEqual(originalJson, File.ReadAllText(storagePath));
+
+            IContact[] stored = ContactBook.LoadFromFile(storagePath).GetAll();
+            Assert.HasCount(2, stored);
+            foreach (IContact original in originals)
+            {
+                Assert.AreEqual(original, Array.Find(stored, contact => contact.Id == original.Id));
+            }
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_EditClearingAllContactMethods_ReportsErrorAndKeepsOriginal(string menuOption)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "", "alice@example.com, alice@school.edu", "", "", "", "", "0");
+            string originalJson = File.ReadAllText(storagePath);
+
+            string output = RunWithStoragePath(storagePath,
+                "5", "1", "", "", "", "-", "", "", "", "", "3", "0");
+
+            StringAssert.Contains(output, "Could not edit contact:");
+            Assert.AreEqual(2, output.Split("Emails: alice@example.com, alice@school.edu").Length - 1);
+            Assert.IsFalse(output.Contains("Contact updated.", StringComparison.Ordinal));
+            Assert.AreEqual(originalJson, File.ReadAllText(storagePath));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    public void Run_EditStudentToMatchEmployee_StoresBothTypes()
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                "1", "Alice", "Smith", "", "alice@example.com", "", "", "", "",
+                "2", "Bob", "Jones", "", "bob@example.com", "", "", "", "", "0");
+
+            string output = RunWithStoragePath(storagePath,
+                "5", "1", "Bob", "Jones", "", "bob@example.com", "", "", "", "", "0");
+            ContactBook contactBook = ContactBook.LoadFromFile(storagePath);
+
+            StringAssert.Contains(output, "Contact updated.");
+            Assert.HasCount(2, contactBook.GetAll());
+            Assert.IsTrue(contactBook.Contains(new Student(new FullName("Bob", "Jones"), ["bob@example.com"])));
+            Assert.IsTrue(contactBook.Contains(new Employee(new FullName("Bob", "Jones"), ["bob@example.com"])));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    public void Run_EditEmptyContactBook_ReportsNoContacts()
+    {
+        string output = RunWithInput("5", "0");
+
+        StringAssert.Contains(output, "No contacts to edit.");
+        Assert.IsFalse(output.Contains("Contact updated.", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    [DataRow("not a number")]
+    [DataRow("0")]
+    [DataRow("2")]
+    public void Run_EditInvalidContactNumber_ReportsErrorAndKeepsOriginal(string selection)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                "1", "Alice", "Smith", "", "alice@example.com", "", "", "", "", "0");
+            string originalJson = File.ReadAllText(storagePath);
+
+            string output = RunWithStoragePath(storagePath, "5", selection, "0");
+
+            StringAssert.Contains(output, "Invalid contact number.");
+            Assert.IsFalse(output.Contains("Contact updated.", StringComparison.Ordinal));
+            Assert.AreEqual(originalJson, File.ReadAllText(storagePath));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1", 1)]
+    [DataRow("1", 7)]
+    [DataRow("2", 7)]
+    public void Run_EndOfInputWhileEditing_ExitsWithoutChangingSavedContacts(string menuOption, int completedFields)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "", "alice@example.com", "", "", "", "", "0");
+            string originalJson = File.ReadAllText(storagePath);
+            string[] lines = ["5", "1", "Alicia", "Johnson", "", "updated@example.com", "", "", "New organization", "New role"];
+
+            string output = RunWithStoragePath(storagePath, lines[..(completedFields + 2)]);
+
+            StringAssert.Contains(output, "Goodbye.");
+            Assert.IsFalse(output.Contains("Contact updated.", StringComparison.Ordinal));
+            Assert.AreEqual(originalJson, File.ReadAllText(storagePath));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_SaveFailsWhenEditing_ReportsErrorAndKeepsOriginal(string menuOption)
+    {
+        string directory = Path.Combine(Path.GetTempPath(), $"contacts-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        string storagePath = Path.Combine(directory, "contacts.json");
+        string originalPath = Path.Combine(directory, "original.json");
+
+        try
+        {
+            RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "", "alice@example.com, alice@school.edu", "", "", "", "", "0");
+            string originalJson = File.ReadAllText(storagePath);
+            Guid originalId = Assert.ContainsSingle(ContactBook.LoadFromFile(storagePath).GetAll()).Id;
+            using BeforeFirstReadReader input = new("5\n1\nAlicia\n\n\n\n\n\n\n\n3\n0", () =>
+            {
+                File.Move(storagePath, originalPath);
+                Directory.CreateDirectory(storagePath);
+            });
+            using StringWriter output = new();
+
+            Program.Run(input, output, storagePath);
+            string text = output.ToString();
+
+            StringAssert.Contains(text, "Could not save contacts:");
+            Assert.AreEqual(2, text.Split("Name: Alice Smith").Length - 1);
+            Assert.AreEqual(2, text.Split($"Id: {originalId}").Length - 1);
+            Assert.IsFalse(text.Contains("Name: Alicia Smith", StringComparison.Ordinal));
+            Assert.IsFalse(text.Contains("Contact updated.", StringComparison.Ordinal));
+            Assert.AreEqual(originalJson, File.ReadAllText(originalPath));
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_AddMultipleEmails_ListsAndPersistsAllAddresses(string menuOption)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            string output = RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "", " work@example.com, personal@example.com, , work@example.com ",
+                "", "", "", "", "3", "0");
+            IContact contact = Assert.ContainsSingle(ContactBook.LoadFromFile(storagePath).GetAll());
+            string[] expected = ["personal@example.com", "work@example.com"];
+
+            StringAssert.Contains(output, "Contact added.");
+            StringAssert.Contains(output, "Emails: personal@example.com, work@example.com");
+            CollectionAssert.AreEqual(expected, contact.Emails.ToArray());
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_AddOnlyEmptyEmailEntries_ReportsMissingContactMethod(string menuOption)
+    {
+        string output = RunWithInput(
+            menuOption, "Alice", "Smith", "", ", ,", "", "", "", "", "3", "0");
+
+        StringAssert.Contains(output, "At least one contact method must be entered");
+        StringAssert.Contains(output, "No contacts found.");
+        Assert.IsFalse(output.Contains("Contact added.", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    [DataRow("1", 0)]
+    [DataRow("1", 1)]
+    [DataRow("1", 2)]
+    [DataRow("2", 0)]
+    [DataRow("2", 1)]
+    [DataRow("2", 2)]
+    public void Run_EndOfInputWhileReadingName_ExitsWithoutChangingSavedContacts(string menuOption, int completedNames)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            ContactBook contactBook = new();
+            contactBook.Add(new Employee(new FullName("Bob", "Jones"), ["bob@example.com"]));
+            contactBook.SaveToFile(storagePath);
+            string originalJson = File.ReadAllText(storagePath);
+            string[] lines = [menuOption, "Alice", "Smith"];
+
+            string output = RunWithStoragePath(storagePath, lines[..(completedNames + 1)]);
+
+            StringAssert.Contains(output, "Goodbye.");
+            Assert.IsFalse(output.Contains("Contact added.", StringComparison.Ordinal));
+            Assert.AreEqual(originalJson, File.ReadAllText(storagePath));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("4")]
+    [DataRow("5")]
+    public void Run_EndOfInputWhileSelectingContact_ExitsWithoutChangingSavedContacts(string menuOption)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            ContactBook contactBook = new();
+            contactBook.Add(new Student(new FullName("Alice", "Smith"), ["alice@example.com"]));
+            contactBook.SaveToFile(storagePath);
+            string originalJson = File.ReadAllText(storagePath);
+
+            string output = RunWithStoragePath(storagePath, menuOption);
+
+            StringAssert.Contains(output, "Enter the number of the contact");
+            StringAssert.Contains(output, "Goodbye.");
+            Assert.IsFalse(output.Contains("Contact removed.", StringComparison.Ordinal));
+            Assert.IsFalse(output.Contains("Contact updated.", StringComparison.Ordinal));
+            Assert.AreEqual(originalJson, File.ReadAllText(storagePath));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    public void Run_StoredJsonNull_ReportsLoadErrorAndPreservesFile()
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            File.WriteAllText(storagePath, "null");
+
+            string output = RunWithStoragePath(storagePath, "0");
+
+            StringAssert.Contains(output, "Could not load contacts:");
+            StringAssert.Contains(output, "The contacts file must contain a JSON array.");
+            Assert.AreEqual("null", File.ReadAllText(storagePath));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
+    [TestMethod]
+    public void Run_InvalidUnicodeInStoredJson_ReportsLoadErrorAndPreservesFile()
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+        string json = """
+            [{
+              "$type": "student",
+              "Name": { "FirstName": "\uD800", "LastName": "Smith" },
+              "Emails": ["alice@example.com"]
+            }]
+            """;
+
+        try
+        {
+            File.WriteAllText(storagePath, json);
+
+            string output = RunWithStoragePath(storagePath, "0");
+
+            StringAssert.Contains(output, "Could not load contacts:");
+            Assert.AreEqual(json, File.ReadAllText(storagePath));
         }
         finally
         {

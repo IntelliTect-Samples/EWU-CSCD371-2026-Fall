@@ -9,7 +9,7 @@ public class EmployeeTests
     [TestMethod]
     public void Constructor_NullName_ThrowsArgumentNullException()
     {
-        Assert.ThrowsExactly<ArgumentNullException>(() => new Employee(null!, "ValidEmail"));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Employee(null!, ["ValidEmail"]));
     }
 
     [TestMethod]
@@ -19,7 +19,7 @@ public class EmployeeTests
     [DataRow("\t")]
     public void Constructor_NullOrWhiteSpaceEmployer_StoresNull(string? employer)
     {
-        Employee employee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail", employer: employer);
+        Employee employee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"], employer: employer);
 
         Assert.IsNull(employee.Employer);
     }
@@ -31,7 +31,7 @@ public class EmployeeTests
     [DataRow("\t")]
     public void Constructor_NullOrWhiteSpaceJobTitle_StoresNull(string? jobTitle)
     {
-        Employee employee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail", jobTitle: jobTitle);
+        Employee employee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"], jobTitle: jobTitle);
 
         Assert.IsNull(employee.JobTitle);
     }
@@ -39,9 +39,9 @@ public class EmployeeTests
     [TestMethod]
     public void Equals_IdenticalSeparateInstances_ReturnsTrue()
     {
-        Employee originalEmployee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail",
+        Employee originalEmployee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"],
             employer: "ValidEmployer", jobTitle: "ValidJobTitle");
-        Employee comparedEmployee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail",
+        Employee comparedEmployee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"],
             employer: "ValidEmployer", jobTitle: "ValidJobTitle");
 
         Assert.IsTrue(Equals(originalEmployee, comparedEmployee));
@@ -52,9 +52,9 @@ public class EmployeeTests
     [DataRow("ValidEmployer", "DifferentJobTitle")]
     public void Equals_OneEmployeeComponentDiffers_ReturnsFalse(string employer, string jobTitle)
     {
-        Employee originalEmployee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail",
+        Employee originalEmployee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"],
             employer: employer, jobTitle: jobTitle);
-        Employee comparedEmployee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail",
+        Employee comparedEmployee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"],
             employer: "ValidEmployer", jobTitle: "ValidJobTitle");
 
         Assert.IsFalse(Equals(originalEmployee, comparedEmployee));
@@ -63,9 +63,9 @@ public class EmployeeTests
     [TestMethod]
     public void GetHashCode_IdenticalSeparateInstances_ReturnsEqualHashCodes()
     {
-        Employee originalEmployee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail",
+        Employee originalEmployee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"],
             employer: "ValidEmployer", jobTitle: "ValidJobTitle");
-        Employee comparedEmployee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail",
+        Employee comparedEmployee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"],
             employer: "ValidEmployer", jobTitle: "ValidJobTitle");
 
         Assert.AreEqual(originalEmployee.GetHashCode(), comparedEmployee.GetHashCode());
@@ -74,10 +74,10 @@ public class EmployeeTests
     [TestMethod]
     public void ToString_NullEmployerAndJobTitle_ReturnsExpectedString()
     {
-        Employee employee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
+        Employee employee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
         string expectedOutput = $"Id: {employee.Id}{Environment.NewLine}"
             + $"Name: ValidFirst ValidLast{Environment.NewLine}"
-            + $"Email: ValidEmail{Environment.NewLine}";
+            + $"Emails: ValidEmail{Environment.NewLine}";
 
         Assert.AreEqual(expectedOutput, employee.ToString());
     }
@@ -85,11 +85,11 @@ public class EmployeeTests
     [TestMethod]
     public void ToString_ProvidedEmployerAndJobTitle_ReturnsExpectedString()
     {
-        Employee employee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail",
+        Employee employee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"],
             employer: "ValidEmployer", jobTitle: "ValidJobTitle");
         string expectedOutput = $"Id: {employee.Id}{Environment.NewLine}"
             + $"Name: ValidFirst ValidLast{Environment.NewLine}"
-            + $"Email: ValidEmail{Environment.NewLine}"
+            + $"Emails: ValidEmail{Environment.NewLine}"
             + $"Employer: ValidEmployer{Environment.NewLine}"
             + $"JobTitle: ValidJobTitle{Environment.NewLine}";
 

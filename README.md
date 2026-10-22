@@ -54,15 +54,19 @@ The `HashSet` is what makes equality matter: it calls `Equals` and `GetHashCode`
   - `Nullable` for all projects ✔
   - Code analysis for all projects (`EnableNETAnalyzers`) ✔
   - `EnforceCodeStyleInBuild` ✔
-- **Ensure there are no errors or warnings (including code analysis warnings)** ❌✔
+- **Ensure there are no errors or warnings (including code analysis warnings)** ✔
 - **All of the above should be unit tested** ✔
 - **Choose simplicity over complexity** ✔
 
 ## Extra Credit
 
 - Persist the contact list to a JSON file with `System.Text.Json`, loading it at startup. ✔
-- Implement editing an existing user. ❌✔
-- Allow contacts to store an arbitrary number of email addresses. Ensure all equality rules above remain in place. ❌✔
+- Implement editing an existing user. ✔
+- Allow contacts to store an arbitrary number of email addresses. Ensure all equality rules above remain in place. ✔
+
+Enter email addresses separated by commas. Email collections are compared without regard to order;
+individual addresses remain case-sensitive. Blank entries and repeated addresses are removed.
+When editing, press Enter to keep the current addresses or enter `-` to clear them.
 
 ## Relevant APIs and Docs to know about
 

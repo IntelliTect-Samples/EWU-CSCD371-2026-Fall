@@ -7,9 +7,9 @@ public record class Employee : Contact
     public string? Employer { get; }
     public string? JobTitle { get; }
 
-    public Employee(FullName name, string? email = null, string? phoneNumber = null,
+    public Employee(FullName name, IReadOnlyList<string>? emails = null, string? phoneNumber = null,
         string? address = null, string? employer = null, string? jobTitle = null)
-        : base(name, email, phoneNumber, address)
+        : base(name, emails, phoneNumber, address)
     {
         Employer = string.IsNullOrWhiteSpace(employer) ? null : employer;
         JobTitle = string.IsNullOrWhiteSpace(jobTitle) ? null : jobTitle;

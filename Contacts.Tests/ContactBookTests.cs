@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Contacts.Tests;
@@ -20,8 +21,8 @@ public class ContactBookTests
     public void Add_DuplicateContact_ReturnsFalseAndKeepsSingleContact()
     {
         ContactBook contactBook = new();
-        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
-        Student duplicateStudent = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
+        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
+        Student duplicateStudent = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
 
         Assert.IsTrue(contactBook.Add(storedStudent));
         Assert.IsFalse(contactBook.Add(duplicateStudent));
@@ -32,8 +33,8 @@ public class ContactBookTests
     public void Add_StudentAndEmployeeWithSameData_StoresBoth()
     {
         ContactBook contactBook = new();
-        Student student = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
-        Employee employee = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
+        Student student = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
+        Employee employee = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
 
         contactBook.Add(student);
 
@@ -53,8 +54,8 @@ public class ContactBookTests
     public void Contains_EqualButDifferentInstance_ReturnsTrue()
     {
         ContactBook contactBook = new();
-        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
-        Student matchingStudent = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
+        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
+        Student matchingStudent = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
 
         contactBook.Add(storedStudent);
 
@@ -65,8 +66,8 @@ public class ContactBookTests
     public void Contains_AbsentContact_ReturnsFalse()
     {
         ContactBook contactBook = new();
-        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
-        Student absentStudent = new(new FullName("ValidFirst", "ValidLast"), "DifferentEmail");
+        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
+        Student absentStudent = new(new FullName("ValidFirst", "ValidLast"), ["DifferentEmail"]);
 
         contactBook.Add(storedStudent);
 
@@ -85,8 +86,8 @@ public class ContactBookTests
     public void Remove_EqualButDifferentInstance_RemovesStoredContact()
     {
         ContactBook contactBook = new();
-        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
-        Student matchingStudent = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
+        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
+        Student matchingStudent = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
 
         contactBook.Add(storedStudent);
 
@@ -98,8 +99,8 @@ public class ContactBookTests
     public void Remove_AbsentContact_ReturnsFalseAndPreservesStoredContact()
     {
         ContactBook contactBook = new();
-        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail");
-        Student absentStudent = new(new FullName("ValidFirst", "ValidLast"), "DifferentEmail");
+        Student storedStudent = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail"]);
+        Student absentStudent = new(new FullName("ValidFirst", "ValidLast"), ["DifferentEmail"]);
 
         contactBook.Add(storedStudent);
 
@@ -112,8 +113,8 @@ public class ContactBookTests
     public void SaveToFile_ThenLoadFromFile_PreservesContactsAndIds()
     {
         string filePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
-        Student student = new(new FullName("ValidFirst", "ValidLast"), "ValidEmail", schoolName: "ValidSchool");
-        Employee employee = new(new FullName("OtherFirst", "OtherLast"), "OtherEmail", employer: "ValidEmployer");
+        Student student = new(new FullName("ValidFirst", "ValidLast"), ["ValidEmail", "SchoolEmail"], schoolName: "ValidSchool");
+        Employee employee = new(new FullName("OtherFirst", "OtherLast"), ["OtherEmail", "WorkEmail"], employer: "ValidEmployer");
         ContactBook contactBook = new();
         contactBook.Add(student);
         contactBook.Add(employee);
@@ -160,8 +161,8 @@ public class ContactBookTests
         try
         {
             ContactBook contactBook = new();
-            contactBook.Add(new Student( new FullName("Alice", "Smith"),
-                "alice@example.com"));
+            contactBook.Add(new Student(new FullName("Alice", "Smith"),
+                ["alice@example.com"]));
 
             contactBook.SaveToFile(filePath);
             string originalJson = File.ReadAllText(filePath);
@@ -180,7 +181,176 @@ public class ContactBookTests
         }
     }
 
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public void Add_ReorderedEmails_RejectsDuplicateAndSupportsContainsAndRemove(bool isEmployee)
+    {
+        FullName name = new("Alice", "Smith");
+        Contact original = isEmployee
+            ? new Employee(name, ["work@example.com", "personal@example.com"])
+            : new Student(name, ["work@example.com", "personal@example.com"]);
+        Contact reordered = isEmployee
+            ? new Employee(name, ["personal@example.com", "work@example.com"])
+            : new Student(name, ["personal@example.com", "work@example.com"]);
+        ContactBook contactBook = new();
+
+        Assert.IsTrue(contactBook.Add(original));
+        Assert.IsFalse(contactBook.Add(reordered));
+        Assert.ContainsSingle(contactBook.GetAll());
+        Assert.IsTrue(contactBook.Contains(reordered));
+        Assert.IsTrue(contactBook.Remove(reordered));
+        Assert.IsEmpty(contactBook.GetAll());
+    }
+
+    [TestMethod]
+    public void Add_StudentAndEmployeeWithSameMultipleEmails_StoresBoth()
+    {
+        FullName name = new("Alice", "Smith");
+        ContactBook contactBook = new();
+
+        Assert.IsTrue(contactBook.Add(new Student(name, ["work@example.com", "personal@example.com"])));
+        Assert.IsTrue(contactBook.Add(new Employee(name, ["personal@example.com", "work@example.com"])));
+        Assert.HasCount(2, contactBook.GetAll());
+    }
+
+    [TestMethod]
+    public void SaveToFile_MultipleEmails_WritesArray()
+    {
+        string filePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+        ContactBook contactBook = new();
+        contactBook.Add(new Student(new FullName("Alice", "Smith"), ["work@example.com", "personal@example.com"]));
+
+        try
+        {
+            contactBook.SaveToFile(filePath);
+            using JsonDocument json = JsonDocument.Parse(File.ReadAllText(filePath));
+            JsonElement entry = json.RootElement[0];
+            JsonElement emails = entry.GetProperty(nameof(IContact.Emails));
+
+            Assert.AreEqual(JsonValueKind.Array, emails.ValueKind);
+            Assert.AreEqual(2, emails.GetArrayLength());
+            Assert.IsFalse(entry.TryGetProperty("Email", out _));
+        }
+        finally
+        {
+            File.Delete(filePath);
+        }
+    }
+
+    [TestMethod]
+    public void LoadFromFile_PreviousSingleEmailFormat_PreservesContactsAndIds()
+    {
+        string filePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+        Guid studentId = Guid.NewGuid();
+        Guid employeeId = Guid.NewGuid();
+        string json = $$"""
+            [
+              {
+                "$type": "student",
+                "Id": "{{studentId}}",
+                "Name": { "FirstName": "Alice", "LastName": "Smith" },
+                "Email": "alice@example.com",
+                "SchoolName": "EWU",
+                "Major": "CS"
+              },
+              {
+                "$type": "employee",
+                "Id": "{{employeeId}}",
+                "Name": { "FirstName": "Bob", "LastName": "Jones" },
+                "Email": "bob@example.com",
+                "Employer": "Acme",
+                "JobTitle": "Developer"
+              }
+            ]
+            """;
+
+        try
+        {
+            File.WriteAllText(filePath, json);
+            ContactBook contactBook = ContactBook.LoadFromFile(filePath);
+            Student student = contactBook.GetAll().OfType<Student>().Single();
+            Employee employee = contactBook.GetAll().OfType<Employee>().Single();
+
+            Assert.HasCount(2, contactBook.GetAll());
+            Assert.AreEqual(studentId, student.Id);
+            Assert.AreEqual(employeeId, employee.Id);
+            Assert.AreEqual(new Student(new FullName("Alice", "Smith"), ["alice@example.com"],
+                schoolName: "EWU", major: "CS"), student);
+            Assert.AreEqual(new Employee(new FullName("Bob", "Jones"), ["bob@example.com"],
+                employer: "Acme", jobTitle: "Developer"), employee);
+
+            contactBook.SaveToFile(filePath);
+            ContactBook reloaded = ContactBook.LoadFromFile(filePath);
+            Assert.IsTrue(reloaded.Contains(student));
+            Assert.IsTrue(reloaded.Contains(employee));
+            Assert.AreEqual(studentId, reloaded.GetAll().OfType<Student>().Single().Id);
+            Assert.AreEqual(employeeId, reloaded.GetAll().OfType<Employee>().Single().Id);
+        }
+        finally
+        {
+            File.Delete(filePath);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("null")]
+    [DataRow("\"\"")]
+    [DataRow("\" \"")]
+    public void LoadFromFile_EmptyPreviousEmail_KeepsOtherContactMethods(string emailJson)
+    {
+        string filePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+        string json = $$"""
+            [{
+              "$type": "student",
+              "Name": { "FirstName": "Alice", "LastName": "Smith" },
+              "Email": {{emailJson}},
+              "PhoneNumber": "555-0100"
+            }]
+            """;
+
+        try
+        {
+            File.WriteAllText(filePath, json);
+            IContact contact = Assert.ContainsSingle(ContactBook.LoadFromFile(filePath).GetAll());
+
+            Assert.IsEmpty(contact.Emails);
+            Assert.AreEqual("555-0100", contact.PhoneNumber);
+        }
+        finally
+        {
+            File.Delete(filePath);
+        }
+    }
+
+    [TestMethod]
+    public void LoadFromFile_BothEmailFormats_PrefersEmailsCollection()
+    {
+        string filePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+        string json = """
+            [{
+              "$type": "student",
+              "Name": { "FirstName": "Alice", "LastName": "Smith" },
+              "Email": "old@example.com",
+              "Emails": ["current@example.com", "school@example.com"]
+            }]
+            """;
+
+        try
+        {
+            File.WriteAllText(filePath, json);
+            IContact contact = Assert.ContainsSingle(ContactBook.LoadFromFile(filePath).GetAll());
+            string[] expected = ["current@example.com", "school@example.com"];
+
+            CollectionAssert.AreEqual(expected, contact.Emails.ToArray());
+        }
+        finally
+        {
+            File.Delete(filePath);
+        }
+    }
+
     private sealed record UnsupportedContact()
         : Contact(new FullName("Unsupported", "Contact"),
-            email: "unsupported@example.com");
+            emails: ["unsupported@example.com"]);
 }
