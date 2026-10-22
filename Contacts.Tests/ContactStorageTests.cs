@@ -123,6 +123,27 @@ public class ContactStorageTests
     }
 
     [TestMethod]
+    public void Load_MissingType_Throws()
+    {
+        File.WriteAllText(_path, """[{"Name":{"FirstName":"A","LastName":"B"}}]""");
+
+        Assert.Throws<NotSupportedException>(() => ContactStorage.Load(_path));
+    }
+
+    [TestMethod]
+    public void Save_OverExistingFile_ReplacesItAndLeavesNoTempFile()
+    {
+        File.WriteAllText(_path, "old contents");
+        ContactBook book = new();
+        book.Add(new Student(new FullName("Ada", "Lovelace"), ["ada@example.com"], "CS"));
+
+        ContactStorage.Save(book, _path);
+
+        Assert.HasCount(1, ContactStorage.Load(_path).GetAll());
+        Assert.IsFalse(File.Exists(_path + ".tmp"));
+    }
+
+    [TestMethod]
     public void Load_InvalidContactData_ThrowsFromValidation()
     {
         File.WriteAllText(_path, """[{"Type":"Student","Name":{"FirstName":"A","LastName":"B"},"Emails":["a@b.c"],"Major":" "}]""");

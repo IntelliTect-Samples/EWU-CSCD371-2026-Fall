@@ -354,10 +354,56 @@ public class ProgramTests
 
             Assert.IsEmpty(book.GetAll());
             StringAssert.Contains(output.ToString(), "Could not load contacts, starting empty");
+            StringAssert.Contains(output.ToString(), "backed up");
+            Assert.AreEqual("{ not json", File.ReadAllText(path + ".bak"));
         }
         finally
         {
             File.Delete(path);
+            File.Delete(path + ".bak");
+        }
+    }
+
+    [TestMethod]
+    public void Load_MissingType_ReportsAndReturnsEmptyBook()
+    {
+        string path = TempPath();
+        File.WriteAllText(path, """[{"Name":{"FirstName":"A","LastName":"B"}}]""");
+        StringWriter output = new();
+
+        try
+        {
+            ContactBook book = Program.Load(path, output);
+
+            Assert.IsEmpty(book.GetAll());
+            StringAssert.Contains(output.ToString(), "Could not load contacts, starting empty");
+        }
+        finally
+        {
+            File.Delete(path);
+            File.Delete(path + ".bak");
+        }
+    }
+
+    [TestMethod]
+    public void Save_WriteFails_ReportsErrorAndKeepsOriginalFile()
+    {
+        string path = TempPath();
+        File.WriteAllText(path, "original");
+        Directory.CreateDirectory(path + ".tmp");
+        StringWriter output = new();
+
+        try
+        {
+            Program.Save(new ContactBook(), path, output);
+
+            StringAssert.Contains(output.ToString(), "Could not save contacts");
+            Assert.AreEqual("original", File.ReadAllText(path));
+        }
+        finally
+        {
+            File.Delete(path);
+            Directory.Delete(path + ".tmp");
         }
     }
 

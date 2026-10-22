@@ -10,7 +10,18 @@ public static class ContactStorage
     {
         ArgumentNullException.ThrowIfNull(book);
 
-        File.WriteAllText(path, JsonSerializer.Serialize(book.GetAll(), Options));
+        // Write to a temp file first so a failed write never truncates the existing contacts file.
+        string tempPath = path + ".tmp";
+
+        try
+        {
+            File.WriteAllText(tempPath, JsonSerializer.Serialize(book.GetAll(), Options));
+            File.Move(tempPath, path, overwrite: true);
+        }
+        finally
+        {
+            File.Delete(tempPath);
+        }
     }
 
     public static ContactBook Load(string path)

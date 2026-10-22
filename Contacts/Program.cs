@@ -21,10 +21,32 @@ public static class Program
         {
             return ContactStorage.Load(path);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or ArgumentException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or ArgumentException or NotSupportedException)
         {
             output.WriteLine($"Could not load contacts, starting empty: {ex.Message}");
+            Backup(path, output);
             return new ContactBook();
+        }
+    }
+
+    // Keep a copy of an unreadable file so saving the empty book on quit does not lose its contents.
+    private static void Backup(string path, TextWriter output)
+    {
+        if (!File.Exists(path))
+        {
+            return;
+        }
+
+        string backupPath = path + ".bak";
+
+        try
+        {
+            File.Copy(path, backupPath, overwrite: true);
+            output.WriteLine($"The unreadable file was backed up to {backupPath}");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            output.WriteLine($"Could not back up contacts: {ex.Message}");
         }
     }
 
