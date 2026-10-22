@@ -6,7 +6,7 @@ public sealed record class FullName(string First, string Last, string? Middle)
 {
     public override string ToString()
         => Middle is null
-            ? $"{First}  {Last}"
+            ? $"{First} {Last}"
             : $"{First} {Middle} {Last}";
 }
 
