@@ -6,7 +6,7 @@ public sealed record class FullName(string First, string Last, string? Middle)
 {
     public override string ToString()
         => Middle is null
-            ? $"{First} {Last}"
+            ? $"{First}  {Last}"
             : $"{First} {Middle} {Last}";
 }
 
@@ -14,7 +14,7 @@ public abstract record ContactBase : IContact
 {
     private static int _nextID = 1;
 
-    public int ID { get; init; } = _nextID++;
+    public int ID { get; set; } = _nextID++;
 
     public FullName name { get; init; }
 
@@ -109,8 +109,15 @@ public class ContactBook
 
         if (items is not null)
         {
-            foreach (var item in items)
-                Add(item);
+            foreach (var item in items) {
+                if (Entities.Contains(item))
+                {
+                    Console.WriteLine($"Item {item} given from JsonOptionGiver already exists in Contacts. Skipping it now.");
+                }
+                else {
+                    Add(item);
+                }
+            }
         }
     }
 

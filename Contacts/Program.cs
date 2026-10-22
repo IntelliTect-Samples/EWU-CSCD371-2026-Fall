@@ -121,12 +121,12 @@ public static class Program
         var lastName = Console.ReadLine() ?? string.Empty;
 
         Console.Write("Middle name (optional): ");
-        var middleName = Console.ReadLine();
+        var middle = Console.ReadLine();
 
-        if (string.IsNullOrWhiteSpace(middleName))
-            middleName = null;
+        if (string.IsNullOrWhiteSpace(middle))
+            middle = null;
 
-        return new FullName(firstName, lastName, middleName);
+        return new FullName(firstName, lastName, middle);
     }
 
     private static List<string> ReadEmails()
@@ -143,7 +143,10 @@ public static class Program
 
             if (string.IsNullOrWhiteSpace(input))
                 break;
-
+            else if (!input.Contains("@") && !input.Contains(".")) {
+                Console.WriteLine("Email does not contain @ and/or . in it, and is not valid.");
+                break;
+            }
             emails.Add(input.Trim());
         }
 
