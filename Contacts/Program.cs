@@ -146,8 +146,16 @@ public static class Program
             {
                 break;
             }
-    
-            input = input.Trim();
+            
+            // Check if the input contains both '@' and '.'
+            if (input.Contains('@') && input.Contains('.'))
+            {
+                Console.WriteLine("Valid basic format.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid: Missing @ or a dot.");
+            }
     
             if (!input.Contains('@') || !input.Contains('.'))
             {
