@@ -18,8 +18,8 @@ public abstract record Contact(FullName Name, IReadOnlyList<string> Emails, stri
         other is not null
         && EqualityContract == other.EqualityContract
         && Name == other.Name
-        && SortedEmails().SequenceEqual(other.SortedEmails(), EmailComparer)
-        && Phone == other.Phone;
+        && Phone == other.Phone
+        && SortedEmails().SequenceEqual(other.SortedEmails(), EmailComparer);
 
     public override int GetHashCode()
     {
