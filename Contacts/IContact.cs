@@ -1,5 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace Contacts;
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(Student), "student")]
+[JsonDerivedType(typeof(Employee), "employee")]
 public interface IContact
 {
     Guid Id { get; }

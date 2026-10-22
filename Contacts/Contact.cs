@@ -3,9 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace Contacts;
 
-[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
-[JsonDerivedType(typeof(Student), "student")]
-[JsonDerivedType(typeof(Employee), "employee")]
 public abstract record class Contact : IContact
 {
     [JsonInclude]

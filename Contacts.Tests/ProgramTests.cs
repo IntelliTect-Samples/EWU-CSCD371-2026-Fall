@@ -174,6 +174,84 @@ public class ProgramTests
         }
     }
 
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_SaveFailsWhenAdding_ReportsErrorAndRollsBack(string menuOption)
+    {
+        string missingDirectory = Path.Combine(Path.GetTempPath(), $"contacts-test-{Guid.NewGuid():N}");
+        string storagePath = Path.Combine(missingDirectory, "contacts.json");
+
+        string output = RunWithStoragePath(storagePath,
+            menuOption, "Alice", "Smith", "", "alice@example.com", "", "", "", "",
+            "3", "0");
+
+        StringAssert.Contains(output, "Could not save contacts:");
+        StringAssert.Contains(output, "No contacts found.");
+        Assert.IsFalse(output.Contains("Contact added.", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void Run_SaveFailsWhenRemoving_ReportsErrorAndKeepsContact()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), $"contacts-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        string storagePath = Path.Combine(directory, "contacts.json");
+
+        try
+        {
+            ContactBook contactBook = new();
+            contactBook.Add(new Student(new FullName("Alice", "Smith"), "alice@example.com"));
+            contactBook.SaveToFile(storagePath);
+
+            using BeforeFirstReadReader input = new("4\n1\n3\n0", () =>
+            {
+                // Loading has finished; block saving without relying on file permissions.
+                File.Move(storagePath, Path.Combine(directory, "original.json"));
+                Directory.CreateDirectory(storagePath);
+            });
+            using StringWriter output = new();
+
+            Program.Run(input, output, storagePath);
+            string text = output.ToString();
+
+            StringAssert.Contains(text, "Could not save contacts:");
+            Assert.AreEqual(2, text.Split("Name: Alice Smith").Length - 1);
+            Assert.IsFalse(text.Contains("Contact removed.", StringComparison.Ordinal));
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("1")]
+    [DataRow("2")]
+    public void Run_EndOfInputWhileAdding_ExitsWithoutChangingSavedContacts(string menuOption)
+    {
+        string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
+
+        try
+        {
+            ContactBook contactBook = new();
+            contactBook.Add(new Employee(new FullName("Bob", "Jones"), "bob@example.com"));
+            contactBook.SaveToFile(storagePath);
+            string originalJson = File.ReadAllText(storagePath);
+
+            string output = RunWithStoragePath(storagePath,
+                menuOption, "Alice", "Smith", "", "alice@example.com");
+
+            StringAssert.Contains(output, "Goodbye.");
+            Assert.IsFalse(output.Contains("Contact added.", StringComparison.Ordinal));
+            Assert.AreEqual(originalJson, File.ReadAllText(storagePath));
+        }
+        finally
+        {
+            File.Delete(storagePath);
+        }
+    }
+
     private static string RunWithInput(params string[] lines)
     {
         string storagePath = Path.Combine(Path.GetTempPath(), $"contacts-{Guid.NewGuid():N}.json");
@@ -199,5 +277,21 @@ public class ProgramTests
         Program.Run(input, output, storagePath);
 
         return output.ToString();
+    }
+
+    private sealed class BeforeFirstReadReader(string text, Action beforeFirstRead) : StringReader(text)
+    {
+        private bool _hasRead;
+
+        public override string? ReadLine()
+        {
+            if (!_hasRead)
+            {
+                beforeFirstRead();
+                _hasRead = true;
+            }
+
+            return base.ReadLine();
+        }
     }
 }

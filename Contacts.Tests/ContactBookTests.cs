@@ -147,4 +147,40 @@ public class ContactBookTests
 
         Assert.IsEmpty(contactBook.GetAll());
     }
+
+    [TestMethod]
+    public void SaveToFile_SerializationFails_PreservesExistingFile()
+    {
+        string directory = Path.Combine(Path.GetTempPath(),
+            $"contacts-test-{Guid.NewGuid():N}");
+
+        Directory.CreateDirectory(directory);
+        string filePath = Path.Combine(directory, "contacts.json");
+
+        try
+        {
+            ContactBook contactBook = new();
+            contactBook.Add(new Student( new FullName("Alice", "Smith"),
+                "alice@example.com"));
+
+            contactBook.SaveToFile(filePath);
+            string originalJson = File.ReadAllText(filePath);
+
+            contactBook.Add(new UnsupportedContact());
+
+            Assert.ThrowsExactly<NotSupportedException>(
+                () => contactBook.SaveToFile(filePath));
+
+            Assert.AreEqual(originalJson, File.ReadAllText(filePath));
+            Assert.HasCount(1, Directory.GetFiles(directory));
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    private sealed record UnsupportedContact()
+        : Contact(new FullName("Unsupported", "Contact"),
+            email: "unsupported@example.com");
 }

@@ -41,14 +41,14 @@ public class ContactBook
         try
         {
             using FileStream stream = File.OpenRead(filePath);
-            Contact[]? contacts = JsonSerializer.Deserialize<Contact[]>(stream, JsonOptions);
+            IContact[]? contacts = JsonSerializer.Deserialize<IContact[]>(stream, JsonOptions);
             if (contacts is null)
             {
                 throw new JsonException("The contacts file must contain a JSON array.");
             }
 
             ContactBook contactBook = new();
-            foreach (Contact contact in contacts)
+            foreach (IContact contact in contacts)
             {
                 contactBook.Add(contact);
             }
@@ -69,10 +69,24 @@ public class ContactBook
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
 
-        Contact[] contacts = Entities.Select(contact => contact as Contact
-            ?? throw new NotSupportedException("Only Contact-derived records can be saved.")).ToArray();
+        IContact[] contacts = GetAll();
 
-        using FileStream stream = File.Create(filePath);
-        JsonSerializer.Serialize(stream, contacts, JsonOptions);
+        string destinationPath = Path.GetFullPath(filePath);
+        string temporaryPath = $"{destinationPath}.{Guid.NewGuid():N}.tmp";
+
+        try
+        {
+            using (FileStream stream = new(
+                temporaryPath, FileMode.CreateNew, FileAccess.Write))
+            {
+                JsonSerializer.Serialize(stream, contacts, JsonOptions);
+            }
+
+            File.Move(temporaryPath, destinationPath, overwrite: true);
+        }
+        finally
+        {
+            File.Delete(temporaryPath);
+        }
     }
 }
