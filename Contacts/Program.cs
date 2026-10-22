@@ -105,7 +105,7 @@ public static class Program
 
         try
         {
-            FullName name = new(firstName, lastName);
+            FullName name = new(firstName, middleName, lastName);
             Employee employee = new(name, email, jobTitle);
             if (book.Add(employee))
                 Console.WriteLine("Employee added successfully.");
