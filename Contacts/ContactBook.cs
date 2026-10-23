@@ -2,22 +2,31 @@ namespace Contacts;
 
 public class ContactBook
 {
-    private HashSet<IContact> Entities { get; } = [];
+    private HashSet<IContact> Contacts { get; } = [];
 
-    public void Add(IContact item)
+    public bool Add(IContact item)
     {
-        Entities.Add(item);
+        ArgumentNullException.ThrowIfNull(item); // null contacts would crash List 
+        return Contacts.Add(item);
     }
 
-    public void Remove(IContact item)
+    public bool Remove(IContact item)
     {
-        Entities.Remove(item);
+        return Contacts.Remove(item);
+    }
+
+    public bool RemoveById(int id)
+    {
+        var contact = Contacts.FirstOrDefault(c => c.Id == id);
+        return contact is not null && Contacts.Remove(contact);
     }
 
     public bool Contains(IContact item)
     {
-        return Entities.Contains(item);
+        return Contacts.Contains(item);
     }
+    public bool IsEmpty => Contacts.Count == 0;
 
-    public IContact[] GetAll() => Entities.ToArray();
+    //public IEnumerable<IContact> GetAll() => Contacts;
+    public IContact[] GetAll() => [.. Contacts];
 }
