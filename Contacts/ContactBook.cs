@@ -4,18 +4,28 @@ public class ContactBook
 {
     private HashSet<IContact> Entities { get; } = [];
 
-    public void Add(IContact item)
+    /// <summary>
+    /// Adds a contact. Returns <c>false</c> (and adds nothing) if an equal contact is already stored.
+    /// </summary>
+    public bool Add(IContact item)
     {
-        Entities.Add(item);
+        ArgumentNullException.ThrowIfNull(item);
+        return Entities.Add(item);
     }
 
-    public void Remove(IContact item)
+    /// <summary>
+    /// Removes the stored contact equal to <paramref name="item"/>, even if it is a different instance.
+    /// Returns <c>false</c> if no equal contact is stored.
+    /// </summary>
+    public bool Remove(IContact item)
     {
-        Entities.Remove(item);
+        ArgumentNullException.ThrowIfNull(item);
+        return Entities.Remove(item);
     }
 
     public bool Contains(IContact item)
     {
+        ArgumentNullException.ThrowIfNull(item);
         return Entities.Contains(item);
     }
 
