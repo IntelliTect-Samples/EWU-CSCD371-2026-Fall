@@ -15,9 +15,7 @@ public class CLITests
         ContactBook book = new();
         StringWriter output = new();
         StringReader input= new("0\n");
-
         book.Add(new Employee(new FullName("Bob", "Smith", null), "b@x.com", "Acme", "Dev", null));
-
         CLI cli = new(book, input, output);
 
         // Act
@@ -34,11 +32,9 @@ public class CLITests
         //Arrange
         string testPrompt = "this is a prompt";
         string testPrompt2 = "this is a second prompt";
-
         ContactBook book = new();
         StringWriter output = new();
         StringReader input = new("\n\nhello");
-
         CLI cli = new(book, input, output);
 
         //Act
@@ -51,7 +47,6 @@ public class CLITests
         int v = Regex.Count(output.ToString(), Regex.Escape(testPrompt2));
         int count = v;
         Assert.AreEqual(2, count);
-
     }
 
     [TestMethod]
@@ -60,11 +55,9 @@ public class CLITests
         //Arrange
         string testPrompt = "this is a prompt";
         string testPrompt2 = "this is a second prompt";
-
         ContactBook book = new();
         StringWriter output = new();
         StringReader input = new("hello\n");
-
         CLI cli = new(book, input, output);
 
         //Act
@@ -81,11 +74,9 @@ public class CLITests
     {
         //Arrange
         string testPrompt = "this is a prompt";
-
         ContactBook book = new();
         StringWriter output = new();
         StringReader input = new("\n");
-
         CLI cli = new(book, input, output);
 
         //Act
@@ -104,7 +95,6 @@ public class CLITests
         ContactBook book = new();
         StringWriter output = new();
         StringReader input = new("John\n\nSmith");
-
         CLI cli = new(book, input, output);
 
         //Act
@@ -126,15 +116,11 @@ public class CLITests
         string company = "Cool Company";
         string jobTitle = "Test Employee";
 
-        string inString = firstName
-            + "\n\n" 
-            + lastName
-            + "\n"
+        string inString = firstName + "\n\n" 
+            + lastName + "\n"
             + email + "\n"
-            + company 
-            + "\n" 
-            + jobTitle 
-            + "\n\n\n";
+            + company + "\n" 
+            + jobTitle + "\n\n\n";
 
         ContactBook book = new();
         StringWriter output = new();
@@ -164,15 +150,11 @@ public class CLITests
         string school = "Cool Company";
         string major = "Test Employee";
 
-        string inString = firstName
-            + "\n\n"
-            + lastName
-            + "\n"
+        string inString = firstName + "\n\n"
+            + lastName + "\n"
             + email + "\n"
-            + school
-            + "\n"
-            + major
-            + "\n\n\n";
+            + school + "\n"
+            + major + "\n\n\n";
 
         ContactBook book = new();
         StringWriter output = new();
@@ -203,15 +185,13 @@ public class CLITests
         string company = "Cool Company";
         string jobTitle = "Test Employee";
 
-        string inString = "\n" + type + "\n" + firstName
-            + "\n\n"
-            + lastName
-            + "\n"
+        string inString = "\n" 
+            + type + "\n" 
+            + firstName + "\n\n"
+            + lastName + "\n"
             + email + "\n"
-            + company
-            + "\n"
-            + jobTitle 
-            + "\n\n\n";
+            + company + "\n"
+            + jobTitle + "\n\n\n";
 
         ContactBook book = new();
         StringWriter output = new();
@@ -238,15 +218,13 @@ public class CLITests
         string school = "Cool Company";
         string major = "Test Employee";
 
-        string inString = "\n" + type + "\n" + firstName
-            + "\n\n"
-            + lastName
-            + "\n"
+        string inString = "\n" 
+            + type + "\n"
+            + firstName + "\n\n"
+            + lastName + "\n"
             + email + "\n"
-            + school
-            + "\n"
-            + major
-            + "\n\n\n";
+            + school + "\n"
+            + major + "\n\n\n";
 
         ContactBook book = new();
         StringWriter output = new();
@@ -255,7 +233,6 @@ public class CLITests
         CLI cli = new(book, input, output);
 
         //Act
-
         var result = cli.EnterContact();
 
         //Assert
