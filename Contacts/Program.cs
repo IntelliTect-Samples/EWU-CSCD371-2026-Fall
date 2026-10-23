@@ -4,7 +4,7 @@ public static class Program
 {
     public static void Main()
     {
-        ContactBook contactBook = new ContactBook();
+        ContactBook contactBook = new();
         CLI cli = new(contactBook, Console.In, Console.Out);
         cli.Run();
     }

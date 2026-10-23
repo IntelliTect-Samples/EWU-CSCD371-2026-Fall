@@ -36,12 +36,10 @@ public abstract record Contact : IContact
         Name == other.Name &&
         Email == other.Email &&
         Phone == other.Phone;
+
     public override int GetHashCode() =>
         HashCode.Combine(EqualityContract, Name, Email, Phone);
-    
-
 }
-
 
 public sealed record FullName
 {
@@ -50,20 +48,20 @@ public sealed record FullName
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(first);
         ArgumentNullException.ThrowIfNullOrWhiteSpace(last);
-        firstName = first.Trim();
-        middleName = string.IsNullOrWhiteSpace(middle) ? null : middle.Trim();
-        lastName = last.Trim(); 
+        FirstName = first.Trim();
+        MiddleName = string.IsNullOrWhiteSpace(middle) ? null : middle.Trim();
+        LastName = last.Trim(); 
     }
-    public string firstName { get; init; }
-    public string? middleName { get; init; }
-    public string lastName { get; init; }
+    public string FirstName { get; init; }
+    public string? MiddleName { get; init; }
+    public string LastName { get; init; }
 
     public override string ToString()
     {
-        if (string.IsNullOrWhiteSpace(middleName))
+        if (string.IsNullOrWhiteSpace(MiddleName))
         {
-            return $"{firstName} {lastName}";
+            return $"{FirstName} {LastName}";
         }
-        return $"{firstName} {middleName} {lastName}";
+        return $"{FirstName} {MiddleName} {LastName}";
     }
 }

@@ -226,9 +226,9 @@ public sealed class ContactsTests
     {
         var name = new FullName("Prince", "Menethil", "Arthas");
 
-        Assert.AreEqual("Prince", name.firstName);
-        Assert.AreEqual("Menethil", name.lastName);
-        Assert.AreEqual("Arthas", name.middleName);
+        Assert.AreEqual("Prince", name.FirstName);
+        Assert.AreEqual("Menethil", name.LastName);
+        Assert.AreEqual("Arthas", name.MiddleName);
     }
 
     [TestMethod]
@@ -236,7 +236,7 @@ public sealed class ContactsTests
     {
         var name = new FullName("Prince", "Menethil");
 
-        Assert.IsNull(name.middleName);
+        Assert.IsNull(name.MiddleName);
     }
 
     [TestMethod]
@@ -246,7 +246,7 @@ public sealed class ContactsTests
     {
         var name = new FullName("Prince", "Menethil", middle);
 
-        Assert.IsNull(name.middleName);
+        Assert.IsNull(name.MiddleName);
     }
 
     [TestMethod]
@@ -254,9 +254,9 @@ public sealed class ContactsTests
     {
         var name = new FullName("  Prince ", " Menethil  ", " Arthas ");
 
-        Assert.AreEqual("Prince", name.firstName);
-        Assert.AreEqual("Menethil", name.lastName);
-        Assert.AreEqual("Arthas", name.middleName);
+        Assert.AreEqual("Prince", name.FirstName);
+        Assert.AreEqual("Menethil", name.LastName);
+        Assert.AreEqual("Arthas", name.MiddleName);
     }
 
     [TestMethod]
