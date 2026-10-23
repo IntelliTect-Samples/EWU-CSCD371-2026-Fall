@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestPlatform.Utilities;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text.RegularExpressions;
 
 namespace Contacts.Tests;
@@ -99,9 +100,9 @@ public class CLITests
         FullName result = cli.EnterName();
 
         //Assert
-        Assert.AreEqual("John", result.firstName);
-        Assert.AreEqual("Smith", result.lastName);
-        Assert.IsNull(result.middleName);
+        Assert.AreEqual("John", result.FirstName);
+        Assert.AreEqual("Smith", result.LastName);
+        Assert.IsNull(result.MiddleName);
     }
 
     [TestMethod]
@@ -130,8 +131,8 @@ public class CLITests
         var result = cli.EnterEmployeeContact();
 
         //Assert
-        Assert.AreEqual(firstName, result.Name.firstName);
-        Assert.AreEqual(lastName, result.Name.lastName);
+        Assert.AreEqual(firstName, result.Name.FirstName);
+        Assert.AreEqual(lastName, result.Name.LastName);
         Assert.AreEqual(company, result.Company);
         Assert.AreEqual(jobTitle, result.JobTitle);
         Assert.IsNull(result.Phone);
@@ -162,8 +163,8 @@ public class CLITests
         var result = cli.EnterStudentContact();
 
         //Assert
-        Assert.AreEqual(firstName, result.Name.firstName);
-        Assert.AreEqual(lastName, result.Name.lastName);
+        Assert.AreEqual(firstName, result.Name.FirstName);
+        Assert.AreEqual(lastName, result.Name.LastName);
         Assert.AreEqual(school, result.School);
         Assert.AreEqual(major, result.Major);
         Assert.IsNull(result.Phone);
@@ -227,6 +228,46 @@ public class CLITests
         //Assert
         StringAssert.Contains(output.ToString(), "Invalid input! Try again...");
         Assert.IsInstanceOfType<Student>(result);
+    }
+
+    [TestMethod]
+    public void EnterRemoveFromListRepromptsInvalidInputTest()
+    {
+        //Arrange
+        ContactBook book = new();
+        book.Add(new Student(new FullName("Bob", "Smith"),"a@b.com", "EWU", "Computer Science"));
+        book.Add(new Student(new FullName("Bart", "Simpson"),"c@d.com", "EWU", "Computer Science"));
+
+        string inString = "a\na\na\n0\n";
+
+        StringWriter output = new();
+        StringReader input = new(inString);
+
+        CLI cli = new(book, input, output);
+
+        //Act
+        cli.EnterRemoveFromList();
+
+        //Assert
+        int v = Regex.Count(output.ToString(), Regex.Escape("Invalid input! Try again..."));
+        Assert.AreEqual(3, v);
+    }
+
+    [TestMethod]
+    public void EnterRemoveFromListEmptyListTest()
+    {
+        //Arrange
+        ContactBook book = new();
+        StringWriter output = new();
+        StringReader input = new("");
+
+        CLI cli = new(book, input, output);
+
+        //Act
+        cli.EnterRemoveFromList();
+
+        //Assert
+        StringAssert.Contains(output.ToString(), "Contact list is empty...");
     }
 }
 

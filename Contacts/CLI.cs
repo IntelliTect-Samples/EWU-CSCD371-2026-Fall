@@ -11,17 +11,17 @@ public class CLI
     private readonly TextReader _in;
     private readonly TextWriter _out;
 
-    public CLI(ContactBook contactbook, TextReader? @in = null, TextWriter? @out = null)
+    public CLI(ContactBook contactbook, TextReader? input = null, TextWriter? output = null)
     {
         _contactBook = contactbook;
-        _in = @in ?? Console.In;
-        _out = @out ?? Console.Out;
+        _in = input ?? Console.In;
+        _out = output ?? Console.Out;
     }
 
     internal static string? FormatContact(IContact contact) => contact switch
     {
-        Employee e => $"{e.Name,20} | {e.Email,20} | {e.Company,30} | {e.JobTitle,20} | {e.Phone??""}",
-        Student s => $"{s.Name,20} | {s.Email,20} | {s.School,30} | {s.Major,20} | {s.Phone??""}",
+        Employee e => $"{e.Name,20} | {e.Email,20} | {e.Company,30} | {e.JobTitle,20} | {e.Phone}",
+        Student s => $"{s.Name,20} | {s.Email,20} | {s.School,30} | {s.Major,20} | {s.Phone}",
         _ => null
     };
 
@@ -29,7 +29,7 @@ public class CLI
     {
         _out.WriteLine("Contacts");
         _out.WriteLine("---------------------------------------------------------------------------------------------");
-        foreach (IContact? contact in _contactBook.GetAll().OrderBy(c => c.Name.lastName))
+        foreach (IContact? contact in _contactBook.GetAll().OrderBy(c => c.Name.FirstName))
         {
             string? contactString = FormatContact(contact);
             if (contactString != null)
@@ -98,9 +98,10 @@ public class CLI
 
         return new(name, email, school, major, phone);
     }
+
     public void EnterRemoveFromList()
     {
-        var contactList = _contactBook.GetAll().OrderBy(c => c.Name).ToList();
+        var contactList = _contactBook.GetAll().OrderBy(c => c.Name.FirstName).ToList();
 
         if (contactList.Count == 0)
         {
@@ -118,12 +119,15 @@ public class CLI
 
         bool isValid = int.TryParse(_in.ReadLine(), out int id) && id >= 0 && id < contactList.Count;
 
-        if (isValid)
+        while (!isValid)
         {
-            contact = contactList[id];
-            _contactBook.Remove(contact);
-            _out.WriteLine("removed");
+            _out.WriteLine("Invalid input! Try again...");
+            isValid = int.TryParse(_in.ReadLine(), out id) && id >= 0 && id < contactList.Count;
         }
+
+        contact = contactList[id];
+        _contactBook.Remove(contact);
+        _out.WriteLine("removed");
 
     }
 
@@ -146,7 +150,7 @@ public class CLI
         return result;
     }
 
-    public  IContact EnterContact()
+    public IContact EnterContact()
     {
         _out.WriteLine("Enter Contact Type (Student or Employee)");
         string? type = _in.ReadLine();
@@ -203,7 +207,4 @@ public class CLI
             }
         }
     }
-
-
-
 }
