@@ -6,8 +6,6 @@ namespace Contacts.Tests;
 [TestClass]
 public class CLITests
 {
-
-
     [TestMethod]
     public void EnterRemoveFromListValid()
     {
@@ -117,10 +115,9 @@ public class CLITests
         string jobTitle = "Test Employee";
 
         string inString = firstName + "\n\n" 
-            + lastName + "\n"
-            + email + "\n"
-            + company + "\n" 
-            + jobTitle + "\n\n\n";
+            + lastName + "\n" + email + "\n" 
+            + company + "\n" + jobTitle 
+            + "\n\n\n";
 
         ContactBook book = new();
         StringWriter output = new();
@@ -151,10 +148,8 @@ public class CLITests
         string major = "Test Employee";
 
         string inString = firstName + "\n\n"
-            + lastName + "\n"
-            + email + "\n"
-            + school + "\n"
-            + major + "\n\n\n";
+            + lastName + "\n" + email + "\n"
+            + school + "\n" + major + "\n\n\n";
 
         ContactBook book = new();
         StringWriter output = new();
@@ -185,12 +180,9 @@ public class CLITests
         string company = "Cool Company";
         string jobTitle = "Test Employee";
 
-        string inString = "\n" 
-            + type + "\n" 
-            + firstName + "\n\n"
-            + lastName + "\n"
-            + email + "\n"
-            + company + "\n"
+        string inString = "\n" + type + "\n" 
+            + firstName + "\n\n" + lastName + "\n"
+            + email + "\n" + company + "\n"
             + jobTitle + "\n\n\n";
 
         ContactBook book = new();
@@ -218,12 +210,9 @@ public class CLITests
         string school = "Cool Company";
         string major = "Test Employee";
 
-        string inString = "\n" 
-            + type + "\n"
-            + firstName + "\n\n"
-            + lastName + "\n"
-            + email + "\n"
-            + school + "\n"
+        string inString = "\n" + type + "\n"
+            + firstName + "\n\n" + lastName + "\n"
+            + email + "\n" + school + "\n"
             + major + "\n\n\n";
 
         ContactBook book = new();
