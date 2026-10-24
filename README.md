@@ -24,16 +24,16 @@ Reference the material on generics, collections, and graph traversal covered in 
 - Implement `AddNode(T value)`. ✔
   - Add a node to the graph. ✔
   - Adding an existing node must not throw or add a duplicate. ✔
-- Implement `AddDependency(T dependsOn, T dependent)`. ❌✔
-  - Both nodes must already exist in the graph. ❌✔
-  - Add the directed edge `dependsOn → dependent`. ❌✔
-  - Do not add duplicate edges. ❌✔
-  - Throw an `InvalidOperationException` if the edge would create a cycle. Use the message `"Adding this dependency would create a cycle."` ❌✔
-- Implement `GetDependencies(T value)` to return the nodes that `value` **directly** depends on. ❌✔
-- Implement `GetDependents(T value)` to return the nodes that **directly** depend on `value`. ❌✔
-- For an edge `dependsOn → dependent`, `GetDependencies(dependent)` includes `dependsOn`, and `GetDependents(dependsOn)` includes `dependent`. ❌✔
-- Choose and consistently apply an equality strategy for values of type `T`. ❌✔
-- Keep the graph's internal collections encapsulated. ❌✔
+- Implement `AddDependency(T dependsOn, T dependent)`. ✔
+  - Both nodes must already exist in the graph. ✔
+  - Add the directed edge `dependsOn → dependent`. ✔
+  - Do not add duplicate edges. ✔
+  - Throw an `InvalidOperationException` if the edge would create a cycle. Use the message `"Adding this dependency would create a cycle."` ✔
+- Implement `GetDependencies(T value)` to return the nodes that `value` **directly** depends on. ✔
+- Implement `GetDependents(T value)` to return the nodes that **directly** depend on `value`. ✔
+- For an edge `dependsOn → dependent`, `GetDependencies(dependent)` includes `dependsOn`, and `GetDependents(dependsOn)` includes `dependent`. ✔
+- Choose and consistently apply an equality strategy for values of type `T`. ✔
+- Keep the graph's internal collections encapsulated. ✔
 
 ### Demonstration and tests
 
