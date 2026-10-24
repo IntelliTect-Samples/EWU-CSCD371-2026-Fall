@@ -43,8 +43,92 @@ public class Dag<T> where T : notnull
         if (!_graph.ContainsKey(dependsOn) || !_graph.ContainsKey(dependent))
             return false;
         
-        // TODO: check cycle creation here - Throw error if true
+        if (WouldCreateCycle(dependsOn, dependent))
+            throw new InvalidOperationException("Adding this dependency would create a cycle.");
         
         return _graph[dependsOn].Add(dependent);
     }
+
+    /// <summary>
+    /// Gets the nodes that directly depend on the specified node.
+    /// </summary>
+    /// 
+    /// <param name="value">
+    /// The node whose dependents are to be returned
+    /// </param>
+    /// 
+    /// <returns>
+    /// A collection containing the nodes that directly depend on <paramref name="value"/>.
+    /// Returns an empty collection if the node has no dependents or does not exist in the graph.
+    /// </returns>
+    public IReadOnlyCollection<T> GetDependents(T value)
+    {
+        if (!_graph.TryGetValue(value, out HashSet<T>? dependents))
+            return [];
+        
+        return dependents.ToArray();
+    }
+
+    /// <summary>
+    /// Gets the nodes that the specified node directly depends on.
+    /// </summary>
+    /// 
+    /// <param name="value">
+    /// The node whose dependencies are to be returned
+    /// </param>
+    /// 
+    /// <returns>
+    /// A collection containing the nodes that <paramref name="value"/> directly depends on.
+    /// Returns an empty collection if the node has no dependencies or does not exist in the graph.
+    /// </returns>
+    public IReadOnlyCollection<T> GetDependencies(T value)
+    {
+        // NOTES: could use the collective expression? but I personally find .ToArray more code readable
+        return _graph
+                .Where(pair => pair.Value.Contains(value))
+                .Select(pair => pair.Key)
+                .ToArray();
+    }
+    
+    /// <summary>
+    /// Determines whether the graph contains the specified node.
+    /// </summary>
+    /// 
+    /// <param name="value">
+    /// The node to locate in the graph
+    /// </param>
+    /// 
+    /// <returns>
+    /// <see langword="true"/> if the node exists in the graph.
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool ContainsNode(T value) => _graph.ContainsKey(value);
+
+    #region Helpers
+
+    private bool WouldCreateCycle(T dependsOn, T dependent)
+    {
+        return CanReach(dependent, dependsOn);
+    }
+
+    private bool CanReach(T start, T target)
+    {
+        HashSet<T> visited = [];
+
+        return CanReach(start, target, visited);
+    }
+
+    private bool CanReach(T current, T target, HashSet<T> visited)
+    {
+        if (EqualityComparer<T>.Default.Equals(current, target))
+            return true;
+        
+        if (!visited.Add(current))
+            return false;
+
+        return _graph[current]
+            .Any(dependent => CanReach(dependent, target, visited));
+    }
+
+    #endregion
 }
