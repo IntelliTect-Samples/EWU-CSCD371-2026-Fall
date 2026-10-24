@@ -214,6 +214,44 @@ public class DagTests
 
     #endregion
 
+    #region CourseGraph Demo Tests
+    
+    [TestMethod]
+    public void CourseGraph_FanInFanOut_DependencyRelationshipsCorrect()
+    {
+        Dag<string> graph = CreateCourseGraph();
+        
+        // 211 fans out to 300 and 320
+        Assert.AreSequenceEqual([CSCD300, CSCD320], graph.GetDependents(CSCD211), SequenceOrder.InAnyOrder);
+        
+        // 300 directly depends on 211
+        Assert.AreSequenceEqual([CSCD211], graph.GetDependencies(CSCD300));
+        
+        // 320 directly depends on 211
+        Assert.AreSequenceEqual([CSCD211], graph.GetDependencies(CSCD320));
+        
+        // 300 is a prerequisite of 371
+        Assert.AreSequenceEqual([CSCD371], graph.GetDependents(CSCD300));
+        
+        // 320 is a prerequisite of 371
+        Assert.AreSequenceEqual([CSCD371], graph.GetDependents(CSCD320));
+        
+        // 371 fans in from 300 and 320
+        Assert.AreSequenceEqual([CSCD300, CSCD320], graph.GetDependencies(CSCD371), SequenceOrder.InAnyOrder);
+    }
+
+    [TestMethod]
+    public void CourseGraph_AddDependency371To211_ThrowsInvalidOperationExceptionDueToCycle()
+    {
+        Dag<string> graph = CreateCourseGraph();
+
+        InvalidOperationException exception =
+            Assert.ThrowsExactly<InvalidOperationException>(
+                () => graph.AddDependency(CSCD371, CSCD211));
+        
+        Assert.AreEqual("Adding this dependency would create a cycle.", exception.Message);
+    }
+
     private static Dag<string> CreateCourseGraph()
     {
         Dag<string> graph = new();
@@ -230,4 +268,6 @@ public class DagTests
         
         return graph;
     }
+    
+    #endregion
 }
