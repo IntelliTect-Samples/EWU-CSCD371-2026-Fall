@@ -101,6 +101,20 @@ public class DagTests
         Assert.AreEqual("Adding this dependency would create a cycle.", exception.Message);
     }
 
+    [TestMethod]
+    public void AddDependency_SelfDependency_ThrowsInvalidOperationException()
+    {
+        Dag<string> graph = new();
+        
+        graph.AddNode(CSCD211);
+        
+        InvalidOperationException exception = 
+            Assert.ThrowsExactly<InvalidOperationException>(
+                () => graph.AddDependency(CSCD211, CSCD211));
+        
+        Assert.AreEqual("Adding this dependency would create a cycle.", exception.Message);
+    }
+
     #endregion
 
     #region GetDependencies Tests (REQ 4)
