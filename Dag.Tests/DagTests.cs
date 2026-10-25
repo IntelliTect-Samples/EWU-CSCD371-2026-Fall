@@ -60,6 +60,27 @@ public class DagTests
     }
 
     [TestMethod]
+    public void RemoveNode_CoursePrerequisites_UnrelatedEdgesRemain()
+    {
+        Dag<string> dag = new();
+        foreach (string course in new[] { "CSCD 211", "CSCD 300", "CSCD 320", "CSCD 371" })
+        {
+            dag.AddNode(course);
+        }
+        dag.AddDependency("CSCD 211", "CSCD 300");
+        dag.AddDependency("CSCD 211", "CSCD 320");
+        dag.AddDependency("CSCD 300", "CSCD 371");
+        dag.AddDependency("CSCD 320", "CSCD 371");
+
+        dag.RemoveNode("CSCD 300");
+
+        CollectionAssert.AreEqual(new[] { "CSCD 320" }, dag.GetDependents("CSCD 211").ToArray());
+        CollectionAssert.AreEqual(new[] { "CSCD 211" }, dag.GetDependencies("CSCD 320").ToArray());
+        CollectionAssert.AreEqual(new[] { "CSCD 371" }, dag.GetDependents("CSCD 320").ToArray());
+        CollectionAssert.AreEqual(new[] { "CSCD 320" }, dag.GetDependencies("CSCD 371").ToArray());
+    }
+
+    [TestMethod]
     public void AddDependency_NewEdge_ReturnsTrue()
     {
         Dag<string> dag = new();
