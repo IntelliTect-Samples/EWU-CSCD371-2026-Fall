@@ -89,7 +89,31 @@ public class Dag<T> where T : notnull
                 .Select(pair => pair.Key)
                 .ToArray();
     }
-    
+
+    /// <summary>
+    /// Removes the specified node and all associated dependencies.
+    /// </summary>
+    /// 
+    /// <param name="value">
+    /// The node to remove.
+    /// </param>
+    /// 
+    /// <returns>
+    /// <see langword="true"/> if the node was removed.
+    /// <see langword="false"/> if the node does not exist.
+    /// </returns>
+    public bool RemoveNode(T value)
+    {
+        if (!_graph.Remove(value))
+            return false;
+
+        foreach (HashSet<T> dependents in _graph.Values)
+        {
+            dependents.Remove(value);
+        }
+        return true;
+    }
+
     /// <summary>
     /// Determines whether the graph contains the specified node.
     /// </summary>

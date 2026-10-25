@@ -270,4 +270,46 @@ public class DagTests
     }
     
     #endregion
+
+    #region ExtraCredit RemoveNode Tests
+
+    [TestMethod]
+    public void RemoveNode_ExistingNode_ReturnsTrue()
+    {
+        Dag<string> graph = new();
+        
+        graph.AddNode(CSCD211);
+        
+        bool result = graph.RemoveNode(CSCD211);
+        
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void RemoveNode_InvalidNode_ReturnsFalse()
+    {
+        Dag<string> graph = new();
+        
+        bool result = graph.RemoveNode(CSCD211);
+        
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void RemoveNode_ExistingNode_RemovesAssociatedEdges()
+    {
+        Dag<string> graph = CreateCourseGraph();
+        
+        graph.RemoveNode(CSCD300);
+        
+        Assert.IsFalse(graph.ContainsNode(CSCD300));
+        
+        // 211 now only leads to 320
+        Assert.AreSequenceEqual([CSCD320], graph.GetDependents(CSCD211));
+        
+        // 371 now only requires 320
+        Assert.AreSequenceEqual([CSCD320], graph.GetDependencies(CSCD371));
+    }
+
+    #endregion
 }
