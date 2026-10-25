@@ -37,20 +37,20 @@ Reference the material on generics, collections, and graph traversal covered in 
 
 ### Demonstration and tests
 
-- Demonstrate a fan-out/fan-in dependency graph using these course prerequisites: `CSCD 211 → CSCD 300`, `CSCD 211 → CSCD 320`, `CSCD 300 → CSCD 371`, and `CSCD 320 → CSCD 371`. CSCD 211 is a prerequisite for both intermediate courses, and both intermediate courses are prerequisites for CSCD 371. ❌✔
-- Attempt to add `CSCD 371 → CSCD 211` and verify that an `InvalidOperationException` is thrown. ❌✔
-- Unit test node and dependency addition, duplicate nodes and edges, cycle detection, and the results of `GetDependencies` and `GetDependents`. ❌✔
-- Include tests for relevant boundary cases, such as querying or adding dependencies for nodes that are not in the graph. ❌✔
+- Demonstrate a fan-out/fan-in dependency graph using these course prerequisites: `CSCD 211 → CSCD 300`, `CSCD 211 → CSCD 320`, `CSCD 300 → CSCD 371`, and `CSCD 320 → CSCD 371`. CSCD 211 is a prerequisite for both intermediate courses, and both intermediate courses are prerequisites for CSCD 371. ✔
+- Attempt to add `CSCD 371 → CSCD 211` and verify that an `InvalidOperationException` is thrown. ✔
+- Unit test node and dependency addition, duplicate nodes and edges, cycle detection, and the results of `GetDependencies` and `GetDependents`. ✔
+- Include tests for relevant boundary cases, such as querying or adding dependencies for nodes that are not in the graph. ✔
 
 ## Fundamentals
 
 - Target all projects at .NET 10 (`net10.0`) and use the latest `LangVersion`.
 - Enable nullable reference types for all projects. ✔
 - Enable .NET analyzers and enforce code style during builds for all projects. ✔
-- Ensure there are no build errors or warnings, including code analysis warnings. ❌✔
-- Unit test the behavior required above. ❌✔
-- Choose simplicity over complexity. ❌✔
+- Ensure there are no build errors or warnings, including code analysis warnings. ✔
+- Unit test the behavior required above. ✔
+- Choose simplicity over complexity. ✔
 
 ## Extra Credit
-- **Remove a node:** Add `RemoveNode(T value)` and remove all incoming and outgoing edges associated with that node. Verify that unrelated nodes and edges remain unchanged. ❌✔
-- **Render as a flow chart:**: Add a method that can output the graph in [mermaid flow chart](https://mermaid.ai/open-source/syntax/flowchart.html) syntax. ❌✔
+- **Remove a node:** Add `RemoveNode(T value)` and remove all incoming and outgoing edges associated with that node. Verify that unrelated nodes and edges remain unchanged. ✔
+- **Render as a flow chart:**: Add a method that can output the graph in [mermaid flow chart](https://mermaid.ai/open-source/syntax/flowchart.html) syntax. ✔

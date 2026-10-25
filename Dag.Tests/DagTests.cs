@@ -355,4 +355,49 @@ public class DagTests
         Assert.ThrowsExactly<NotSupportedException>(() => dependents.Add("CSCD 999"));
         CollectionAssert.AreEqual(new[] { "CSCD 300" }, dag.GetDependents("CSCD 211").ToArray());
     }
+
+    [TestMethod]
+    public void ToMermaid_Nodes_AreDeclaredWithLabels()
+    {
+        Dag<string> dag = new();
+        dag.AddNode("CSCD 211");
+
+        string result = dag.ToMermaid();
+
+        StringAssert.Contains(result, "flowchart TD");
+        StringAssert.Contains(result, "n0[\"CSCD 211\"]");
+    }
+
+    [TestMethod]
+    public void ToMermaid_NodeNameWithQuote_IsEscaped()
+    {
+        Dag<string> dag = new();
+        dag.AddNode("Say \"hi\"");
+
+        string result = dag.ToMermaid();
+
+        StringAssert.Contains(result, "n0[\"Say #quot;hi#quot;\"]");
+    }
+
+    [TestMethod]
+    public void ToMermaid_CoursePrerequisites_DrawsEdgesFromPrerequisiteToDependent()
+    {
+    Dag<string> dag = new();
+        foreach (string course in new[] { "CSCD 211", "CSCD 300", "CSCD 320", "CSCD 371" })
+        {
+            dag.AddNode(course);
+        }
+        dag.AddDependency("CSCD 211", "CSCD 300");
+        dag.AddDependency("CSCD 211", "CSCD 320");
+        dag.AddDependency("CSCD 300", "CSCD 371");
+        dag.AddDependency("CSCD 320", "CSCD 371");
+
+        string result = dag.ToMermaid();
+
+        StringAssert.Contains(result, "n0 --> n1");
+        StringAssert.Contains(result, "n0 --> n2");
+        StringAssert.Contains(result, "n1 --> n3");
+        StringAssert.Contains(result, "n2 --> n3");
+    }
+
 }
