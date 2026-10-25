@@ -2,6 +2,8 @@
 
 public class Dag<T> where T : notnull
 {
+    // KEY = dependency node
+    // Value = nodes that directly depend on the key
     private readonly Dictionary<T, HashSet<T>> _graph = [];
     
     /// <summary>
@@ -83,11 +85,14 @@ public class Dag<T> where T : notnull
     /// </returns>
     public IReadOnlyCollection<T> GetDependencies(T value)
     {
-        // NOTES: could use the collective expression? but I personally find .ToArray more code readable
-        return _graph
-                .Where(pair => pair.Value.Contains(value))
-                .Select(pair => pair.Key)
-                .ToArray();
+        List<T> dependencies = [];
+
+        foreach ((T node, HashSet<T> dependents) in _graph)
+        {
+            if (dependents.Contains(value))
+                dependencies.Add(node);
+        }
+        return dependencies.ToArray();
     }
 
     /// <summary>
@@ -138,20 +143,28 @@ public class Dag<T> where T : notnull
     private bool CanReach(T start, T target)
     {
         HashSet<T> visited = [];
+        Stack<T> stack = [];
 
-        return CanReach(start, target, visited);
-    }
-
-    private bool CanReach(T current, T target, HashSet<T> visited)
-    {
-        if (EqualityComparer<T>.Default.Equals(current, target))
-            return true;
+        stack.Push(start);
         
-        if (!visited.Add(current))
-            return false;
+        while (stack.Count > 0)
+        {
+            T current = stack.Pop();
 
-        return _graph[current]
-            .Any(dependent => CanReach(dependent, target, visited));
+            // Found target
+            if (EqualityComparer<T>.Default.Equals(current, target))
+                return true;
+
+            // Already explored
+            if (!visited.Add(current))
+                continue;
+
+            // Explore outgoing edges
+            foreach (T dependent in _graph[current]) 
+                stack.Push(dependent);
+        }
+
+        return false;
     }
 
     #endregion
