@@ -133,7 +133,77 @@ public class Dag<T> where T : notnull
     /// </returns>
     public bool ContainsNode(T value) => _graph.ContainsKey(value);
 
+    /// <summary>
+    /// Renders the graph as a Mermaid flowchart.
+    /// </summary>
+    ///
+    /// <returns>
+    /// A Mermaid flowchart with one node declaration for each graph node and one
+    /// directed edge for each dependency.
+    /// </returns>
+    public string ToMermaidFlowchart()
+    {
+        List<string> lines = ["flowchart TD"];
+        Dictionary<T, string> nodeIds = [];
+
+        foreach (T node in _graph.Keys)
+        {
+            string nodeId = $"node{nodeIds.Count}";
+            nodeIds.Add(node, nodeId);
+
+            string label = node.ToString()
+                ?? throw new InvalidOperationException("Node values must return a non-null string from ToString.");
+            lines.Add($"{nodeId}[\"{EscapeMermaidLabel(label)}\"]");
+        }
+
+        foreach ((T dependsOn, HashSet<T> dependents) in _graph)
+        {
+            foreach (T dependent in dependents)
+            {
+                lines.Add($"{nodeIds[dependsOn]} --> {nodeIds[dependent]}");
+            }
+        }
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
     #region Helpers
+
+    // Prevent label characters from being interpreted as Mermaid syntax.
+    private static string EscapeMermaidLabel(string label)
+    {
+        System.Text.StringBuilder escaped = new();
+
+        foreach (char character in label)
+        {
+            switch (character)
+            {
+                case '#':
+                    escaped.Append("#35;");
+                    break;
+                case '&':
+                    escaped.Append("#38;");
+                    break;
+                case '"':
+                    escaped.Append("#34;");
+                    break;
+                case '<':
+                    escaped.Append("#60;");
+                    break;
+                case '>':
+                    escaped.Append("#62;");
+                    break;
+                case '\\':
+                    escaped.Append("#92;");
+                    break;
+                default:
+                    escaped.Append(char.IsControl(character) ? ' ' : character);
+                    break;
+            }
+        }
+
+        return escaped.ToString();
+    }
 
     private bool WouldCreateCycle(T dependsOn, T dependent)
     {

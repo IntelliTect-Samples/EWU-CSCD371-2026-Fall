@@ -4,10 +4,10 @@
 public class DagTests
 {
     // constants used to avoid string typing errors
-    private const string CSCD211 = "CSCD211";
-    private const string CSCD300 = "CSCD300";
-    private const string CSCD320 = "CSCD320";
-    private const string CSCD371 = "CSCD371";
+    private const string CSCD211 = "CSCD 211";
+    private const string CSCD300 = "CSCD 300";
+    private const string CSCD320 = "CSCD 320";
+    private const string CSCD371 = "CSCD 371";
 
     #region AddNode Tests (REQ 2)
 
@@ -283,6 +283,58 @@ public class DagTests
         return graph;
     }
     
+    #endregion
+
+    #region ExtraCredit Mermaid Flowchart Tests
+
+    [TestMethod]
+    public void ToMermaidFlowchart_CourseGraph_RendersNodesAndDependencies()
+    {
+        Dag<string> graph = CreateCourseGraph();
+
+        string result = graph.ToMermaidFlowchart();
+
+        Assert.AreEqual(
+            string.Join(
+                Environment.NewLine,
+                "flowchart TD",
+                "node0[\"CSCD 211\"]",
+                "node1[\"CSCD 300\"]",
+                "node2[\"CSCD 320\"]",
+                "node3[\"CSCD 371\"]",
+                "node0 --> node1",
+                "node0 --> node2",
+                "node1 --> node3",
+                "node2 --> node3"),
+            result);
+    }
+
+    [TestMethod]
+    public void ToMermaidFlowchart_EmptyGraph_RendersFlowchartHeader()
+    {
+        Dag<string> graph = new();
+
+        string result = graph.ToMermaidFlowchart();
+
+        Assert.AreEqual("flowchart TD", result);
+    }
+
+    [TestMethod]
+    public void ToMermaidFlowchart_SpecialCharactersInLabel_AreEscaped()
+    {
+        Dag<string> graph = new();
+        graph.AddNode("A #1 & \"B\" <C> \\ D");
+
+        string result = graph.ToMermaidFlowchart();
+
+        Assert.AreEqual(
+            string.Join(
+                Environment.NewLine,
+                "flowchart TD",
+                "node0[\"A #35;1 #38; #34;B#34; #60;C#62; #92; D\"]"),
+            result);
+    }
+
     #endregion
 
     #region ExtraCredit RemoveNode Tests
