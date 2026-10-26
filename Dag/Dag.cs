@@ -42,13 +42,13 @@ public class Dag<T> where T : notnull
     /// </exception>
     public bool AddDependency(T dependsOn, T dependent)
     {
-        if (!_graph.ContainsKey(dependsOn) || !_graph.ContainsKey(dependent))
+        if (!_graph.TryGetValue(dependsOn, out HashSet<T>? dependents) || !_graph.ContainsKey(dependent))
             return false;
         
         if (WouldCreateCycle(dependsOn, dependent))
             throw new InvalidOperationException("Adding this dependency would create a cycle.");
         
-        return _graph[dependsOn].Add(dependent);
+        return dependents.Add(dependent);
     }
 
     /// <summary>
