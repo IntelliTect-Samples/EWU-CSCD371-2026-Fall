@@ -10,6 +10,13 @@ public class Dag<T> where T : notnull
 {
     private readonly Dictionary<T, HashSet<T>> _dependents = new();
 
+    /// <summary>
+    /// Adds a node to the graph if it does not already exist.
+    /// </summary>
+    /// <param name="value">The value of the node to add.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if value is null.
+    /// </exception>
     public void AddNode(T value)
     {
         if (!_dependents.ContainsKey(value))
@@ -18,6 +25,20 @@ public class Dag<T> where T : notnull
         }
     }
 
+    /// <summary>
+    /// Adds a directed dependency from the prerequisite node to the dependent node.
+    /// </summary>
+    /// <param name="dependsOn">The node that must occur first.</param>
+    /// <param name="dependent">The node that depends on dependsOn.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if either node does not exist in the graph.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if either node value is null.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if adding the dependency would create a cycle.
+    /// </exception>
     public void AddDependency(T dependsOn, T dependent)
     {
         if (!_dependents.TryGetValue(dependsOn, out HashSet<T>? dependents) ||
@@ -57,6 +78,17 @@ public class Dag<T> where T : notnull
         dependents.Add(dependent);
     }
 
+    /// <summary>
+    /// Gets the nodes that the specified node directly depends on.
+    /// </summary>
+    /// <param name="value">The node whose dependencies are requested.</param>
+    /// <returns>A list of nodes that value directly depends on.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the node does not exist in the graph.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if value is null.
+    /// </exception>
     public List<T> GetDependencies(T value)
     {
         if (!_dependents.ContainsKey(value))
@@ -77,6 +109,17 @@ public class Dag<T> where T : notnull
         return dependencies;
     }
 
+    /// <summary>
+    /// Gets the nodes that directly depend on the specified node.
+    /// </summary>
+    /// <param name="value">The node whose dependents are requested.</param>
+    /// <returns>A list of nodes that directly depend on value.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the node does not exist in the graph.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if value is null.
+    /// </exception>
     public List<T> GetDependents(T value)
     {
         if (!_dependents.TryGetValue(value, out HashSet<T>? dependents))
@@ -87,6 +130,14 @@ public class Dag<T> where T : notnull
         return new List<T>(dependents);
     }
 
+    /// <summary>
+    /// Removes a node and all incoming and outgoing dependencies associated with it.
+    /// Does nothing if the node does not exist.
+    /// </summary>
+    /// <param name="value">The value of the node to remove.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if value is null.
+    /// </exception>
     public void RemoveNode(T value)
     {
         if (!_dependents.ContainsKey(value))
@@ -102,6 +153,10 @@ public class Dag<T> where T : notnull
         }
     }
 
+    /// <summary>
+    /// Converts the graph into Mermaid flowchart syntax.
+    /// </summary>
+    /// <returns>A string representing the graph as a Mermaid flowchart.</returns>
     public string ToMermaid()
     {
         StringBuilder result = new();
