@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using System.Globalization;
+
 namespace Dag;
 
 public class Dag<T> where T : notnull
@@ -18,13 +20,13 @@ public class Dag<T> where T : notnull
 
     public void AddDependency(T dependsOn, T dependent)
     {
-        if (!_dependents.ContainsKey(dependsOn) ||
+        if (!_dependents.TryGetValue(dependsOn, out HashSet<T>? dependents) ||
             !_dependents.ContainsKey(dependent))
         {
             throw new ArgumentException("Both nodes must exist in the graph.");
         }
 
-        if (_dependents[dependsOn].Contains(dependent))
+        if (dependents.Contains(dependent))
         {
             return;
         }
@@ -52,7 +54,7 @@ public class Dag<T> where T : notnull
             }
         }
 
-        _dependents[dependsOn].Add(dependent);
+        dependents.Add(dependent);
     }
 
     public List<T> GetDependencies(T value)
@@ -77,12 +79,12 @@ public class Dag<T> where T : notnull
 
     public List<T> GetDependents(T value)
     {
-        if (!_dependents.ContainsKey(value))
+        if (!_dependents.TryGetValue(value, out HashSet<T>? dependents))
         {
             throw new ArgumentException("Node does not exist.", nameof(value));
         }
 
-        return new List<T>(_dependents[value]);
+        return new List<T>(dependents);
     }
 
     public void RemoveNode(T value)
@@ -113,12 +115,14 @@ public class Dag<T> where T : notnull
         {
             nodeIds.Add(node, $"node{id}");
 
-            string label = Convert.ToString(node) ?? "";
+            string label = Convert.ToString(node, CultureInfo.InvariantCulture) ?? "";
             label = label.Replace("\"", "#quot;")
                          .Replace("\r", " ")
                          .Replace("\n", " ");
 
-            result.AppendLine($"    {nodeIds[node]}[\"{label}\"]");
+            result.AppendLine(
+                CultureInfo.InvariantCulture,
+                $"      {nodeIds[node]}[\"{label}\"]");
 
             id++;
         }
@@ -128,7 +132,8 @@ public class Dag<T> where T : notnull
             foreach (T dependent in pair.Value)
             {
                 result.AppendLine(
-                    $"    {nodeIds[pair.Key]} --> {nodeIds[dependent]}");
+                    CultureInfo.InvariantCulture,
+                    $"      {nodeIds[pair.Key]} --> {nodeIds[dependent]}");
             }
         }
 
