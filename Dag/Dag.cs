@@ -56,20 +56,20 @@ public class Dag<T> where T : notnull
         return string.Join(Environment.NewLine, lines);
     }
 
-    public void AddDependency(T dependsOn, T dependent) // NO CYCLES ALLOWED
+    public void AddDependency(T dependsOn, T dependent)
     {
-       if (!dag.ContainsKey(dependsOn) || !dag.ContainsKey(dependent))
+        if (!dag.TryGetValue(dependsOn, out var dependents) ||
+            !dag.ContainsKey(dependent))
         {
             throw new ArgumentException("Both nodes must exist in the DAG.");
         }
 
-        // Check for cycles
         if (CycleCheck(dependsOn, dependent))
         {
             throw new InvalidOperationException("Adding this dependency would create a cycle.");
         }
 
-        dag[dependsOn].Add(dependent);
+        dependents.Add(dependent);
     }
 
     public IReadOnlyCollection<T> GetDependencies(T dependent)
@@ -91,18 +91,14 @@ public class Dag<T> where T : notnull
 
     public IReadOnlyCollection<T> GetDependents(T dependsOn)
     {
-        if (!dag.ContainsKey(dependsOn))
+        if (!dag.TryGetValue(dependsOn, out var dependents))
         {
             throw new ArgumentException("Node does not exist in the DAG.");
         }
 
-        var dependents = new HashSet<T>();
-        foreach (var node in dag[dependsOn])
-        {
-          dependents.Add(node);
-        }
-        return dependents;
+        return new HashSet<T>(dependents);
     }
+    
 
     private bool CycleCheck(T dependsOn, T dependent)
     {
@@ -118,19 +114,14 @@ public class Dag<T> where T : notnull
                 return true; // Cycle detected
             }
 
-            if (!visited.Contains(current))
+            if (visited.Add(current) && dag.TryGetValue(current, out var neighbors))
             {
-                visited.Add(current);
-                if (dag.ContainsKey(current))
+                foreach (var neighbor in neighbors)
                 {
-                    foreach (var neighbor in dag[current])
-                    {
-                        stack.Push(neighbor);
-                    }
+                    stack.Push(neighbor);
                 }
             }
         }
-
         return false; // No cycle detected
     }
 }
