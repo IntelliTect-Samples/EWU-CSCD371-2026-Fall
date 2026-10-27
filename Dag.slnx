@@ -5,4 +5,5 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="Dag.Tests/Dag.Tests.csproj" />
+  <Project Path="Dag/Dag.csproj" />
 </Solution>
