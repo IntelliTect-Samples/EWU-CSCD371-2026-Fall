@@ -3,6 +3,8 @@ namespace Dag.Tests;
 [TestClass]
 public class DagTests
 {
+    private static readonly string[] Cscd300And320 = ["CSCD 300", "CSCD 320"];
+
     [TestMethod]
     public void AddNode_NewNode_ReturnsTrue()
     {
@@ -74,10 +76,10 @@ public class DagTests
 
         dag.RemoveNode("CSCD 300");
 
-        CollectionAssert.AreEqual(new[] { "CSCD 320" }, dag.GetDependents("CSCD 211").ToArray());
-        CollectionAssert.AreEqual(new[] { "CSCD 211" }, dag.GetDependencies("CSCD 320").ToArray());
-        CollectionAssert.AreEqual(new[] { "CSCD 371" }, dag.GetDependents("CSCD 320").ToArray());
-        CollectionAssert.AreEqual(new[] { "CSCD 320" }, dag.GetDependencies("CSCD 371").ToArray());
+        Assert.AreEqual("CSCD 320", dag.GetDependents("CSCD 211").Single());
+        Assert.AreEqual("CSCD 211", dag.GetDependencies("CSCD 320").Single());
+        Assert.AreEqual("CSCD 371", dag.GetDependents("CSCD 320").Single());
+        Assert.AreEqual("CSCD 320", dag.GetDependencies("CSCD 371").Single());
     }
 
     [TestMethod]
@@ -209,8 +211,8 @@ public class DagTests
         dag.AddDependency("CSCD 300", "CSCD 371");
         dag.AddDependency("CSCD 320", "CSCD 371");
 
-        CollectionAssert.AreEquivalent(new[] { "CSCD 300", "CSCD 320" }, dag.GetDependencies("CSCD 371").ToArray());
-        CollectionAssert.AreEquivalent(new[] { "CSCD 211" }, dag.GetDependencies("CSCD 300").ToArray());
+        CollectionAssert.AreEquivalent(Cscd300And320, dag.GetDependencies("CSCD 371").ToArray());
+        Assert.AreEqual("CSCD 211", dag.GetDependencies("CSCD 300").Single());
         Assert.IsEmpty(dag.GetDependencies("CSCD 211"));
     }
 
@@ -223,7 +225,7 @@ public class DagTests
         dag.AddDependency("CSCD 211", "CSCD 300");
         dag.AddDependency("CSCD 211", "CSCD 300");
 
-        CollectionAssert.AreEqual(new[] { "CSCD 211" }, dag.GetDependencies("CSCD 300").ToArray());
+        Assert.AreEqual("CSCD 211", dag.GetDependencies("CSCD 300").Single());
     }
 
     [TestMethod]
@@ -284,8 +286,8 @@ public class DagTests
         dag.AddDependency("CSCD 300", "CSCD 371");
         dag.AddDependency("CSCD 320", "CSCD 371");
 
-        CollectionAssert.AreEquivalent(new[] { "CSCD 300", "CSCD 320" }, dag.GetDependents("CSCD 211").ToArray());
-        CollectionAssert.AreEquivalent(new[] { "CSCD 371" }, dag.GetDependents("CSCD 300").ToArray());
+        CollectionAssert.AreEquivalent(Cscd300And320, dag.GetDependents("CSCD 211").ToArray());
+        Assert.AreEqual("CSCD 371", dag.GetDependents("CSCD 300").Single());
         Assert.IsEmpty(dag.GetDependents("CSCD 371"));
     }
 
@@ -311,8 +313,8 @@ public class DagTests
 
         dag.AddDependency("CSCD 211", "CSCD 300");
 
-        CollectionAssert.AreEqual(new[] { "CSCD 211" }, dag.GetDependencies("CSCD 300").ToArray());
-        CollectionAssert.AreEqual(new[] { "CSCD 300" }, dag.GetDependents("CSCD 211").ToArray());
+        Assert.AreEqual("CSCD 211", dag.GetDependencies("CSCD 300").Single());
+        Assert.AreEqual("CSCD 300", dag.GetDependents("CSCD 211").Single());
     }
 
     [TestMethod]
@@ -359,7 +361,7 @@ public class DagTests
 
         Assert.IsTrue(dependencies.IsReadOnly);
         Assert.ThrowsExactly<NotSupportedException>(() => dependencies.Add("CSCD 999"));
-        CollectionAssert.AreEqual(new[] { "CSCD 211" }, dag.GetDependencies("CSCD 300").ToArray());
+        Assert.AreEqual("CSCD 211", dag.GetDependencies("CSCD 300").Single());
     }
 
     [TestMethod]
@@ -374,7 +376,7 @@ public class DagTests
 
         Assert.IsTrue(dependents.IsReadOnly);
         Assert.ThrowsExactly<NotSupportedException>(() => dependents.Add("CSCD 999"));
-        CollectionAssert.AreEqual(new[] { "CSCD 300" }, dag.GetDependents("CSCD 211").ToArray());
+        Assert.AreEqual("CSCD 300", dag.GetDependents("CSCD 211").Single());
     }
 
     [TestMethod]
