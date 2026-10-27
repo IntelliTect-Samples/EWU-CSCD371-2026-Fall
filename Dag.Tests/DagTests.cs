@@ -258,7 +258,7 @@ public void GetDependencies_MissingNode()
 
         string result = dag.ToMermaid();
 
-        Assert.IsTrue(result.StartsWith("flowchart TD"));
+        Assert.IsTrue(result.StartsWith("flowchart TD", StringComparison.Ordinal));
         Assert.IsTrue(result.Contains("n0[\"A\"]"));
         Assert.IsTrue(result.Contains("n1[\"B\"]"));
         Assert.IsTrue(result.Contains("n2[\"C\"]"));
