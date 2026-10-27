@@ -3,33 +3,33 @@
 public sealed class Dag<T> where T : notnull
 {
     // Nodes that directly depend on a given node
-    private readonly Dictionary<T, HashSet<T>> _dependents = new();
+    private readonly Dictionary<T, HashSet<T>> _dependents = [];
 
     // Nodes that a given node directly depends on
-    private readonly Dictionary<T, HashSet<T>> _dependencies = new();
+    private readonly Dictionary<T, HashSet<T>> _dependencies = [];
 
     // Add a node if it does not already exist
     public void AddNode(T value)
     {
-        if (_dependents.TryAdd(value, new HashSet<T>()))
+        if (_dependents.TryAdd(value, []))
         {
-            _dependencies.Add(value, new HashSet<T>());
+            _dependencies.Add(value, []);
         }
     }
 
     // Add an edge: dependsOn to dependent
     public void AddDependency(T dependsOn, T dependent)
     {
-        // Both nodes must exist first
-        if (!_dependents.ContainsKey(dependsOn) ||
-            !_dependents.ContainsKey(dependent))
+        // Check that both nodes exist
+        if (!_dependents.TryGetValue(dependsOn, out HashSet<T>? dependents) ||
+            !_dependencies.TryGetValue(dependent, out HashSet<T>? dependencies))
         {
             throw new ArgumentException(
                 "Both nodes must already exist in the graph.");
         }
 
-        // Ignore duplicate edges
-        if (_dependents[dependsOn].Contains(dependent))
+        // Do not add duplicate edges
+        if (dependents.Contains(dependent))
         {
             return;
         }
@@ -43,11 +43,11 @@ public sealed class Dag<T> where T : notnull
         }
 
         // Store the relationship in both directions
-        _dependents[dependsOn].Add(dependent);
-        _dependencies[dependent].Add(dependsOn);
+        dependents.Add(dependent);
+        dependencies.Add(dependsOn);
     }
 
-    // Return the nodes this value directly depends on
+    // Return nodes this value directly depends on
     public IReadOnlyCollection<T> GetDependencies(T value)
     {
         if (!_dependencies.TryGetValue(value, out HashSet<T>? nodes))
@@ -56,7 +56,7 @@ public sealed class Dag<T> where T : notnull
                 "The node does not exist in the graph.", nameof(value));
         }
 
-        return nodes.ToArray();
+        return [.. nodes];
     }
 
     // Return nodes that directly depend on this value
@@ -68,13 +68,13 @@ public sealed class Dag<T> where T : notnull
                 "The node does not exist in the graph.", nameof(value));
         }
 
-        return nodes.ToArray();
+        return [.. nodes];
     }
 
-    // Check whether a path already exists from start to target
+    // Check whether a path exists from start to target
     private bool HasPath(T start, T target)
     {
-        HashSet<T> visited = new();
+        HashSet<T> visited = [];
         Stack<T> stack = new();
 
         stack.Push(start);

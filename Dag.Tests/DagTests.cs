@@ -36,8 +36,8 @@ public class DagTests
         // Adding A again should not change the graph
         graph.AddNode("A");
 
-        Assert.AreEqual(1, graph.GetDependents("A").Count);
-        Assert.AreEqual(1, graph.GetDependencies("B").Count);
+        Assert.HasCount(1, graph.GetDependents("A"));
+        Assert.HasCount(1, graph.GetDependencies("B"));
     }
 
     [TestMethod]
@@ -45,21 +45,17 @@ public class DagTests
     {
         var graph = CreateCourseGraph();
 
-        CollectionAssert.AreEquivalent(
-            new[] { "CSCD 211" },
-            graph.GetDependencies("CSCD 300").ToArray());
+        Assert.AreSequenceEqual(
+            new[] { "CSCD 211" }, graph.GetDependencies("CSCD 300").ToArray(), Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 
-        CollectionAssert.AreEquivalent(
-            new[] { "CSCD 300", "CSCD 320" },
-            graph.GetDependencies("CSCD 371").ToArray());
+        Assert.AreSequenceEqual(
+            new[] { "CSCD 300", "CSCD 320" }, graph.GetDependencies("CSCD 371").ToArray(), Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 
-        CollectionAssert.AreEquivalent(
-            new[] { "CSCD 300", "CSCD 320" },
-            graph.GetDependents("CSCD 211").ToArray());
+        Assert.AreSequenceEqual(
+            new[] { "CSCD 300", "CSCD 320" }, graph.GetDependents("CSCD 211").ToArray(), Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 
-        CollectionAssert.AreEquivalent(
-            new[] { "CSCD 371" },
-            graph.GetDependents("CSCD 320").ToArray());
+        Assert.AreSequenceEqual(
+            new[] { "CSCD 371" }, graph.GetDependents("CSCD 320").ToArray(), Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
     }
 
     [TestMethod]
@@ -73,8 +69,8 @@ public class DagTests
         graph.AddDependency("A", "B");
         graph.AddDependency("A", "B");
 
-        Assert.AreEqual(1, graph.GetDependents("A").Count);
-        Assert.AreEqual(1, graph.GetDependencies("B").Count);
+        Assert.HasCount(1, graph.GetDependents("A"));
+        Assert.HasCount(1, graph.GetDependencies("B"));
     }
 
     [TestMethod]
@@ -90,7 +86,7 @@ public class DagTests
             exception.Message);
 
         // Rejected edge should not have been added
-        Assert.AreEqual(0, graph.GetDependents("CSCD 371").Count);
+        Assert.IsEmpty(graph.GetDependents("CSCD 371"));
     }
 
     [TestMethod]
@@ -140,12 +136,16 @@ public class DagTests
         graph.AddDependency("A", "B");
         graph.AddDependency("B", "C");
 
-        CollectionAssert.AreEquivalent(
-            new[] { "B" },
-            graph.GetDependencies("C").ToArray());
+        string[] expected = ["B"];
 
-        CollectionAssert.AreEquivalent(
-            new[] { "B" },
-            graph.GetDependents("A").ToArray());
+        Assert.AreSequenceEqual(
+            expected,
+            graph.GetDependencies("C"),
+            SequenceOrder.InAnyOrder);
+
+        Assert.AreSequenceEqual(
+            expected,
+            graph.GetDependents("A"),
+            SequenceOrder.InAnyOrder);
     }
 }
