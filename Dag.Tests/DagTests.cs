@@ -6,10 +6,17 @@ namespace Dag.Tests;
 [TestClass]
 public class DagTests
 {
-    // Create the course graph required by the assignment
-    private static global::Dag.Dag<string> CreateCourseGraph()
+    // Reusable arrays for expected test results
+    private static readonly string[] Course211 = ["CSCD 211"];
+    private static readonly string[] Courses300And320 =
+        ["CSCD 300", "CSCD 320"];
+    private static readonly string[] Course371 = ["CSCD 371"];
+    private static readonly string[] NodeB = ["B"];
+
+    // Create the required course prerequisite graph
+    private static Graph CreateCourseGraph()
     {
-        var graph = new global::Dag.Dag<string>();
+        Graph graph = new();
 
         graph.AddNode("CSCD 211");
         graph.AddNode("CSCD 300");
@@ -27,13 +34,11 @@ public class DagTests
     [TestMethod]
     public void AddNode_DoesNotCreateDuplicates()
     {
-        var graph = new global::Dag.Dag<string>();
+        Graph graph = new();
 
         graph.AddNode("A");
         graph.AddNode("B");
         graph.AddDependency("A", "B");
-
-        // Adding A again should not change the graph
         graph.AddNode("A");
 
         Assert.HasCount(1, graph.GetDependents("A"));
@@ -43,25 +48,33 @@ public class DagTests
     [TestMethod]
     public void CourseGraph_HasCorrectDependencies()
     {
-        var graph = CreateCourseGraph();
+        Graph graph = CreateCourseGraph();
 
         Assert.AreSequenceEqual(
-            new[] { "CSCD 211" }, graph.GetDependencies("CSCD 300").ToArray(), Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
+            Course211,
+            graph.GetDependencies("CSCD 300"),
+            SequenceOrder.InAnyOrder);
 
         Assert.AreSequenceEqual(
-            new[] { "CSCD 300", "CSCD 320" }, graph.GetDependencies("CSCD 371").ToArray(), Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
+            Courses300And320,
+            graph.GetDependencies("CSCD 371"),
+            SequenceOrder.InAnyOrder);
 
         Assert.AreSequenceEqual(
-            new[] { "CSCD 300", "CSCD 320" }, graph.GetDependents("CSCD 211").ToArray(), Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
+            Courses300And320,
+            graph.GetDependents("CSCD 211"),
+            SequenceOrder.InAnyOrder);
 
         Assert.AreSequenceEqual(
-            new[] { "CSCD 371" }, graph.GetDependents("CSCD 320").ToArray(), Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
+            Course371,
+            graph.GetDependents("CSCD 320"),
+            SequenceOrder.InAnyOrder);
     }
 
     [TestMethod]
     public void AddDependency_DoesNotCreateDuplicateEdges()
     {
-        var graph = new global::Dag.Dag<string>();
+        Graph graph = new();
 
         graph.AddNode("A");
         graph.AddNode("B");
@@ -76,7 +89,7 @@ public class DagTests
     [TestMethod]
     public void AddDependency_RejectsIndirectCycle()
     {
-        var graph = CreateCourseGraph();
+        Graph graph = CreateCourseGraph();
 
         var exception = Assert.ThrowsExactly<InvalidOperationException>(
             () => graph.AddDependency("CSCD 371", "CSCD 211"));
@@ -85,14 +98,15 @@ public class DagTests
             "Adding this dependency would create a cycle.",
             exception.Message);
 
-        // Rejected edge should not have been added
+        // Verify the rejected edge was not added
         Assert.IsEmpty(graph.GetDependents("CSCD 371"));
     }
 
     [TestMethod]
     public void AddDependency_RejectsSelfCycle()
     {
-        var graph = new global::Dag.Dag<string>();
+        Graph graph = new();
+
         graph.AddNode("A");
 
         Assert.ThrowsExactly<InvalidOperationException>(
@@ -102,7 +116,8 @@ public class DagTests
     [TestMethod]
     public void AddDependency_RequiresExistingNodes()
     {
-        var graph = new global::Dag.Dag<string>();
+        Graph graph = new();
+
         graph.AddNode("A");
 
         Assert.ThrowsExactly<ArgumentException>(
@@ -115,7 +130,7 @@ public class DagTests
     [TestMethod]
     public void Query_RejectsMissingNodes()
     {
-        var graph = new global::Dag.Dag<string>();
+        Graph graph = new();
 
         Assert.ThrowsExactly<ArgumentException>(
             () => graph.GetDependencies("Missing"));
@@ -127,7 +142,7 @@ public class DagTests
     [TestMethod]
     public void Queries_ReturnOnlyDirectConnections()
     {
-        var graph = new global::Dag.Dag<string>();
+        Graph graph = new();
 
         graph.AddNode("A");
         graph.AddNode("B");
@@ -136,15 +151,13 @@ public class DagTests
         graph.AddDependency("A", "B");
         graph.AddDependency("B", "C");
 
-        string[] expected = ["B"];
-
         Assert.AreSequenceEqual(
-            expected,
+            NodeB,
             graph.GetDependencies("C"),
             SequenceOrder.InAnyOrder);
 
         Assert.AreSequenceEqual(
-            expected,
+            NodeB,
             graph.GetDependents("A"),
             SequenceOrder.InAnyOrder);
     }
