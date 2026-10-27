@@ -3,6 +3,7 @@
     <File Path="Directory.Build.props" />
     <File Path="global.json" />
     <File Path="README.md" />
+    <Project Path="Dag/Dag.csproj" Id="aabcd98d-7e50-4b8f-b568-48fc42e425db" />
   </Folder>
   <Project Path="Dag.Tests/Dag.Tests.csproj" />
 </Solution>
