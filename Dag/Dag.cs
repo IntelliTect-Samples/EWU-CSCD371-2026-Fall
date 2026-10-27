@@ -1,4 +1,4 @@
-namespace Dag;
+﻿namespace Dag;
 
 public class Dag<T> where T : notnull
 {
@@ -10,6 +10,50 @@ public class Dag<T> where T : notnull
             return; // Node already exists, do nothing
         }
         dag.Add(node, new HashSet<T>());
+    }
+
+      public void RemoveNode(T value)
+    {
+        if (!dag.Remove(value))
+        {
+            throw new ArgumentException("Node does not exist.");
+        }
+
+        foreach (var dependents in dag.Values)
+        {
+            dependents.Remove(value);
+        }
+    }
+
+    public string ToMermaid()
+    {
+        var lines = new List<string> { "flowchart TD" };
+        var nodeIds = new Dictionary<T, string>();
+
+        int index = 0;
+
+        foreach (var node in dag.Keys)
+        {
+            string id = $"n{index++}";
+            nodeIds[node] = id;
+
+            string label = node.ToString() ?? "";
+            label = label.Replace("\"", "&quot;");
+
+            lines.Add($"    {id}[\"{label}\"]");
+        }
+
+        foreach (var node in dag)
+        {
+            foreach (var dependent in node.Value)
+            {
+                lines.Add(
+                    $"    {nodeIds[node.Key]} --> {nodeIds[dependent]}"
+                );
+            }
+        }
+
+        return string.Join(Environment.NewLine, lines);
     }
 
     public void AddDependency(T dependsOn, T dependent) // NO CYCLES ALLOWED

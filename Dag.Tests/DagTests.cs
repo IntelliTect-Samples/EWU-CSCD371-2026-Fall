@@ -219,4 +219,69 @@ public void GetDependencies_MissingNode()
 
         Assert.Fail($"Expected {typeof(TException).Name} to be thrown.");
     }
+
+    [TestMethod]
+    public void RemoveNode_RemovesEdgesAndPreservesUnrelatedNodes()
+    {
+        var dag = new Dag<string>();
+
+        dag.AddNode("A");
+        dag.AddNode("B");
+        dag.AddNode("C");
+        dag.AddNode("D");
+
+        dag.AddDependency("A", "B");
+        dag.AddDependency("B", "C");
+        dag.AddDependency("A", "D");
+
+        dag.RemoveNode("B");
+
+        Assert.AreEqual(1, dag.GetDependents("A").Count);
+        Assert.IsTrue(dag.GetDependents("A").Contains("D"));
+        Assert.AreEqual(0, dag.GetDependencies("C").Count);
+
+        Assert.ThrowsExactly<ArgumentException>(() =>
+        dag.GetDependents("B"));
+    }
+
+    [TestMethod]
+    public void ToMermaid_GeneratesCorrectFlowchart()
+    {
+        var dag = new Dag<string>();
+
+        dag.AddNode("A");
+        dag.AddNode("B");
+        dag.AddNode("C");
+
+        dag.AddDependency("A", "B");
+        dag.AddDependency("B", "C");
+
+        string result = dag.ToMermaid();
+
+        Assert.IsTrue(result.StartsWith("flowchart TD"));
+        Assert.IsTrue(result.Contains("n0[\"A\"]"));
+        Assert.IsTrue(result.Contains("n1[\"B\"]"));
+        Assert.IsTrue(result.Contains("n2[\"C\"]"));
+        Assert.IsTrue(result.Contains("n0 --> n1"));
+        Assert.IsTrue(result.Contains("n1 --> n2"));
+    }
+
+    [TestMethod]
+    public void ToMermaid_HandlesIsolatedNodesAndSpaces()
+    {
+        var dag = new Dag<string>();
+
+        dag.AddNode("CSCD 211");
+        dag.AddNode("CSCD 371");
+        dag.AddNode("Isolated Node");
+
+        dag.AddDependency("CSCD 211", "CSCD 371");
+
+        string result = dag.ToMermaid();
+
+        Assert.IsTrue(result.Contains("n0[\"CSCD 211\"]"));
+        Assert.IsTrue(result.Contains("n1[\"CSCD 371\"]"));
+        Assert.IsTrue(result.Contains("n2[\"Isolated Node\"]"));
+        Assert.IsTrue(result.Contains("n0 --> n1"));
+    }
 }
