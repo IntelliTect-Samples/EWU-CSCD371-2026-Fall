@@ -3,17 +3,11 @@ using System.Text;
 
 namespace Dag;
 
-/// <summary>
-/// Stores directed dependencies without allowing cycles. Node identity uses
-/// <see cref="EqualityComparer{T}.Default"/>, including value equality for records.
-/// Values must keep the same equality and hash code while stored in the graph.
-/// </summary>
 public class Dag<T> where T : notnull
 {
     private Dictionary<T, HashSet<T>> Dependencies { get; } = [];
     private Dictionary<T, HashSet<T>> Dependents { get; } = [];
 
-    /// <returns>True if the node was added; false if an equal node already exists.</returns>
     public bool AddNode(T value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -27,13 +21,6 @@ public class Dag<T> where T : notnull
         return true;
     }
 
-    /// <summary>
-    /// Adds the edge <paramref name="dependsOn"/> → <paramref name="dependent"/>.
-    /// Both nodes must already exist. A rejected dependency leaves the graph unchanged.
-    /// </summary>
-    /// <returns>True if the edge was added; false if it already exists.</returns>
-    /// <exception cref="ArgumentException">Either node has not been added.</exception>
-    /// <exception cref="InvalidOperationException">The edge would create a cycle.</exception>
     public bool AddDependency(T dependsOn, T dependent)
     {
         ArgumentNullException.ThrowIfNull(dependsOn);
@@ -54,7 +41,6 @@ public class Dag<T> where T : notnull
             return false;
         }
 
-        // A new edge closes a cycle only if its destination can already reach its source.
         if (HasPath(dependent, dependsOn))
         {
             throw new InvalidOperationException("Adding this dependency would create a cycle.");
@@ -65,10 +51,6 @@ public class Dag<T> where T : notnull
         return true;
     }
 
-    /// <summary>
-    /// Returns a copy of the node's direct prerequisites, in no guaranteed order.
-    /// </summary>
-    /// <exception cref="ArgumentException">The node has not been added.</exception>
     public T[] GetDependencies(T value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -78,10 +60,6 @@ public class Dag<T> where T : notnull
             : throw new ArgumentException("Add the node to the graph first.", nameof(value));
     }
 
-    /// <summary>
-    /// Returns a copy of the nodes that directly depend on this node, in no guaranteed order.
-    /// </summary>
-    /// <exception cref="ArgumentException">The node has not been added.</exception>
     public T[] GetDependents(T value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -91,8 +69,6 @@ public class Dag<T> where T : notnull
             : throw new ArgumentException("Add the node to the graph first.", nameof(value));
     }
 
-    /// <summary>Removes the node and all of its incoming and outgoing edges.</summary>
-    /// <returns>True if the node was removed; false if it was not in the graph.</returns>
     public bool RemoveNode(T value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -116,11 +92,6 @@ public class Dag<T> where T : notnull
         return true;
     }
 
-    /// <summary>
-    /// Returns Mermaid flowchart syntax with arrows from prerequisites to dependents.
-    /// Labels use the values' string representations; generated IDs keep equal labels distinct.
-    /// Node and edge order is not guaranteed.
-    /// </summary>
     public string ToMermaid()
     {
         StringBuilder builder = new();
@@ -173,7 +144,6 @@ public class Dag<T> where T : notnull
 
     private static string EscapeMermaidLabel(string label)
     {
-        // Mermaid requires at least one character inside a quoted node label.
         if (label.Length == 0)
         {
             return " ";
