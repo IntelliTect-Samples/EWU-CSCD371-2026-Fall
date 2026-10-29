@@ -4,5 +4,6 @@
     <File Path="global.json" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="Dag/Dag.csproj" />
   <Project Path="Dag.Tests/Dag.Tests.csproj" />
 </Solution>
