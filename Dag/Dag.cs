@@ -19,6 +19,11 @@ public class Dag<T> where T : notnull
     /// </exception>
     public void AddNode(T value)
     {
+        if (value is null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
         if (!_dependents.ContainsKey(value))
         {
             _dependents.Add(value, new HashSet<T>());
@@ -41,10 +46,24 @@ public class Dag<T> where T : notnull
     /// </exception>
     public void AddDependency(T dependsOn, T dependent)
     {
-        if (!_dependents.TryGetValue(dependsOn, out HashSet<T>? dependents) ||
-            !_dependents.ContainsKey(dependent))
+        if (dependsOn is null)
         {
-            throw new ArgumentException("Both nodes must exist in the graph.");
+            throw new ArgumentNullException(nameof(dependsOn));
+        }
+
+        if (dependent is null)
+        {
+            throw new ArgumentNullException(nameof(dependent));
+        }
+
+        if (!_dependents.TryGetValue(dependsOn, out HashSet<T>? dependents))
+        {
+            throw new ArgumentException("Prerequisite node does not exist in the graph!");
+        }
+
+        if (!_dependents.ContainsKey(dependent))
+        {
+            throw new ArgumentException("The dependent node does not exist in the graph!", nameof(dependent));
         }
 
         if (dependents.Contains(dependent))

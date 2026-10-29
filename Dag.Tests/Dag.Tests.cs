@@ -1,5 +1,6 @@
 using Dag;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace Dag.Tests;
 
@@ -12,9 +13,13 @@ public class DagTests
         Dag<string> dag = new();
 
         dag.AddNode("A");
+        dag.AddNode("B");
+        dag.AddDependency("A", "B");
+
         dag.AddNode("A");
 
-        Assert.AreEqual(0, dag.GetDependents("A").Count);
+        Assert.AreEqual(1, dag.GetDependents("A").Count);
+        Assert.IsTrue(dag.GetDependents("A").Contains("B"));
     }
 
     [TestMethod]
@@ -150,5 +155,20 @@ public class DagTests
         Assert.IsTrue(result.Contains("[\"A\"]"));
         Assert.IsTrue(result.Contains("[\"B\"]"));
         Assert.IsTrue(result.Contains("node0 --> node1"));
+    }
+
+    [TestMethod]
+    public void AddDependency_ThrowsWhenNodeDependsOnItself()
+    {
+        Dag<string> dag = new();
+        dag.AddNode("A");
+
+        InvalidOperationException exception =
+            Assert.ThrowsExactly<InvalidOperationException>(
+                () => dag.AddDependency("A", "A"));
+
+        Assert.AreEqual(
+            "Adding this dependency would create a cycle.",
+            exception.Message);
     }
 }
