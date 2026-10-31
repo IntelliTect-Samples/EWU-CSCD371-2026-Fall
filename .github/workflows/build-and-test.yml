@@ -198,7 +198,7 @@ jobs:
       - name: ReportGenerator
         id: reportgenerator
         if: ${{ !cancelled() && github.event_name == 'pull_request' && hashFiles('**/*.cobertura.xml') != '' }}
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.11
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.12
         with:
           reports: '**/*.cobertura.xml'
           targetdir: coveragereport
@@ -221,7 +221,7 @@ jobs:
       - name: ReportGenerator (HTML)
         id: reportgenerator-html
         if: ${{ !cancelled() && steps.reportgenerator.outcome == 'success' }}
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.11
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.12
         with:
           reports: '**/*.cobertura.xml'
           targetdir: coverage-html
@@ -240,7 +240,7 @@ jobs:
       - name: ReportGenerator (HTML summary)
         id: reportgenerator-html-summary
         if: ${{ !cancelled() && steps.reportgenerator.outcome == 'success' }}
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.11
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.12
         with:
           reports: '**/*.cobertura.xml'
           targetdir: coverage-html-summary
