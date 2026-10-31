@@ -42,10 +42,10 @@ Do one of the following two options (or both if you want extra, extra credit) :)
 
 - Place all shared project properties into a `Directory.Build.props` file.
 - Place all shared project items into a `Directory.Build.targets` file. (optional)
-- nullable reference types is enabled  ❌✔
-- Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ❌✔
-- Set LangVersion and the TargetFramework to the latest released versions available (preview versions optional)   ❌✔
-- and enabled .NET analyzers for both projects ❌✔
+- nullable reference types is enabled  ✔
+- Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ✔
+- Set LangVersion and the TargetFramework to the latest released versions available (preview versions optional)   ✔
+- and enabled .NET analyzers for both projects ✔
 - For this assignment, always use `Assert.AreEqual<T>()` (the generic version)  ❌✔
 - All of the above should be unit tested ❌✔
 - Choose simplicity over complexity ❌✔

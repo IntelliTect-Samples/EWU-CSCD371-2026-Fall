@@ -1,5 +1,4 @@
 <Solution>
   <Project Path="Calculate.Tests/Calculate.Tests.csproj" />
   <Project Path="Calculate/Calculate.csproj" />
-  <Project Path="ClassLib/ClassLib.csproj" />
 </Solution>
