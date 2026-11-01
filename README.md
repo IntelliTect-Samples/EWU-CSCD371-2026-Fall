@@ -1,6 +1,6 @@
 # Assignment
 
-The purpose of this assignment is to learn how to work with delegates and lambda expressions. We will define a 
+The purpose of this assignment is to learn how to work with delegates and lambda expressions. We will define a
 calculator class that stores 4 actions corresponding to +, -, *, /, and multiple. The calculator class will
 also support customizable behavior for reading and writing content.
 
@@ -36,7 +36,7 @@ Do one of the following two options (or both if you want extra, extra credit) :)
 
 - Refactor the redirect portion of the `Program` class into 'ProgramBase` ✔
 - Move ProgramBase into a ConsoleUtilities assembly to be used in other console-based projects ✔
-- Use generics the mathematical operations methods and consider using generic constraints (requires .NET 7.0)
+- Use generics the mathematical operations methods and consider using generic constraints (requires .NET 7.0) ✔
 
 ## Fundamentals
 
