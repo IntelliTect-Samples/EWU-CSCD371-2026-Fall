@@ -16,6 +16,18 @@ public sealed class CalculatorTests
     public void Divide_TwoNumbers_ReturnsQuotient() => Assert.AreEqual<int>(5, Calculator.Divide(10, 2));
 
     [TestMethod]
+    public void Add_TwoDoubles_ReturnsSum() => Assert.AreEqual<double>(7.5, Calculator.Add(3.5, 4.0));
+
+    [TestMethod]
+    public void Subtract_TwoDecimals_ReturnsDifference() => Assert.AreEqual<decimal>(1.25m, Calculator.Subtract(3.75m, 2.5m));
+
+    [TestMethod]
+    public void Multiply_TwoLongs_ReturnsProduct() => Assert.AreEqual<long>(6_000_000_000L, Calculator.Multiply(3_000_000_000L, 2L));
+
+    [TestMethod]
+    public void Divide_TwoDoubles_ReturnsFractionalQuotient() => Assert.AreEqual<double>(2.5, Calculator.Divide(5.0, 2.0));
+
+    [TestMethod]
     public void MathematicalOperations_ContainsFourOperators()
     {
         Calculator calculator = new();
