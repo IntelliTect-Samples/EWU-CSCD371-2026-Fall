@@ -34,8 +34,8 @@ Chapter 15: Collection Interfaces with Standard Query Operators
 
 Do one of the following two options (or both if you want extra, extra credit) :)
 
-- Refactor the redirect portion of the `Program` class into 'ProgramBase`
-- Move ProgramBase into a ConsoleUtilities assembly to be used in other console-based projects
+- Refactor the redirect portion of the `Program` class into 'ProgramBase` ✔
+- Move ProgramBase into a ConsoleUtilities assembly to be used in other console-based projects ✔
 - Use generics the mathematical operations methods and consider using generic constraints (requires .NET 7.0)
 
 ## Fundamentals
