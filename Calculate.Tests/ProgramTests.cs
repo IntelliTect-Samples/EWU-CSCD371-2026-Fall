@@ -3,6 +3,8 @@ namespace Calculate.Tests;
 [TestClass]
 public sealed class ProgramTests
 {
+    private static readonly string?[] ExpectedOutput = ["7", "Invalid calculation.", "5"];
+
     [TestMethod]
     public void Run_ValidAndInvalidInput_WritesResultsUntilBlankLine()
     {
@@ -16,7 +18,7 @@ public sealed class ProgramTests
 
         program.Run();
 
-        CollectionAssert.AreEqual(new string?[] { "7", "Invalid calculation.", "5" }, output.Skip(1).ToArray());
+        CollectionAssert.AreEqual(ExpectedOutput, output.Skip(1).ToArray());
     }
 
     [TestMethod]
