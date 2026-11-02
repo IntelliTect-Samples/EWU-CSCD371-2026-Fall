@@ -1,4 +1,4 @@
-﻿namespace Calculate;
+﻿namespace ConsoleUtilities;
 
 public class ProgramBase
 {
