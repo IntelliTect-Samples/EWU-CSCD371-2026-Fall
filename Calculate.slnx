@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Calculate/Calculate.csproj" />
+  <Project Path="Calculate.Tests/Calculate.Tests.csproj" />
+  <Project Path="ConsoleUtilities/ConsoleUtilities.csproj" />
+</Solution>
