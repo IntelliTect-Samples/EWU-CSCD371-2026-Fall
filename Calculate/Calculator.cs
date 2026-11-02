@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Math = System.Math;
 
@@ -54,4 +52,3 @@ public class Calculator
     }
 
 }
-
