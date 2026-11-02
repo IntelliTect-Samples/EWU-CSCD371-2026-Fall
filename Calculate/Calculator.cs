@@ -52,10 +52,5 @@ public class Calculator
 
         return false;
     }
-<<<<<<< HEAD
-}
-=======
 
 }
-
->>>>>>> d03262e6e96ccb6f778cb0636ff2a613612ebab6
