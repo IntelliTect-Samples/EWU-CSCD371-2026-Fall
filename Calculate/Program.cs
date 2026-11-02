@@ -2,7 +2,7 @@
 
 public class Program
 {
-    private readonly Calculator _calculator = new Calculator();
+    private readonly Calculator _calculator = new();
 
     public Action<string?> WriteLine { get; init; } = Console.WriteLine;
     public Func<string?> ReadLine { get; init; } = Console.ReadLine;
