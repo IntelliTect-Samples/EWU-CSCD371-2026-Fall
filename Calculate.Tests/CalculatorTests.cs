@@ -3,6 +3,15 @@
 [TestClass]
 public class CalculatorTests
 {
+    [TestMethod]
+    public void MathematicalOperations_WithDecimalOperands_ReturnExpectedResults()
+    {
+        Assert.AreEqual<decimal>(7.5m, Calculator.Add(3.2m, 4.3m));
+        Assert.AreEqual<decimal>(-1.1m, Calculator.Subtract(3.2m, 4.3m));
+        Assert.AreEqual<decimal>(13.76m, Calculator.Multiply(3.2m, 4.3m));
+        Assert.AreEqual<decimal>(0.5m, Calculator.Divide(3.2m, 6.4m));
+    }
+
     #region Addition Tests
     
     [TestMethod]

@@ -1,32 +1,38 @@
-﻿namespace Calculate;
+﻿using System.Numerics;
+
+namespace Calculate;
 
 public class Calculator
 {
     public IReadOnlyDictionary<char, Func<int, int, int>> MathematicalOperations { get; } =
         new Dictionary<char, Func<int, int, int>>
         {
-            ['+'] = Add,
-            ['-'] = Subtract,
-            ['*'] = Multiply,
-            ['/'] = Divide,
+            ['+'] = Add<int>,
+            ['-'] = Subtract<int>,
+            ['*'] = Multiply<int>,
+            ['/'] = Divide<int>,
         };
     
-    public static int Add(int left, int right)
+    public static T Add<T>(T left, T right)
+        where T : INumber<T>
     {
         return left + right;
     }
 
-    public static int Subtract(int left, int right)
+    public static T Subtract<T>(T left, T right)
+        where T : INumber<T>
     {
         return left - right;
     }
 
-    public static int Multiply(int left, int right)
+    public static T Multiply<T>(T left, T right)
+        where T : INumber<T>
     {
         return left * right;
     }
 
-    public static int Divide(int left, int right)
+    public static T Divide<T>(T left, T right)
+        where T : INumber<T>
     {
         return left / right;
     }
