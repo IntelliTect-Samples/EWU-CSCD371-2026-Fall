@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Math = System.Math;
 
-namespace Calculate
+namespace Calculate;
 {
 
     public class Calculator
