@@ -2,8 +2,3 @@
   <Project Path="Calculate/Calculate.csproj" />
   <Project Path="CalculateTests/Calculate.tests.csproj" />
 </Solution>
-
-<Solution>
-  <Project Path="Calculate.Tests/Calculate.Tests.csproj" />
-  <Project Path="Calculate/Calculate.csproj" />
-</Solution>
