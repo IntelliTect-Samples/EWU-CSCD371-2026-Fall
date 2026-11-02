@@ -13,6 +13,15 @@ public class Calculator
 		return left * right;
 	}
 	public static int Divide(int left, int right) { return left / right; }
-
+    public IReadOnlyDictionary<char, Func<int, int, int>>
+        MathematicalOperations
+    { get; }
+        = new Dictionary<char, Func<int, int, int>>
+        {
+            ['+'] = Add,
+            ['-'] = Subtract,
+            ['*'] = Multiply,
+            ['/'] = Divide
+        };
 
 }
