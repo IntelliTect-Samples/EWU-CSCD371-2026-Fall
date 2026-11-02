@@ -21,7 +21,7 @@ public class Program
             {
                 WriteLine(_calculator.TryCalculate(input, out int result)
                     ? $"{input} = {result}"
-                    : "Invalid calculation. Use: <integer> <+|-|*|/> <integer>");
+                    : "Invalid calculator input--> Use: <integer> <+|-|*|/> <integer>");
             }
             catch (DivideByZeroException ex)
             {
@@ -29,7 +29,7 @@ public class Program
             }
             catch (OverflowException)
             {
-                WriteLine("Number overflow");
+                WriteLine("IntegerNumber overflow");
             }
             catch (ArgumentException)
             {

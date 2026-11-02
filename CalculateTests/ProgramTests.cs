@@ -53,7 +53,7 @@ public class ProgramTests
  
         Assert.HasCount(4, output);
         Assert.AreEqual<string?>("3 + 4 = 7", output[1]);
-        Assert.AreEqual<string?>("Invalid calculation. Use: <integer> <+|-|*|/> <integer>", output[2]);
+        Assert.AreEqual<string?>("Invalid calculator input--> Use: <integer> <+|-|*|/> <integer>", output[2]);
         Assert.AreEqual<string?>("10 / 2 = 5", output[3]);
     }
 }

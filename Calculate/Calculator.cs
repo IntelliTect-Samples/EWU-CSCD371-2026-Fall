@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Math = System.Math;
 
 namespace Calculate
 {
@@ -14,7 +15,7 @@ namespace Calculate
         public static int Subtract(int left, int right) => checked(left - right);
         public static int Multiply(int left, int right) => checked(left * right);
         public static int Divide(int left, int right) =>
-            right == 0 ? throw new DivideByZeroException("Division by zero is undefined.") : left / right;
+            right == 0 ? throw new DivideByZeroException("Division by zero is undefined.") : checked((int)Math.Round((double)left / right));
 
         // Define a read-only property, MathematicalOperations, of type IReadOnlyDictionary<char, Func<int, int, int>>
 
