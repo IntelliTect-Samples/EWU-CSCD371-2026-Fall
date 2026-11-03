@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+    <File Path="INSTRUCTOR-NOTES.md" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="ExceptionHandling.Reference/ExceptionHandling.Reference.csproj" />
+  <Project Path="ExceptionHandling.Shared/ExceptionHandling.Shared.csproj" />
+  <Project Path="ExceptionHandling.Starter/ExceptionHandling.Starter.csproj" />
+</Solution>

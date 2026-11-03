@@ -1,0 +1,33 @@
+using ExceptionHandling.Reference;
+using ExceptionHandling.Shared;
+
+return DemoRunner.Run(args,
+[
+    new("Catch only the exceptions you can handle",
+        "CONSIDER catching a specific exception when you understand why it was thrown and can respond to it.",
+        CatchOnlyWhatYouCanHandle.Run),
+    new("Don't hide (bury) exceptions you don't fully handle",
+        "DO NOT over-catch. Let exceptions propagate unless you know how to address them here.",
+        DontBuryExceptions.Run),
+    new("Use System.Exception and general catch blocks rarely",
+        "AVOID catching System.Exception except in top-level handlers or for cleanup that ends with throw;.",
+        CatchSystemExceptionRarely.Run),
+    new("Avoid logging or reporting lower in the call stack",
+        "AVOID exception reporting or logging lower in the call stack.",
+        LogHighInTheCallStack.Run),
+    new("Use throw; rather than throw exception;",
+        "DO use throw; rather than throw <exception object> inside a catch block.",
+        ThrowVersusThrowException.Run),
+    new("Favor exception filters over catch-and-rethrow",
+        "DO use exception filters to avoid rethrowing an exception from within a catch block.",
+        FiltersInsteadOfRethrow.Run),
+    new("Avoid throwing exceptions from exception filters",
+        "AVOID throwing exceptions from exception filters.",
+        DontThrowFromFilters.Run),
+    new("Avoid filter conditions that might change over time",
+        "AVOID exception filters with logic that might implicitly change over time.",
+        StableFilterConditions.Run),
+    new("Use caution when rethrowing different exceptions",
+        "DO use caution when rethrowing different exceptions. Preserve the original as InnerException.",
+        WrapWithInnerException.Run),
+]);

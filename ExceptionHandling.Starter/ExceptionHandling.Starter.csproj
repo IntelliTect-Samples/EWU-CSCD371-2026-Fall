@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExceptionHandling.Shared\ExceptionHandling.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
