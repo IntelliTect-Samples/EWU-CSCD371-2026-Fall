@@ -64,6 +64,9 @@ public sealed class CalculatorTests
     [DataRow("3 ++ 4")]
     [DataRow("3 + 4 + 5")]
     [DataRow("10 / 0")]
+    [DataRow("+ 3 + 4")]
+    [DataRow("five + six")]
+    [DataRow("+ + +")]
     [DataRow("")]
     [DataRow(null)]
     public void TryCalculate_InvalidExpression_ReturnsFalse(string? calculation)
