@@ -4,7 +4,7 @@
 public class ProgramTests
 {
     [TestMethod]
-    public void WriteLine_UsesCustomDelegate()
+    public void WriteLineUsesCustomDelegate()
     {
         string? output = null;
 
@@ -19,7 +19,7 @@ public class ProgramTests
     }
 
     [TestMethod]
-    public void ReadLine_UsesCustomDelegate()
+    public void ReadLineUsesCustomDelegate()
     {
         Program program = new()
         {

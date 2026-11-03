@@ -87,7 +87,7 @@ public class CalculatorTests
 
         program.Run();
 
-        Assert.AreEqual<int>(2, output.Count);
+        Assert.HasCount(2, output);
         Assert.AreEqual<string>("Result: 7", output[1]);
     }
 
@@ -104,7 +104,7 @@ public class CalculatorTests
 
         program.Run();
 
-        Assert.AreEqual<int>(2, output.Count);
+        Assert.HasCount(2, output);
         Assert.AreEqual<string>("Invalid calculation.", output[1]);
     }
 
