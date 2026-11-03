@@ -38,6 +38,8 @@ public class ProgramTests
 
         program.Run();
 
+        // Suppress MSTEST0037 warning for Assert.AreEqual<int>(2, output.Count) 
+        // because we are intentionally checking the count of the output list.
         #pragma warning disable MSTEST0037
         Assert.AreEqual<int>(2, output.Count);
         #pragma warning restore MSTEST0037
