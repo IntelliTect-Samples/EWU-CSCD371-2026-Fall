@@ -1,4 +1,5 @@
-﻿using ConsoleUtilities;
+﻿using System.Globalization;
+using ConsoleUtilities;
 
 namespace Calculate;
 
@@ -17,7 +18,7 @@ public class Program : ProgramBase
 
 		if (calculator.TryCalculate(calculation, out int result))
 		{
-			WriteLine(result.ToString());
+			WriteLine(result.ToString(CultureInfo.InvariantCulture));
 		}
 		else
 		{
