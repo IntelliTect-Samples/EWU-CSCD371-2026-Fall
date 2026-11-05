@@ -50,7 +50,7 @@ public sealed class CalculateTests
     public void DivideRoundsOddValueDivision()
     {
         int dividends = Calculator.Divide(15, 2);
-        Assert.AreEqual(8, dividends);
+        Assert.AreEqual<int>(8, dividends);
     }
 
     //Overflow and divide by zero Tests 

@@ -5,5 +5,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Calculate\Calculate.csproj" />
   </ItemGroup>
+  <PropertyGroup> 
+    <TestingPlatformCommandLineArguments>--report-trx --report-trx-filename results.trx</TestingPlatformCommandLineArguments>
+    <EnableMicrosoftTestingExtensionsTrxReport>true</EnableMicrosoftTestingExtensionsTrxReport>
+  </PropertyGroup>
+
 </Project>
  
