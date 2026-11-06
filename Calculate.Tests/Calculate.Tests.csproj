@@ -12,6 +12,6 @@
     <PackageReference Include="MSTest" Version="4.*" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Calculator\Calculator.csproj" />
+    <ProjectReference Include="..\Calculate\Calculate.csproj" />
   </ItemGroup>
 </Project>

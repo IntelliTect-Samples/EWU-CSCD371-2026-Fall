@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Calculator;
+namespace Calculate;
 
 public class Program
 {

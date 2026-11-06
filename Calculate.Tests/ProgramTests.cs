@@ -1,12 +1,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Calculator.Tests;
+namespace Calculate.Tests;
 
 [TestClass]
 public class ProgramTests
 {
     [TestMethod]
-    public void DefaultConstructor_DefaultsToConsoleDelegates()
+    public void DefaultConstructorDefaultsToConsoleDelegates()
     {
         Program program = new();
 
@@ -15,7 +15,7 @@ public class ProgramTests
     }
 
     [TestMethod]
-    public void WriteLineAndReadLine_SetAtConstruction_AreInvoked()
+    public void WriteLineAndReadLineSetAtConstructionAreInvoked()
     {
         List<string?> written = [];
         Program program = new()
@@ -33,7 +33,7 @@ public class ProgramTests
     }
 
     [TestMethod]
-    public void Run_CalculatesEachLineUntilBlank()
+    public void RunCalculatesEachLineUntilBlank()
     {
         Queue<string?> input = new(["3 + 4", "10 / 2", "bogus", "1 / 0", ""]);
         List<string?> output = [];
@@ -61,7 +61,7 @@ public class ProgramTests
     }
 
     [TestMethod]
-    public void Run_StopsWhenReadLineReturnsNull()
+    public void RunStopsWhenReadLineReturnsNull()
     {
         List<string?> output = [];
         Program program = new()

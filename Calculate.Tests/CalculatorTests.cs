@@ -1,24 +1,24 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Calculator.Tests;
+namespace Calculate.Tests;
 
 [TestClass]
 public class CalculatorTests
 {
     [TestMethod]
-    public void Add_ReturnsSum() => Assert.AreEqual<int>(7, Calculator.Add(3, 4));
+    public void AddReturnsSum() => Assert.AreEqual<int>(7, Calculator.Add(3, 4));
 
     [TestMethod]
-    public void Subtract_ReturnsDifference() => Assert.AreEqual<int>(40, Calculator.Subtract(42, 2));
+    public void SubtractReturnsDifference() => Assert.AreEqual<int>(40, Calculator.Subtract(42, 2));
 
     [TestMethod]
-    public void Multiply_ReturnsProduct() => Assert.AreEqual<int>(12, Calculator.Multiply(3, 4));
+    public void MultiplyReturnsProduct() => Assert.AreEqual<int>(12, Calculator.Multiply(3, 4));
 
     [TestMethod]
-    public void Divide_ReturnsQuotient() => Assert.AreEqual<int>(5, Calculator.Divide(10, 2));
+    public void DivideReturnsQuotient() => Assert.AreEqual<int>(5, Calculator.Divide(10, 2));
 
     [TestMethod]
-    public void MathematicalOperations_ContainsTheFourOperators()
+    public void MathematicalOperationsContainsTheFourOperators()
     {
         IReadOnlyDictionary<char, Func<int, int, int>> operations = new Calculator().MathematicalOperations;
 
@@ -30,7 +30,7 @@ public class CalculatorTests
     }
 
     [TestMethod]
-    public void MathematicalOperations_MapToTheMatchingMethods()
+    public void MathematicalOperationsMapToTheMatchingMethods()
     {
         IReadOnlyDictionary<char, Func<int, int, int>> operations = new Calculator().MathematicalOperations;
 
@@ -46,7 +46,7 @@ public class CalculatorTests
     [DataRow("6 * 7", 42)]
     [DataRow("10 / 2", 5)]
     [DataRow("-3 + 4", 1)]
-    public void TryCalculate_ValidExpression_ReturnsTrueAndResult(string calculation, int expected)
+    public void TryCalculateValidExpressionReturnsTrueAndResult(string calculation, int expected)
     {
         bool success = new Calculator().TryCalculate(calculation, out int result);
 
@@ -68,7 +68,7 @@ public class CalculatorTests
     [DataRow("3 / 0")]
     [DataRow("")]
     [DataRow(null)]
-    public void TryCalculate_InvalidExpression_ReturnsFalse(string? calculation)
+    public void TryCalculateInvalidExpressionReturnsFalse(string? calculation)
     {
         bool success = new Calculator().TryCalculate(calculation, out int result);
 
