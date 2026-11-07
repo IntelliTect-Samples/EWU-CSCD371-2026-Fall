@@ -15,25 +15,22 @@ The purpose of this assignment is to solidify your learning of:
 
 **Throughout, consider using the `System.Linq.Enumerable` methods `Zip`, `Count`, `Sort` and `Contains` methods for testing collections.**. (Preferably avoid using `Microsoft.VisualStudio.TestTools.UnitTesting.CollectionAssert` although that might be easier, to get a firmer grasp on additional LINQ API.)
 
-1. Implement the `ISampleData.CsvRows` property, loading the data from the `People.csv` file and returning each line as a single string. ❌✔
+1. Implement the `ISampleData.CsvRows` property, loading the data from the `People.csv` file and returning each line as a single string. ✔
 
-   - Change the "Copy to" property on People.csv to "Copy if newer" so that the file is deployed along with your test project. ❌✔
-   - Using LINQ, skip the first row in the `People.csv`. ❌✔
-   - Be sure to appropriately handle resource (`IDisposable`) items correctly if applicable (and it may not be depending on how you implement it). ❌✔
+   - Change the "Copy to" property on People.csv to "Copy if newer" so that the file is deployed along with your test project. ✔
+   - Using LINQ, skip the first row in the `People.csv`. ✔
+   - Be sure to appropriately handle resource (`IDisposable`) items correctly if applicable (and it may not be depending on how you implement it). ✔
+2. Implement `IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()` to return a **sorted**, **unique** list of states. ✔
 
-2. Implement `IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()` to return a **sorted**, **unique** list of states. ❌✔
+   - Use `ISampleData.CsvRows` for your data source. ✔
+   - Don't forget the list should be unique. ✔
+   - Sort the list alphabetically. ✔
+   - Include a test that leverages a hardcoded list of addresses. ✔
+   - Include a test that uses LINQ to verify the data is sorted correctly (do not use a hardcoded list). ✔
+3. Implement `ISampleData.GetAggregateSortedListOfStatesUsingCsvRows()` to return a `string` that contains a **unique**, comma separated list of states. ✔
 
-   - Use `ISampleData.CsvRows` for your data source. ❌✔
-   - Don't forget the list should be unique. ❌✔
-   - Sort the list alphabetically. ❌✔
-   - Include a test that leverages a hardcoded list of addresses. ❌✔
-   - Include a test that uses LINQ to verify the data is sorted correctly (do not use a hardcoded list). ❌✔
-
-3. Implement `ISampleData.GetAggregateSortedListOfStatesUsingCsvRows()` to return a `string` that contains a **unique**, comma separated list of states. ❌✔
-
-   - Use `ISampleData.GetUniqueSortedListOfStatesGivenCsvRows()` for your data source. ❌✔
-   - Consider "selecting" only the states and calling `ToArray()` to retrieve an array of all the state names. ❌✔
-
+   - Use `ISampleData.GetUniqueSortedListOfStatesGivenCsvRows()` for your data source. ✔
+   - Consider "selecting" only the states and calling `ToArray()` to retrieve an array of all the state names. ✔
 4. Implement the `ISampleData.People` property to return all the items in `People.csv` as `Person` objects ❌✔
 
    - Use `ISampleData.CsvRows` as the source of the data. ❌✔
@@ -41,11 +38,9 @@ The purpose of this assignment is to solidify your learning of:
    - Be sure that `Person.Address` is also populated. ❌✔
    - Adding null validation to all the `Person` and `Address` properties.
    - Consider using `ISampleData.CsvRows` in your test to verify your results. ❌✔
-
 5. Implement `ISampleDate.FilterByEmailAddress(Predicate<string> filter)` to return a list of names where the email address matches the `filter`. ❌✔
 
    - Use `ISampleData.People` for your data source. ❌✔
-
 6. Implement `ISampleData.GetAggregateListOfStatesGivenPeopleCollection(IEnumerable<IPerson> people)` to return a `string` that contains a **unique**, comma-separated list of states. ❌✔
 
    - Use the `people` parameter from `ISampleData.People` property for your data source. ❌✔
