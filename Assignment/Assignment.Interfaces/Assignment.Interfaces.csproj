@@ -1,4 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+<ItemGroup>
+    <None Update="People.csv">
+      <CopyToOutputDirectory>CopyIfNewer</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <PropertyGroup>
     <RootNamespace>Assignment</RootNamespace>
   </PropertyGroup>

@@ -1,12 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Assignment;
 
 public interface ISampleData
 {
     // 1.
-    IEnumerable<string> CsvRows { get; }
+    IEnumerable<string> CsvRows {
+        get
+        {
+            using StreamReader reader = new("People.csv");
+            reader.ReadLine();
+            List<string> lines = [];
+            while (reader.ReadLine() is string line)
+            {
+                lines.Add(line);
+            }
+            return lines.Skip(1); // Skip the header row
+        }
+    }
     
     // 2.
     IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows();
