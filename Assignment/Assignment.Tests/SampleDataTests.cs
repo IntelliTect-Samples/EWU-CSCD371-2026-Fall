@@ -41,4 +41,16 @@ public class SampleDataTests
             .Zip(states.Skip(1), (current, next) => string.CompareOrdinal(current, next) <= 0)
             .All(isSorted => isSorted));
     }
+
+    [TestMethod]
+    public void GetAggregateSortedListOfStatesUsingCsvRows_ReturnsUniqueCommaSeparatedStates()
+    {
+        var sampleData = new SampleData();
+        string[] states = sampleData.GetUniqueSortedListOfStatesGivenCsvRows().ToArray();
+
+        string aggregatedStates = sampleData.GetAggregateSortedListOfStatesUsingCsvRows();
+
+        Assert.AreEqual(string.Join(",", states), aggregatedStates);
+        Assert.AreEqual(states.Length, aggregatedStates.Split(',').Distinct(StringComparer.Ordinal).Count());
+    }
 }
