@@ -148,4 +148,92 @@ public class SampleDataTests
         Assert.ThrowsExactly<ArgumentNullException>(() => new Person("First", "Last", null!, "a@b.com"));
         Assert.ThrowsExactly<ArgumentNullException>(() => new Person("First", "Last", address, null!));
     }
+
+    [TestMethod]
+    public void FilterByEmailAddress_GovEmails_ReturnsMatchingNamesInPeopleOrder()
+    {
+        SampleData data = new();
+        (string FirstName, string LastName)[] expected =
+        [
+            ("Ev", "Challace"),
+            ("Marijn", "McKennan"),
+            ("Priscilla", "Jenyns"),
+            ("Amelia", "Toal")
+        ];
+
+        (string FirstName, string LastName)[] actual = data
+            .FilterByEmailAddress(email => email.EndsWith(".gov", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.AreEqual<int>(expected.Length, actual.Length);
+        Assert.IsTrue(expected.Zip(actual).All(pair => pair.First == pair.Second));
+    }
+
+    [TestMethod]
+    public void FilterByEmailAddress_ExactEmail_ReturnsSinglePerson()
+    {
+        SampleData data = new();
+
+        (string FirstName, string LastName)[] actual = data
+            .FilterByEmailAddress(email => email == "pjenyns0@state.gov")
+            .ToArray();
+
+        Assert.AreEqual<int>(1, actual.Length);
+        Assert.AreEqual<(string, string)>(("Priscilla", "Jenyns"), actual[0]);
+    }
+
+    [TestMethod]
+    public void FilterByEmailAddress_NoMatches_ReturnsEmpty()
+    {
+        SampleData data = new();
+
+        Assert.IsFalse(data.FilterByEmailAddress(_ => false).Any());
+    }
+
+    [TestMethod]
+    public void FilterByEmailAddress_NullFilter_Throws()
+    {
+        SampleData data = new();
+
+        Assert.ThrowsExactly<ArgumentNullException>(() => data.FilterByEmailAddress(null!));
+    }
+
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_MatchesUniqueSortedListFromCsvRows()
+    {
+        SampleData data = new();
+        string expected = string.Join(", ", data.GetUniqueSortedListOfStatesGivenCsvRows());
+
+        Assert.AreEqual<string>(expected, data.GetAggregateListOfStatesGivenPeopleCollection(data.People));
+    }
+
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_DuplicateStates_ListedOnce()
+    {
+        SampleData data = new();
+        IPerson[] people =
+        [
+            new Person("A", "One", new Address("1 Main St", "Spokane", "WA", "99201"), "a@example.com"),
+            new Person("B", "Two", new Address("2 Main St", "Helena", "MT", "59601"), "b@example.com"),
+            new Person("C", "Three", new Address("3 Main St", "Cheney", "WA", "99004"), "c@example.com")
+        ];
+
+        Assert.AreEqual<string>("MT, WA", data.GetAggregateListOfStatesGivenPeopleCollection(people));
+    }
+
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_EmptyCollection_ReturnsEmptyString()
+    {
+        SampleData data = new();
+
+        Assert.AreEqual<string>(string.Empty, data.GetAggregateListOfStatesGivenPeopleCollection([]));
+    }
+
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_NullPeople_Throws()
+    {
+        SampleData data = new();
+
+        Assert.ThrowsExactly<ArgumentNullException>(() => data.GetAggregateListOfStatesGivenPeopleCollection(null!));
+    }
 }
