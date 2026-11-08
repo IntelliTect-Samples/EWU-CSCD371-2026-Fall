@@ -20,7 +20,7 @@ public abstract class SampleDataTestsBase
     protected abstract Task<string> GetAggregateListOfStatesGivenPeopleCollectionAsync(IEnumerable<IPerson> people);
 
     [TestMethod]
-    public async Task GetUniqueSortedListOfStatesGivenCsvRows_ContainsStatesFromHardcodedAddresses()
+    public async Task GetUniqueSortedListOfStatesGivenCsvRowsContainsStatesFromHardcodedAddresses()
     {
         string[] hardcodedAddresses =
         [
@@ -40,7 +40,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task GetUniqueSortedListOfStatesGivenCsvRows_ReturnsUniqueAlphabeticallySortedStates()
+    public async Task GetUniqueSortedListOfStatesGivenCsvRowsReturnsUniqueAlphabeticallySortedStates()
     {
         string[] states = await GetUniqueSortedListOfStatesGivenCsvRowsAsync();
 
@@ -51,7 +51,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task GetAggregateSortedListOfStatesUsingCsvRows_ReturnsUniqueCommaSeparatedStates()
+    public async Task GetAggregateSortedListOfStatesUsingCsvRowsReturnsUniqueCommaSeparatedStates()
     {
         string[] states = await GetUniqueSortedListOfStatesGivenCsvRowsAsync();
 
@@ -62,7 +62,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task People_ReturnsAllCsvRowsAsSortedPeopleWithAddresses()
+    public async Task PeopleReturnsAllCsvRowsAsSortedPeopleWithAddresses()
     {
         string[][] expectedRows = (await GetCsvRowsAsync())
             .Select(row => row.Split(','))
@@ -87,7 +87,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task FilterByEmailAddress_GovDomain_ReturnsHardcodedNamesInPeopleOrder()
+    public async Task FilterByEmailAddressGovDomainReturnsHardcodedNamesInPeopleOrder()
     {
         (string FirstName, string LastName)[] expected =
         [
@@ -105,7 +105,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task FilterByEmailAddress_MatchesPeopleFilteredWithLinq()
+    public async Task FilterByEmailAddressMatchesPeopleFilteredWithLinq()
     {
         static bool IsEduEmail(string email) => email.Contains("edu", StringComparison.Ordinal);
 
@@ -122,7 +122,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task FilterByEmailAddress_ExactEmail_ReturnsSinglePerson()
+    public async Task FilterByEmailAddressExactEmailReturnsSinglePerson()
     {
         (string FirstName, string LastName)[] actual =
             await FilterByEmailAddressAsync(email => email == "kjoder1@quantcast.com");
@@ -132,7 +132,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task FilterByEmailAddress_NoMatches_ReturnsEmpty()
+    public async Task FilterByEmailAddressNoMatchesReturnsEmpty()
     {
         (string FirstName, string LastName)[] actual =
             await FilterByEmailAddressAsync(email => email.EndsWith(".invalid", StringComparison.Ordinal));
@@ -141,14 +141,14 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task FilterByEmailAddress_NullFilter_ThrowsArgumentNullException()
+    public async Task FilterByEmailAddressNullFilterThrowsArgumentNullException()
     {
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(
             () => FilterByEmailAddressAsync(null!));
     }
 
     [TestMethod]
-    public async Task GetAggregateListOfStatesGivenPeopleCollection_MatchesUniqueSortedStatesFromCsvRows()
+    public async Task GetAggregateListOfStatesGivenPeopleCollectionMatchesUniqueSortedStatesFromCsvRows()
     {
         string expected = string.Join(",", await GetUniqueSortedListOfStatesGivenCsvRowsAsync());
 
@@ -158,7 +158,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task GetAggregateListOfStatesGivenPeopleCollection_DuplicateStates_ReturnsUniqueSortedList()
+    public async Task GetAggregateListOfStatesGivenPeopleCollectionDuplicateStatesReturnsUniqueSortedList()
     {
         IPerson[] people =
         [
@@ -175,7 +175,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task GetAggregateListOfStatesGivenPeopleCollection_EmptyCollection_ReturnsEmptyString()
+    public async Task GetAggregateListOfStatesGivenPeopleCollectionEmptyCollectionReturnsEmptyString()
     {
         string actual = await GetAggregateListOfStatesGivenPeopleCollectionAsync([]);
 
@@ -183,7 +183,7 @@ public abstract class SampleDataTestsBase
     }
 
     [TestMethod]
-    public async Task GetAggregateListOfStatesGivenPeopleCollection_NullPeople_ThrowsArgumentNullException()
+    public async Task GetAggregateListOfStatesGivenPeopleCollectionNullPeopleThrowsArgumentNullException()
     {
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(
             () => GetAggregateListOfStatesGivenPeopleCollectionAsync(null!));
