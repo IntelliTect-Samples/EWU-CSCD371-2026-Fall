@@ -30,11 +30,28 @@ public class SampleData : ISampleData
 
     // 5.
     public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(
-        Predicate<string> filter) => throw new NotImplementedException();
+        Predicate<string> filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        return People
+            .Where(person => filter(person.EmailAddress))
+            .Select(person => (person.FirstName, person.LastName));
+    }
 
     // 6.
     public string GetAggregateListOfStatesGivenPeopleCollection(
-        IEnumerable<IPerson> people) => throw new NotImplementedException();
+        IEnumerable<IPerson> people)
+    {
+        ArgumentNullException.ThrowIfNull(people);
+
+        return people
+            .Select(person => person.Address.State)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(state => state, StringComparer.Ordinal)
+            .Aggregate(string.Empty, (aggregate, state) =>
+                aggregate.Length == 0 ? state : $"{aggregate},{state}");
+    }
 
     private static IPerson ParsePerson(string row)
     {
