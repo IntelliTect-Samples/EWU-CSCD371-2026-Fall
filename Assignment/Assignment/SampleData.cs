@@ -8,12 +8,12 @@ namespace Assignment;
 public class SampleData : ISampleData
 {
     // 1.
-    public IEnumerable<string> CsvRows => File.ReadLines(Path.Combine(AppContext.BaseDirectory, "People.csv")).Skip(1);
+    public IEnumerable<string> CsvRows => File.ReadLines(PeopleCsv.FilePath).Skip(1);
 
     // 2.
-    public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows() 
+    public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()
         => CsvRows
-            .Select(row => row.Split(',')[6])
+            .Select(PeopleCsv.GetState)
             .Distinct(StringComparer.Ordinal)
             .OrderBy(state => state, StringComparer.Ordinal);
 
@@ -23,7 +23,7 @@ public class SampleData : ISampleData
 
     // 4.
     public IEnumerable<IPerson> People => CsvRows
-        .Select(ParsePerson)
+        .Select(PeopleCsv.ParsePerson)
         .OrderBy(person => person.Address.State, StringComparer.Ordinal)
         .ThenBy(person => person.Address.City, StringComparer.Ordinal)
         .ThenBy(person => person.Address.Zip, StringComparer.Ordinal);
@@ -49,22 +49,6 @@ public class SampleData : ISampleData
             .Select(person => person.Address.State)
             .Distinct(StringComparer.Ordinal)
             .OrderBy(state => state, StringComparer.Ordinal)
-            .Aggregate(string.Empty, (aggregate, state) =>
-                aggregate.Length == 0 ? state : $"{aggregate},{state}");
-    }
-
-    private static IPerson ParsePerson(string row)
-    {
-        string[] columns = row.Split(',');
-        if (columns.Length != 8)
-        {
-            throw new FormatException("A People.csv row must contain exactly 8 columns.");
-        }
-
-        return new Person(
-            columns[1],
-            columns[2],
-            columns[3],
-            new Address(columns[4], columns[5], columns[6], columns[7]));
+            .Aggregate(string.Empty, PeopleCsv.AppendState);
     }
 }
