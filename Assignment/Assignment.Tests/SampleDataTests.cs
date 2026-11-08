@@ -53,4 +53,30 @@ public class SampleDataTests
         Assert.AreEqual(string.Join(",", states), aggregatedStates);
         Assert.AreEqual(states.Length, aggregatedStates.Split(',').Distinct(StringComparer.Ordinal).Count());
     }
+
+    [TestMethod]
+    public void People_ReturnsAllCsvRowsAsSortedPeopleWithAddresses()
+    {
+        var sampleData = new SampleData();
+        string[][] expectedRows = sampleData.CsvRows
+            .Select(row => row.Split(','))
+            .OrderBy(columns => columns[6], StringComparer.Ordinal)
+            .ThenBy(columns => columns[5], StringComparer.Ordinal)
+            .ThenBy(columns => columns[7], StringComparer.Ordinal)
+            .ToArray();
+
+        IPerson[] people = sampleData.People.ToArray();
+
+        Assert.AreEqual(expectedRows.Length, people.Length);
+        Assert.IsTrue(expectedRows
+            .Zip(people, (columns, person) =>
+                columns[1] == person.FirstName
+                && columns[2] == person.LastName
+                && columns[3] == person.EmailAddress
+                && columns[4] == person.Address.StreetAddress
+                && columns[5] == person.Address.City
+                && columns[6] == person.Address.State
+                && columns[7] == person.Address.Zip)
+            .All(matches => matches));
+    }
 }
