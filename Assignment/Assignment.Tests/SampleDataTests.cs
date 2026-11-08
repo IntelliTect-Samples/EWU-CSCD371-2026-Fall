@@ -75,4 +75,77 @@ public class SampleDataTests
         Assert.IsTrue(expected.Zip(actual).All(pair => pair.First == pair.Second));
     }
 
+    [TestMethod]
+    public void People_ReturnsOnePersonPerCsvRow()
+    {
+        SampleData data = new();
+
+        Assert.AreEqual<int>(data.CsvRows.Count(), data.People.Count());
+    }
+
+    [TestMethod]
+    public void People_AreSortedByStateThenCityThenZip()
+    {
+        SampleData data = new();
+        IPerson[] people = data.People.ToArray();
+
+        Assert.IsTrue(people.Zip(people.Skip(1)).All(pair =>
+        {
+            int state = string.CompareOrdinal(pair.First.Address.State, pair.Second.Address.State);
+            int city = string.CompareOrdinal(pair.First.Address.City, pair.Second.Address.City);
+            int zip = string.CompareOrdinal(pair.First.Address.Zip, pair.Second.Address.Zip);
+            return state < 0 || (state == 0 && (city < 0 || (city == 0 && zip <= 0)));
+        }));
+    }
+
+    [TestMethod]
+    public void People_MatchCsvRowsIncludingAddress()
+    {
+        SampleData data = new();
+
+        string[] expected = data.CsvRows
+            .Select(row => string.Join(',', row.Split(',').Skip(1)))
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+        string[] actual = data.People
+            .Select(person => string.Join(',',
+                person.FirstName, person.LastName, person.EmailAddress,
+                person.Address.StreetAddress, person.Address.City,
+                person.Address.State, person.Address.Zip))
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.AreEqual<int>(expected.Length, actual.Length);
+        Assert.IsTrue(expected.Zip(actual).All(pair => pair.First == pair.Second));
+    }
+
+    [TestMethod]
+    public void People_FirstPerson_IsFromAlabama()
+    {
+        SampleData data = new();
+
+        IPerson first = data.People.First();
+
+        Assert.AreEqual<string>("AL", first.Address.State);
+    }
+
+    [TestMethod]
+    public void Address_NullArgument_Throws()
+    {
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Address(null!, "City", "ST", "12345"));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Address("Street", null!, "ST", "12345"));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Address("Street", "City", null!, "12345"));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Address("Street", "City", "ST", null!));
+    }
+
+    [TestMethod]
+    public void Person_NullArgument_Throws()
+    {
+        Address address = new("Street", "City", "ST", "12345");
+
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Person(null!, "Last", address, "a@b.com"));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Person("First", null!, address, "a@b.com"));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Person("First", "Last", null!, "a@b.com"));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Person("First", "Last", address, null!));
+    }
 }

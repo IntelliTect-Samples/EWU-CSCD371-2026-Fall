@@ -31,13 +31,13 @@ The purpose of this assignment is to solidify your learning of:
 
    - Use `ISampleData.GetUniqueSortedListOfStatesGivenCsvRows()` for your data source. ✔
    - Consider "selecting" only the states and calling `ToArray()` to retrieve an array of all the state names. ✔
-4. Implement the `ISampleData.People` property to return all the items in `People.csv` as `Person` objects ❌✔
+4. Implement the `ISampleData.People` property to return all the items in `People.csv` as `Person` objects ✔
 
-   - Use `ISampleData.CsvRows` as the source of the data. ❌✔
-   - Sort the list by State, City, and Zip. ❌✔
-   - Be sure that `Person.Address` is also populated. ❌✔
-   - Adding null validation to all the `Person` and `Address` properties.
-   - Consider using `ISampleData.CsvRows` in your test to verify your results. ❌✔
+   - Use `ISampleData.CsvRows` as the source of the data. ✔
+   - Sort the list by State, City, and Zip. ✔
+   - Be sure that `Person.Address` is also populated. ✔
+   - Adding null validation to all the `Person` and `Address` properties. ✔
+   - Consider using `ISampleData.CsvRows` in your test to verify your results. ✔
 5. Implement `ISampleDate.FilterByEmailAddress(Predicate<string> filter)` to return a list of names where the email address matches the `filter`. ❌✔
 
    - Use `ISampleData.People` for your data source. ❌✔

@@ -24,7 +24,17 @@ public class SampleData : ISampleData
         => string.Join(", ", GetUniqueSortedListOfStatesGivenCsvRows().ToArray());
 
     // 4.
-    public IEnumerable<IPerson> People => throw new NotImplementedException();
+    public IEnumerable<IPerson> People =>
+        CsvRows
+            .Select(row => row.Split(','))
+            .Select(columns => new Person(
+                columns[1],
+                columns[2],
+                new Address(columns[4], columns[5], columns[6], columns[7]),
+                columns[3]))
+            .OrderBy(person => person.Address.State, StringComparer.Ordinal)
+            .ThenBy(person => person.Address.City, StringComparer.Ordinal)
+            .ThenBy(person => person.Address.Zip, StringComparer.Ordinal);
 
     // 5.
     public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(
