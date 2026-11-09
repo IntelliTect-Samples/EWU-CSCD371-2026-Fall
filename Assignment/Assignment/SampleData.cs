@@ -20,7 +20,7 @@ public class SampleData : ISampleData
         => CsvRows.Select(row => row.Split(',')[6]).Distinct().OrderBy(State => State);
     // 3.
     public string GetAggregateSortedListOfStatesUsingCsvRows()
-        => string.Join(",", GetUniqueSortedListOfStatesGivenCsvRows());
+        => string.Join(", ", GetUniqueSortedListOfStatesGivenCsvRows());
     // 4.
     public IEnumerable<IPerson> People => CsvRows.Select(row =>
     {
