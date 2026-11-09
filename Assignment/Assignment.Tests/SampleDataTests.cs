@@ -39,7 +39,19 @@ public class SampleDataTests
         // assert
         Assert.IsTrue(expectedDataRows.SequenceEqual(actual));
     }
-    
+
+    [TestMethod]
+    public void CsvRows_WhenEnumeratedWithJustHeader_ReturnsEmptyCollection()
+    {
+        using TestCsvFile sourceFile = new("Ignored Header Row");
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        string[] actual = [..sampleData.CsvRows];
+        
+        Assert.IsEmpty(actual);
+    }
+
     #endregion
 
     private sealed class TestCsvFile : IDisposable
