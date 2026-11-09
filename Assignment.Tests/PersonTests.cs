@@ -51,7 +51,7 @@ public class PersonTests
             address ?? CreateAddress());
     }
     
-    private static IAddress CreateAddress(
+    private static Address CreateAddress(
         string streetAddress = "defaultAddress",
         string city = "defaultCity",
         string state = "defaultState",
