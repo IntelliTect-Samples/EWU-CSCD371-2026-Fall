@@ -4,22 +4,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="4.4.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="4.4.1" />
-    <PackageReference Include="coverlet.collector" Version="10.0.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <ProjectReference Include="..\Assignment\Assignment.csproj" />
+    <None Include="..\Assignment\People.csv" Link="People.csv" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-  <ItemGroup>
-  <ProjectReference Include="..\Assignment\Assignment.csproj" />
-</ItemGroup>
-<ItemGroup>
-  <None Include="..\Assignment\People.csv" Link="People.csv" CopyToOutputDirectory="PreserveNewest" />
-</ItemGroup>
 
 </Project>
