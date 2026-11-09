@@ -27,8 +27,8 @@ public class PersonTests
             new Person(
                 firstName: "firstName",
                 lastName: "lastName",
-                null!,
-                emailAddress: "emailAddress"));
+                emailAddress: "emailAddress",
+                null!));
     }
     
     [TestMethod]
@@ -41,14 +41,14 @@ public class PersonTests
     private static Person CreatePerson(
         string firstName = "defaultFirstName",
         string lastName = "defaultLastName",
-        IAddress? address = null,
-        string emailAddress = "defaultEmail")
+        string emailAddress = "defaultEmail",
+        IAddress? address = null)
     {
         return new Person(
             firstName,
             lastName,
-            address ?? CreateAddress(),
-            emailAddress);
+            emailAddress,
+            address ?? CreateAddress());
     }
     
     private static IAddress CreateAddress(

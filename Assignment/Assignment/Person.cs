@@ -7,8 +7,8 @@ public record Person : IPerson
     public Person(
         string firstName,
         string lastName,
-        IAddress address,
-        string emailAddress)
+        string emailAddress,
+        IAddress address)
     {
         ArgumentNullException.ThrowIfNull(firstName);
         ArgumentNullException.ThrowIfNull(lastName);
