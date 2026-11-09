@@ -331,6 +331,148 @@ public class SampleDataTests
     }
 
     #endregion
+
+    #region FilterByEmailAddress Tests
+
+    [TestMethod]
+    public void FilterByEmailAddress_WhenEmailMatches_ReturnName()
+    {
+        Person expectedPerson = CreateTestPerson(
+            firstName: "Test",
+            lastName: "Person",
+            emailAddress: "find me");
+
+        using TestCsvFile sourceFile =
+            new("Ignored Header Row",
+                CreateCsvDataRow(expectedPerson));
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+
+        (string FirstName, string LastName)[] actual =
+        [..sampleData.FilterByEmailAddress(email => email == expectedPerson.EmailAddress)];
+
+        (string FirstName, string LastName)[] expected =
+        [
+            (expectedPerson.FirstName,
+            expectedPerson.LastName)
+        ];
+        
+        // sequenceEqual used with one entry expected
+        Assert.IsTrue(expected.SequenceEqual(actual));
+    }
+
+    [TestMethod]
+    public void FilterByEmailAddress_WhenNoEmailMatches_ReturnEmptyCollection()
+    {
+        Person personEntry = CreateTestPerson();
+
+        using TestCsvFile sourceFile =
+            new("Ignored Header Row",
+                CreateCsvDataRow(personEntry));
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        (string FirstName, string LastName)[] actual =
+            [..sampleData.FilterByEmailAddress(email => email == "not an email")];
+        
+        Assert.IsEmpty(actual);
+    }
+
+    [TestMethod]
+    public void FilterByEmailAddress_WhenMultipleMatches_ReturnsMatchingEntryNames()
+    {
+        const string matchEmail = "find me";
+        
+        Person matchingEntryOne = CreateTestPerson(
+            firstName: "First",
+            lastName: "Match",
+            emailAddress: matchEmail);
+        
+        Person matchingEntryTwo = CreateTestPerson(
+            firstName: "Second",
+            lastName: "Match",
+            emailAddress: matchEmail);
+
+        Person notAMatchingEntry = CreateTestPerson();
+
+        using TestCsvFile sourceFile =
+            new("Ignored Header Row",
+                CreateCsvDataRow(matchingEntryOne),
+                CreateCsvDataRow(matchingEntryTwo),
+                CreateCsvDataRow(notAMatchingEntry));
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        (string FirstName, string LastName)[] actual =
+            [..sampleData.FilterByEmailAddress(email => email == matchEmail)];
+
+        // note: sorting done means that order can change from actual
+        (string FirstName, string LastName)[] expected =
+        [
+            (matchingEntryOne.FirstName, matchingEntryOne.LastName),
+            (matchingEntryTwo.FirstName, matchingEntryTwo.LastName)
+        ];
+        
+        // same entries found, but order could be different
+        Assert.HasCount(expected.Length, actual);
+        Assert.IsTrue(expected.All(actual.Contains));
+    }
+
+    #endregion
+
+    #region GetAggregateListOfStatesGivenPeopleCollection Tests
+
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_ReturnsUniqueAggregateString()
+    {
+        Person[] peopleEntries = 
+        [
+            CreateTestPerson(state: "A"),
+            CreateTestPerson(state: "A"),
+            CreateTestPerson(state: "B"),
+            CreateTestPerson(state: "C")
+        ];
+
+        const string expected = "A,B,C";
+
+        SampleData sampleData = new();
+        
+        string actual = 
+            sampleData.GetAggregateListOfStatesGivenPeopleCollection(peopleEntries);
+        
+        Assert.AreEqual(expected, actual);
+    }
+
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_WhenPeopleCollectionEmpty_ReturnsEmptyCollection()
+    {
+        Person[] peopleEntries = [];
+        
+        SampleData sampleData = new();
+        
+        string actual = sampleData
+            .GetAggregateListOfStatesGivenPeopleCollection(peopleEntries);
+        
+        Assert.IsEmpty(actual);
+    }
+
+    [TestMethod]
+    public void GetAggregateListOfStatesGivenPeopleCollection_WhenSingleStateExists_ReturnsSingle()
+    {
+        Person[] peopleEntries =
+        [
+            CreateTestPerson(state: "A")
+        ];
+        
+        SampleData sampleData = new();
+        
+        string actual = sampleData
+            .GetAggregateListOfStatesGivenPeopleCollection(peopleEntries);
+        
+        Assert.AreEqual("A", actual);
+    }
+
+    #endregion
     
     private static string CreateCsvDataRowWithState(string state) =>
          $"x,x,x,x,x,x,{state},x";

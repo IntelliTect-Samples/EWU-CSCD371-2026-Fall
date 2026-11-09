@@ -48,9 +48,21 @@ public class SampleData(string filePath = "People.csv") : ISampleData
 
     // 5.
     public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(
-        Predicate<string> filter) => throw new NotImplementedException();
+        Predicate<string> filter) => 
+            People
+                .Where(person => filter(person.EmailAddress))
+                .Select(person => (person.FirstName, person.LastName));
 
     // 6.
     public string GetAggregateListOfStatesGivenPeopleCollection(
-        IEnumerable<IPerson> people) => throw new NotImplementedException();
+        IEnumerable<IPerson> people) => 
+            people
+                .Select(person => person.Address.State)
+                .Distinct()
+                .OrderBy(state => state)
+                .DefaultIfEmpty(string.Empty)
+                .Aggregate((current, next) => 
+                    string.IsNullOrEmpty(current)
+                    ? next
+                    : $"{current},{next}");
 }
