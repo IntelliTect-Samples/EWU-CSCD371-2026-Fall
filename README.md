@@ -60,9 +60,9 @@ The purpose of this assignment is to solidify your learning of:
 - Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ✔
 - Set `LangVersion` and the `TargetFramework` to the latest released versions available (preview versions optional)   ✔
 - and enabled .NET analyzers for both projects ✔
-- For this assignment, consider using `Assert.AreEqual<T>()` (the generic version)  ❌✔
-- All of the above should be unit tested ❌✔
-- Choose simplicity over complexity ❌✔
-- Make sure all exceptions are appropriately handled ❌✔
+- For this assignment, consider using `Assert.AreEqual<T>()` (the generic version)  ✔
+- All of the above should be unit tested ✔
+- Choose simplicity over complexity ✔
+- Make sure all exceptions are appropriately handled ✔
 
 ## See [Docs](Docs)
