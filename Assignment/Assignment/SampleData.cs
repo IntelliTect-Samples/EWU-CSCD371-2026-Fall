@@ -27,6 +27,12 @@ public class SampleData : ISampleData
     internal static string ByCity(IPerson person) => person.Address.City;
     internal static string ByZip(IPerson person) => person.Address.Zip;
 
+    internal static IOrderedEnumerable<IPerson> SortPeople(IEnumerable<IPerson> people)
+        => people
+            .OrderBy(ByState, StringComparer.Ordinal)
+            .ThenBy(ByCity, StringComparer.Ordinal)
+            .ThenBy(ByZip, StringComparer.Ordinal);
+
     internal static string JoinStates(IEnumerable<string> states) => string.Join(", ", states);
 
     internal static string AppendState(string list, string state)
@@ -50,11 +56,7 @@ public class SampleData : ISampleData
 
     // 4.
     public IEnumerable<IPerson> People =>
-        CsvRows
-            .Select(ParsePerson)
-            .OrderBy(ByState, StringComparer.Ordinal)
-            .ThenBy(ByCity, StringComparer.Ordinal)
-            .ThenBy(ByZip, StringComparer.Ordinal);
+        SortPeople(CsvRows.Select(ParsePerson));
 
     // 5.
     public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(

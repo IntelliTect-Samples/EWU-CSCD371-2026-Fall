@@ -6,10 +6,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Assignment.Tests;
 
-/// <summary>
-/// Assertions shared by <see cref="SampleDataTests"/> and <see cref="SampleDataAsyncTests"/>.
-/// Each derived class adapts its implementation to the abstract members below.
-/// </summary>
 public abstract class SampleDataTestsBase
 {
     protected abstract Task<string[]> GetCsvRows();

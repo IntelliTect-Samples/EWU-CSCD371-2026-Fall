@@ -25,12 +25,24 @@ public class SampleDataAsync : IAsyncSampleData
         => SampleData.JoinStates(await GetUniqueSortedListOfStatesGivenCsvRows().ToArrayAsync());
 
     // 4.
-    public IAsyncEnumerable<IPerson> People =>
-        CsvRows
-            .Select(row => (IPerson)SampleData.ParsePerson(row))
-            .OrderBy(SampleData.ByState, StringComparer.Ordinal)
-            .ThenBy(SampleData.ByCity, StringComparer.Ordinal)
-            .ThenBy(SampleData.ByZip, StringComparer.Ordinal);
+    public IAsyncEnumerable<IPerson> People => LoadPeopleAsync();
+
+    private async IAsyncEnumerable<IPerson> LoadPeopleAsync()
+    {
+        string[] rows = await CsvRows.ToArrayAsync();
+
+        IPerson[] people = await Task.Run(() => SampleData.SortPeople(
+            rows.AsParallel()
+                .AsOrdered()
+                .Select(SampleData.ParsePerson)
+                .ToArray())
+            .ToArray());
+
+        foreach (IPerson person in people)
+        {
+            yield return person;
+        }
+    }
 
     // 5.
     public IAsyncEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(

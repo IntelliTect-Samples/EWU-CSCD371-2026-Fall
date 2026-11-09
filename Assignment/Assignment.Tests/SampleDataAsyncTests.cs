@@ -27,4 +27,18 @@ public class SampleDataAsyncTests : SampleDataTestsBase
 
     protected override async Task<string> GetAggregateStatesFor(IPerson[]? people)
         => await _data.GetAggregateListOfStatesGivenPeopleCollection(people?.ToAsyncEnumerable()!);
+
+    [TestMethod]
+    public async Task People_ParsedInParallel_MatchesSynchronousOrderExactly()
+    {
+        IPerson[] expected = new SampleData().People.ToArray();
+
+        IPerson[] actual = await _data.People.ToArrayAsync();
+
+        Assert.AreEqual<int>(expected.Length, actual.Length);
+        Assert.IsTrue(expected.Zip(actual).All(pair =>
+            pair.First.FirstName == pair.Second.FirstName
+            && pair.First.LastName == pair.Second.LastName
+            && pair.First.EmailAddress == pair.Second.EmailAddress));
+    }
 }
