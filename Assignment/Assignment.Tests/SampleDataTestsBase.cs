@@ -156,7 +156,7 @@ public abstract class SampleDataTestsBase
     [TestMethod]
     public async Task FilterByEmailAddress_NoMatches_ReturnsEmpty()
     {
-        Assert.IsFalse((await FilterByEmail(_ => false)).Any());
+        Assert.AreEqual<int>(0, (await FilterByEmail(_ => false)).Length);
     }
 
     [TestMethod]
