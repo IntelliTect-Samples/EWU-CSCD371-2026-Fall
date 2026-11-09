@@ -12,11 +12,9 @@ public class SampleDataTests
     
     // CsvRows requirements:
     
-    // given: a source csv file where each row is represented as a single string.
-    
     // Implementation shall:
-    // 1. shall return each line from a source .csv file as a single string.
-    // 2. shall exclude the first row if the source .csv file.
+    // 1. return each line from a source .csv file as a single string.
+    // 2. exclude the first row if the source .csv file.
     
     [TestMethod]
     public void CsvRows_WhenEnumerated_ReturnsAllRowsExceptHeader()
@@ -53,6 +51,115 @@ public class SampleDataTests
     }
 
     #endregion
+
+    #region GetUniqueSortedListOfStatesGivenCsvRows Tests
+    
+    // Note CSV structure of: Id,FirstName,LastName,Email,StreetAddress,City,State,Zip
+    // where State is column 7 (index 6)
+
+    [TestMethod]
+    public void GetUniqueSortedListOfStatesGivenCsvRows_WhenStatesContainDuplicates_ReturnsUnique()
+    {
+        string[] csvDataRows = 
+        [
+            CreateCsvDataRowWithState("CA"),
+            CreateCsvDataRowWithState("CA"),
+            CreateCsvDataRowWithState("OR"),
+            CreateCsvDataRowWithState("WA"),
+        ];
+
+        string[] expectedResult = 
+        [
+            "CA",
+            "OR",
+            "WA",
+        ];
+        
+        using TestCsvFile sourceFile = 
+            new(["Ignored Header Row", .. csvDataRows]);
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        string[] actual = 
+            [..sampleData.GetUniqueSortedListOfStatesGivenCsvRows()];
+        
+        Assert.IsTrue(expectedResult.SequenceEqual(actual));
+    }
+
+    [TestMethod]
+    public void GetUniqueSortedListOfStatesGivenCsvRows_WhenStatesAreUnordered_ReturnsAlphabeticallyOrdered()
+    {
+        string[] csvDataRows =
+        [
+            CreateCsvDataRowWithState("WA"),
+            CreateCsvDataRowWithState("CA"),
+            CreateCsvDataRowWithState("OR"),
+        ];
+
+        string[] expectedResult =
+        [
+            "CA",
+            "OR",
+            "WA",
+        ];
+        
+        using TestCsvFile sourceFile = 
+            new(["Ignored Header Row", .. csvDataRows]);
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        string[] actual = 
+            [..sampleData.GetUniqueSortedListOfStatesGivenCsvRows()];
+        
+        Assert.IsTrue(expectedResult.SequenceEqual(actual));
+    }
+
+    [TestMethod]
+    public void GetUniqueSortedListOfStatesGivenCsvRows_WhenStatesReturned_AreAlphabeticallyOrdered()
+    {
+        SampleData sampleData = new();
+        
+        string[] actual = 
+            [..sampleData.GetUniqueSortedListOfStatesGivenCsvRows()];
+
+        string[] expected =
+            [.. actual.OrderBy(state => state)];
+        
+        Assert.IsTrue(expected.SequenceEqual(actual));
+    }
+
+    #endregion
+
+    #region GetAggregateSortedListOfStatesUsingCsvRows Tests
+
+    [TestMethod]
+    public void GetAggregateSortedListOfStatesUsingCsvRows()
+    {
+        string[] csvDataRows =
+        [
+            CreateCsvDataRowWithState("CA"),
+            CreateCsvDataRowWithState("CA"),
+            CreateCsvDataRowWithState("OR"),
+            CreateCsvDataRowWithState("WA")
+        ];
+
+        const string expected = "CA,OR,WA";
+        
+        using TestCsvFile sourceFile =
+            new(["Ignored Header Row", .. csvDataRows]);
+
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        string actual = sampleData
+            .GetAggregateSortedListOfStatesUsingCsvRows();
+        
+        Assert.AreEqual(expected, actual);
+    }
+
+    #endregion
+    
+    private static string CreateCsvDataRowWithState(string state) =>
+         $"x,x,x,x,x,x,{state},x";
 
     private sealed class TestCsvFile : IDisposable
     {

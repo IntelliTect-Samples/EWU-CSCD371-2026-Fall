@@ -11,13 +11,19 @@ public class SampleData(string filePath = "People.csv") : ISampleData
         File.ReadLines(filePath)
             .Skip(1);
 
-    // 2.
+    // CSV Columns are defined as:
+    // Id, FirstName, LastName, Email, StreetAddress, City, State, Zip
+    
+    // State is column 7 (index 6)
     public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows() 
-        => throw new NotImplementedException();
+        => CsvRows
+            .Select(row => row.Split(',')[6])
+            .Distinct()
+            .OrderBy(state => state);
 
     // 3.
     public string GetAggregateSortedListOfStatesUsingCsvRows()
-        => throw new NotImplementedException();
+        => string.Join(",", GetUniqueSortedListOfStatesGivenCsvRows());
 
     // 4.
     public IEnumerable<IPerson> People => throw new NotImplementedException();
