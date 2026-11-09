@@ -10,12 +10,6 @@ public class SampleDataTests
 {
     #region CsvRows Tests
     
-    // CsvRows requirements:
-    
-    // Implementation shall:
-    // 1. return each line from a source .csv file as a single string.
-    // 2. exclude the first row if the source .csv file.
-    
     [TestMethod]
     public void CsvRows_WhenEnumerated_ReturnsAllRowsExceptHeader()
     {
