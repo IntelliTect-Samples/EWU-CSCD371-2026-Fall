@@ -183,9 +183,195 @@ public class SampleDataTests
     }
 
     #endregion
+
+    #region People Tests
+
+    [TestMethod]
+    public void People_WhenCsvRowExists_ReturnsMappedPerson()
+    {
+        Person expected = CreateTestPerson();
+        
+        using TestCsvFile sourceFile = 
+            new("Ignored Header Row",
+                CreateCsvDataRow(expected));
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+
+        Person actual = sampleData.People.Cast<Person>().Single();
+        
+        Assert.AreEqual(expected, actual);
+    }
+
+    [TestMethod]
+    public void People_WhenStatesAreUnordered_ReturnsSortedByState()
+    {
+        Person[] expected = 
+        [
+            CreateTestPerson(state: "A"),
+            CreateTestPerson(state: "Z")
+        ];
+        
+        // file intentionally swaps the expected ordering
+        using TestCsvFile sourceFile = 
+            new("Ignored Header Row",
+                CreateCsvDataRow(expected[1]),
+                CreateCsvDataRow(expected[0])
+            );
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+
+        Person[] actual =
+            [.. sampleData.People.Cast<Person>()];
+        
+        Assert.IsTrue(expected.SequenceEqual(actual));
+    }
+    
+    [TestMethod]
+    public void People_WhenCitiesAreUnordered_ReturnsSortedByCity()
+    {
+        Person[] expected = 
+        [
+            CreateTestPerson(city: "A"),
+            CreateTestPerson(city: "Z")
+        ];
+        
+        // file intentionally swaps the expected ordering
+        using TestCsvFile sourceFile = 
+            new("Ignored Header Row",
+                CreateCsvDataRow(expected[1]),
+                CreateCsvDataRow(expected[0])
+            );
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+
+        Person[] actual =
+            [.. sampleData.People.Cast<Person>()];
+        
+        Assert.IsTrue(expected.SequenceEqual(actual));
+    }
+    
+    [TestMethod]
+    public void People_WhenZipsAreUnordered_ReturnsSortedByZip()
+    {
+        Person[] expected = 
+        [
+            CreateTestPerson(zip: "1"),
+            CreateTestPerson(zip: "2")
+        ];
+        
+        // file intentionally swaps the expected ordering
+        using TestCsvFile sourceFile = 
+            new("Ignored Header Row",
+                CreateCsvDataRow(expected[1]),
+                CreateCsvDataRow(expected[0])
+            );
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+
+        Person[] actual =
+            [.. sampleData.People.Cast<Person>()];
+        
+        Assert.IsTrue(expected.SequenceEqual(actual));
+    }
+    
+    [TestMethod]
+    public void People_WhenEnumerated_ReturnsSortedByStateCityAndZip()
+    {
+        Person[] expected =
+        [
+            CreateTestPerson(
+                state: "A",
+                city: "A",
+                zip: "1"),
+            
+            CreateTestPerson(
+                state: "A",
+                city: "A",
+                zip: "2"),
+            
+            CreateTestPerson(
+                state: "A",
+                city: "Z",
+                zip: "1"),
+            
+            CreateTestPerson(
+                state: "Z",
+                city: "A",
+                zip: "1"),
+        ];
+        
+        using TestCsvFile sourceFile = 
+            new("Ignored Header Row",
+                CreateCsvDataRow(expected[3]),
+                CreateCsvDataRow(expected[2]),
+                CreateCsvDataRow(expected[1]),
+                CreateCsvDataRow(expected[0])
+            );
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        Person[] actual =
+            [.. sampleData.People.Cast<Person>()];
+        
+        Assert.IsTrue(expected.SequenceEqual(actual));
+    }
+
+    [TestMethod]
+    public void People_WhenCsvContainsOnlyHeader_ReturnsEmptyCollection()
+    {
+        using TestCsvFile sourceFile = 
+            new("Ignored Header Row");
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        Person[] actual =
+            [.. sampleData.People.Cast<Person>()];
+        
+        Assert.IsEmpty(actual);
+    }
+
+    #endregion
     
     private static string CreateCsvDataRowWithState(string state) =>
          $"x,x,x,x,x,x,{state},x";
+
+    private static string CreateCsvDataRow(Person person)
+    {
+        return string.Join(",", 
+            [
+                "x",
+                person.FirstName,
+                person.LastName,
+                person.EmailAddress,
+                person.Address.StreetAddress,
+                person.Address.City,
+                person.Address.State,
+                person.Address.Zip
+            ]
+        );
+    }
+
+    private static Person CreateTestPerson(
+        string firstName = "defaultFirstName",
+        string lastName = "defaultLastName",
+        string emailAddress = "defaultEmail",
+        string streetAddress = "defaultAddress",
+        string city = "defaultCity",
+        string state = "defaultState",
+        string zip = "defaultZip")
+    {
+        return new Person(
+            firstName,
+            lastName,
+            emailAddress,
+            
+            new Address(
+                streetAddress,
+                city,
+                state,
+                zip)
+        );
+    }
 
     private sealed class TestCsvFile : IDisposable
     {
