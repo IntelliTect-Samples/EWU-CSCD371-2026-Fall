@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -7,67 +8,54 @@ namespace Assignment.Tests;
 [TestClass]
 public class SampleDataTests
 {
-    private const string CsvFile = "People.csv";
-    
     #region CsvRows Tests
     
     // CsvRows requirements:
+    
     // given: a source csv file where each row is represented as a single string.
+    
     // Implementation shall:
     // 1. shall return each line from a source .csv file as a single string.
     // 2. shall exclude the first row if the source .csv file.
     
     [TestMethod]
-    public void CsvRows_WhenEnumerated_FirstReturnedResultIsSecondRowOfSourceFile()
+    public void CsvRows_WhenEnumerated_ReturnsAllRowsExceptHeader()
     {
-        // If CsvRows returns each source row as a single string,
-        // and excludes the first source row,
-        
-        // then the first returned string must
-        // equal the second row of the source file.
-        
         // arrange
-        SampleData sampleData = new();
+        string[] expectedDataRows =
+        [
+            "FirstDataRow",
+            "SecondDataRow"
+        ];
         
-        // second line of source file
-        string expected = 
-            File.ReadLines(CsvFile)
-            .ElementAt(1);
+        using TestCsvFile sourceFile = 
+            new(["Ignored Header Row", .. expectedDataRows]);
         
-        // act + get first string from CsvRows
-        string actual = 
-            sampleData.CsvRows
-            .First();
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        // act
+        string[] actual = [.. sampleData.CsvRows];
         
         // assert
-        Assert.AreEqual(expected, actual);
-    }
-
-    [TestMethod]
-    public void CsvRows_WhenEnumerated_ReturnsOneLessRowThanSourceFile()
-    {
-        // If CsvRows returns each source row as a single string,
-        // and excludes the first source row,
-        
-        // then the returned collection count must
-        // equal the source file count minus one.
-        
-        // arrange
-        SampleData sampleData = new();
-
-        // count of source file minus one
-        int expected =
-            File.ReadLines(CsvFile)
-                .Count() - 1;
-
-        // act + count from CsvRows
-        int actual = 
-            sampleData.CsvRows
-                .Count();
-        
-        // assert
-        Assert.AreEqual(expected, actual);
+        Assert.IsTrue(expectedDataRows.SequenceEqual(actual));
     }
     
     #endregion
+
+    private sealed class TestCsvFile : IDisposable
+    {
+        public string FilePath { get; }
+        
+        public TestCsvFile(params string[] rows)
+        {
+            FilePath = Path.GetTempFileName();
+            
+            File.WriteAllLines(FilePath, rows);
+        }
+
+        public void Dispose()
+        {
+            File.Delete(FilePath);
+        }
+    }
 }

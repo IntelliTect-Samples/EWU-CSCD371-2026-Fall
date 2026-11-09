@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace Assignment;
 
-public class SampleData : ISampleData
+public class SampleData(string filePath = "People.csv") : ISampleData
 {
     public IEnumerable<string> CsvRows =>
-        File.ReadLines("People.csv")
+        File.ReadLines(filePath)
             .Skip(1);
 
     // 2.
