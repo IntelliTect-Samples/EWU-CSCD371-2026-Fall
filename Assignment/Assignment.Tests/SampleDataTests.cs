@@ -128,12 +128,25 @@ public class SampleDataTests
         Assert.IsTrue(expected.SequenceEqual(actual));
     }
 
+    [TestMethod]
+    public void GetUniqueSortedListOfStatesGivenCsvRows_WhenNoDataRowsExists_ReturnsEmptyCollection()
+    {
+        using TestCsvFile sourceFile = new("Ignored Header Row");
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        string[] actual = 
+            [..sampleData.GetUniqueSortedListOfStatesGivenCsvRows()];
+        
+        Assert.IsEmpty(actual);
+    }
+
     #endregion
 
     #region GetAggregateSortedListOfStatesUsingCsvRows Tests
 
     [TestMethod]
-    public void GetAggregateSortedListOfStatesUsingCsvRows()
+    public void GetAggregateSortedListOfStatesUsingCsvRows_ReturnsAggregateString()
     {
         string[] csvDataRows =
         [
@@ -154,6 +167,19 @@ public class SampleDataTests
             .GetAggregateSortedListOfStatesUsingCsvRows();
         
         Assert.AreEqual(expected, actual);
+    }
+
+    [TestMethod]
+    public void GetAggregateSortedListOfStatesUsingCsvRows_WhenNoDataRowsExists_ReturnsEmptyCollection()
+    {
+        using TestCsvFile sourceFile = new("Ignored Header Row");
+        
+        SampleData sampleData = new(sourceFile.FilePath);
+        
+        string actual = sampleData
+            .GetAggregateSortedListOfStatesUsingCsvRows();
+        
+        Assert.IsEmpty(actual);
     }
 
     #endregion
