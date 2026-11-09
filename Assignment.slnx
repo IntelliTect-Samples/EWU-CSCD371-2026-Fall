@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="../global.json" />
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="Assignment.Interfaces/Assignment.Interfaces.csproj" />
+  <Project Path="Assignment.Tests/Assignment.Tests.csproj" />
+  <Project Path="Assignment/Assignment.csproj" />
+</Solution>
