@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.Linq;
 
 
@@ -18,12 +19,66 @@ public class SampleDataTests
     }
 
     //TODO: implement
-    //[TestMethod]
-    //public void TestGetUniqueSortedListOfStatesGivenCsvRowsHardcodedList()
-    //{
+    [TestMethod]
+    public void TestGetUniqueSortedListOfStatesGivenCsvRowsHardcodedList()
+    {
+    List<string> states = [
+        "CA",
+        "WA",
+        "CA",
+        "TX",
+        "WA"];
 
-    //}
+    List<string> expected =
+    [
+        "CA",
+        "TX",
+        "WA"
+    ];
 
+    Assert.AreSequenceEqual(expected,states.Distinct()
+            .OrderBy(s => s)
+            .ToList());
+    }
+    [TestMethod]
+    public void TestPeopleCountMatchesCsvRows()
+    {
+        Assert.AreEqual<int>(
+            _sampleData.CsvRows.Count(),
+            _sampleData.People.Count());
+    }
+    [TestMethod]
+    public void TestPeopleHaveAddresses()
+    {
+        Assert.IsTrue(
+            _sampleData.People.All(
+                p => p.Address != null));
+    }
+    [TestMethod]
+    public void TestFilterByEmailAddress()
+    {
+        var result =
+            _sampleData.FilterByEmailAddress(
+                email => email.EndsWith(".edu"));
+
+        Assert.IsTrue(result.Any());
+    }
+    [TestMethod]
+    public void TestAggregateListOfStatesGivenPeopleCollection()
+    {
+        string expected =
+            _sampleData
+                .GetAggregateSortedListOfStatesUsingCsvRows();
+
+        string actual =
+            _sampleData
+                .GetAggregateListOfStatesGivenPeopleCollection(
+                    _sampleData.People);
+
+        Assert.AreEqual<string>(
+            expected,
+            actual);
+    }
     [TestMethod]
     public void TestGetUniqueSortedListOfStatesGivenCsvRowsWithLinq()
     {

@@ -45,10 +45,10 @@ public class SampleData : ISampleData
 
     // 6.
     public string GetAggregateListOfStatesGivenPeopleCollection(
-        IEnumerable<IPerson> people) => People
+        IEnumerable<IPerson> people) => people
         .Select(person => person.Address.State)
         .Distinct()
         .OrderBy(state => state)
-        .Aggregate((a, b) => a + ", " + b);
+        .Aggregate((a, b) => $"{a}, {b}");
 
 }
