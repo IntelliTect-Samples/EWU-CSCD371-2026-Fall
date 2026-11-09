@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'Assignment.Interfaces'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)Assignment.Interfaces/Assignment.Interfaces.csproj" />
+  </ItemGroup>
+</Project>
