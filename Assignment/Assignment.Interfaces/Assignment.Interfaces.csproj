@@ -1,3 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <PropertyGroup>
+    <RootNamespace>Assignment</RootNamespace>
+  </PropertyGroup>
 </Project>
