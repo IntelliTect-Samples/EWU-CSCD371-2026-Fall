@@ -10,7 +10,7 @@ public class SampleDataAsync : SampleDataBase, IAsyncSampleData
 {
     private static async IAsyncEnumerable<string> ReadCsvRowsAsync(string filePath)
     {
-        StreamReader sr = new(filePath);
+        using StreamReader sr = new(filePath);
         await sr.ReadLineAsync();
         string? s;
 
@@ -18,10 +18,6 @@ public class SampleDataAsync : SampleDataBase, IAsyncSampleData
         {
             yield return s;
         }
-
-        sr.Close();
-        sr.DiscardBufferedData();
-        sr.Dispose();
     }
 
     private async IAsyncEnumerable<IPerson> GetPeopleAsync()
