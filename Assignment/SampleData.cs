@@ -5,12 +5,26 @@ using System.Linq;
 
 namespace Assignment;
 
+/// <summary>
+/// Represents a collection of sample data for testing and demonstration purposes.
+/// </summary> 
+/// <remarks>
+/// This class provides methods to read and manipulate sample data from a CSV file.
+/// </remarks>
+/// <seealso cref="ISampleData" />
+/// <example>
+/// <code>
+/// var sampleData = new SampleData();
+/// var uniqueStates = sampleData.GetUniqueSortedListOfStatesGivenCsvRows();
+/// </code>
+/// </example>
 public class SampleData : ISampleData
 {
     // 1.
     public IEnumerable<string> CsvRows =>
         File.ReadLines(Path.Combine(AppContext.BaseDirectory, "People.csv"))
             .Skip(1);
+            
     // 2.
     public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows() =>
         CsvRows

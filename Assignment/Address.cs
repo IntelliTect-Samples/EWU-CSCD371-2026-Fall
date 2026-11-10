@@ -2,6 +2,18 @@ using System;
 
 namespace Assignment;
 
+/// <summary>
+/// Represents a physical address with street, city, state, and zip code.
+/// </summary>
+/// <remarks>
+/// This class is immutable and thread-safe. Once an instance is created, its properties cannot be changed.
+/// </remarks>
+/// <seealso cref="IAddress" />
+/// <example>
+/// <code>
+/// var address = new Address("123 Main St", "Anytown", "CA", "12345");
+/// Console.WriteLine(address.StreetAddress); // Output: 123 Main St
+/// </code>
 public sealed class Address : IAddress
 {
     public Address(
