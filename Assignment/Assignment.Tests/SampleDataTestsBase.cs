@@ -22,7 +22,7 @@ public abstract class SampleDataTestsBase
     public async Task TestCsvRowsSkipsHeader()
     {
         var rows = await CsvRows();
-        Assert.DoesNotContain("FirstName", rows.First());
+        Assert.DoesNotContain("FirstName", rows[0]);
     }
 
     [TestMethod]
@@ -42,9 +42,7 @@ public abstract class SampleDataTestsBase
         "WA"
         ];
 
-        Assert.AreSequenceEqual(expected, states.Distinct()
-                .OrderBy(s => s)
-                .ToList());
+        Assert.AreSequenceEqual(expected, [.. states.Distinct().OrderBy(s => s)]);
     }
 
     [TestMethod]
@@ -54,8 +52,8 @@ public abstract class SampleDataTestsBase
         var people = await People();
 
 
-        Assert.AreEqual<int>(rows.Count(),
-            people.Count());
+        Assert.HasCount(rows.Count,
+            people);
     }
 
     [TestMethod]
@@ -75,7 +73,7 @@ public abstract class SampleDataTestsBase
             await FilterByEmailAddress(
                 email => email.EndsWith(".edu"));
 
-        Assert.IsTrue(result.Any());
+        Assert.IsNotEmpty(result);
     }
 
     [TestMethod]

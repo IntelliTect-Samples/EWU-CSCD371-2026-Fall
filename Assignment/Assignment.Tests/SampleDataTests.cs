@@ -11,8 +11,7 @@ namespace Assignment.Tests;
 [TestClass]
 public class SampleDataTests : SampleDataTestsBase
 {
-    private readonly ISampleData _sampleData =
-        new SampleData();
+    private readonly SampleData _sampleData = new();
 
     [TestMethod]
     public void TestAggregateListOfStatesGivenPeopleCollection()
