@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <None Update="People.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
