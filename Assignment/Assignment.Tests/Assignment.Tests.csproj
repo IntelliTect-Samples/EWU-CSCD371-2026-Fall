@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Assignment\Assignment.csproj" />
-	<None Include="..\Assignment\People.csv" Link="People.csv" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

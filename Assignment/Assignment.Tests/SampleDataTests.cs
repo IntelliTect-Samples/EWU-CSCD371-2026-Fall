@@ -18,7 +18,6 @@ public class SampleDataTests
         Assert.DoesNotContain("FirstName", _sampleData.CsvRows.First());
     }
 
-    //TODO: implement
     [TestMethod]
     public void TestGetUniqueSortedListOfStatesGivenCsvRowsHardcodedList()
     {
