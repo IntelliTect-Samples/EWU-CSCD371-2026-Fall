@@ -7,7 +7,7 @@ namespace Assignment.Tests;
 public class AddressTests
 {
     [TestMethod]
-    public void Constructor_ValidArguments_SetsProperties()
+    public void ConstructorValidArgumentsSetsProperties()
     {
         var address = new Address(
             "123 Main Street",
@@ -22,7 +22,7 @@ public class AddressTests
     }
 
     [TestMethod]
-    public void Constructor_NullStreetAddress_ThrowsArgumentNullException()
+    public void ConstructorNullStreetAddressThrowsArgumentNullException()
     {
         var exception = Assert.ThrowsExactly<ArgumentNullException>(
             () => new Address(null!, "Seattle", "WA", "98101"));
@@ -31,7 +31,7 @@ public class AddressTests
     }
 
     [TestMethod]
-    public void Constructor_NullCity_ThrowsArgumentNullException()
+    public void ConstructorNullCityThrowsArgumentNullException()
     {
         var exception = Assert.ThrowsExactly<ArgumentNullException>(
             () => new Address("123 Main Street", null!, "WA", "98101"));
@@ -40,7 +40,7 @@ public class AddressTests
     }
 
     [TestMethod]
-    public void Constructor_NullState_ThrowsArgumentNullException()
+    public void ConstructorNullStateThrowsArgumentNullException()
     {
         var exception = Assert.ThrowsExactly<ArgumentNullException>(
             () => new Address("123 Main Street", "Seattle", null!, "98101"));
@@ -49,7 +49,7 @@ public class AddressTests
     }
 
     [TestMethod]
-    public void Constructor_NullZip_ThrowsArgumentNullException()
+    public void ConstructorNullZipThrowsArgumentNullException()
     {
         var exception = Assert.ThrowsExactly<ArgumentNullException>(
             () => new Address("123 Main Street", "Seattle", "WA", null!));

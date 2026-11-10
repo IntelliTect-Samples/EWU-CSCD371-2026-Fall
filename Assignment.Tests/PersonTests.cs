@@ -7,7 +7,7 @@ namespace Assignment.Tests;
 public class PersonTests
 {
     [TestMethod]
-    public void Constructor_ValidArguments_SetsProperties()
+    public void ConstructorValidArgumentsSetsProperties()
     {
         var address = new Address(
             "123 Main Street",
@@ -30,7 +30,7 @@ public class PersonTests
     }
 
     [TestMethod]
-    public void Constructor_NullFirstName_ThrowsArgumentNullException()
+    public void ConstructorNullFirstNameThrowsArgumentNullException()
     {
         var address = new Address("123 Main Street", "Seattle", "WA", "98101");
 
@@ -41,7 +41,7 @@ public class PersonTests
     }
 
     [TestMethod]
-    public void Constructor_NullLastName_ThrowsArgumentNullException()
+    public void ConstructorNullLastNameThrowsArgumentNullException()
     {
         var address = new Address("123 Main Street", "Seattle", "WA", "98101");
 
@@ -52,7 +52,7 @@ public class PersonTests
     }
 
     [TestMethod]
-    public void Constructor_NullAddress_ThrowsArgumentNullException()
+    public void ConstructorNullAddressThrowsArgumentNullException()
     {
         var exception = Assert.ThrowsExactly<ArgumentNullException>(
             () => new Person("John", "Smith", null!, "john@example.com"));
@@ -61,7 +61,7 @@ public class PersonTests
     }
 
     [TestMethod]
-    public void Constructor_NullEmailAddress_ThrowsArgumentNullException()
+    public void ConstructorNullEmailAddressThrowsArgumentNullException()
     {
         var address = new Address("123 Main Street", "Seattle", "WA", "98101");
 
