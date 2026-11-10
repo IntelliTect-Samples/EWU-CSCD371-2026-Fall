@@ -5,35 +5,20 @@ using System.Linq;
 
 namespace Assignment;
 
-public class SampleData : ISampleData
+public class SampleData : SampleDataBase, ISampleData
 {
     // 1.
-    private static readonly string CsvFile =
-    Path.Combine(
-        AppContext.BaseDirectory,
-        "People.csv");
     public IEnumerable<string> CsvRows =>
     File.ReadLines(CsvFile)
         .Skip(1);
     // 2.
     public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()
-        => CsvRows.Select(row => row.Split(',')[6]).Distinct().OrderBy(State => State);
+        => CsvRows.Select(row => GetState(row)).Distinct().OrderBy(State => State);
     // 3.
     public string GetAggregateSortedListOfStatesUsingCsvRows()
         => string.Join(", ", GetUniqueSortedListOfStatesGivenCsvRows());
     // 4.
-    public IEnumerable<IPerson> People => CsvRows.Select(row =>
-    {
-        string[] columns = row.Split(',');
-
-        return new Person(columns[1],
-            columns[2],
-            columns[3],
-            new Address(columns[4],
-            columns[5],
-            columns[6],
-            columns[7]));
-    }
+    public IEnumerable<IPerson> People => CsvRows.Select(row => ParsePerson(row)
     ).OrderBy(p => p.Address.State)
         .ThenBy(p => p.Address.City)
         .ThenBy(p => p.Address.Zip);
