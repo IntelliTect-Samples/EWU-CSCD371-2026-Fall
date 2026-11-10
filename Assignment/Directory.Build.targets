@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'Assignment.Tests'">
+    <None Include="$(MSBuildThisFileDirectory)Assignment/People.csv" Link="People.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
