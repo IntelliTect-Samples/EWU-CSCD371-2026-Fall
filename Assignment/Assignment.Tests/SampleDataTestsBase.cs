@@ -71,7 +71,7 @@ public abstract class SampleDataTestsBase
     {
         var result =
             await FilterByEmailAddress(
-                email => email.EndsWith(".edu"));
+                email => email.EndsWith(".edu", StringComparison.OrdinalIgnoreCase));
 
         Assert.IsNotEmpty(result);
     }
