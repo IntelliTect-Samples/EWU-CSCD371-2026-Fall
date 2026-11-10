@@ -43,7 +43,7 @@ public class Testing
     [TestMethod]
     public void GetUniqueSortedStates_HardcodedRows_ReturnsExpectedStates()
     {
-        string[] expected = {"ID", "TX", "WA"} ;
+        string[] expected = ["ID", "TX", "WA"];
         string[] actual = new FakeSampleData()
             .GetUniqueSortedListOfStatesGivenCsvRows().ToArray();
 

@@ -26,8 +26,8 @@ The purpose of this assignment is to solidify your learning of:
    - Use `ISampleData.CsvRows` for your data source. ✔
    - Don't forget the list should be unique. ✔
    - Sort the list alphabetically. ✔
-   - Include a test that leverages a hardcoded list of addresses. ❌✔
-   - Include a test that uses LINQ to verify the data is sorted correctly (do not use a hardcoded list). ❌✔
+   - Include a test that leverages a hardcoded list of addresses. ✔
+   - Include a test that uses LINQ to verify the data is sorted correctly (do not use a hardcoded list). ✔
 
 3. Implement `ISampleData.GetAggregateSortedListOfStatesUsingCsvRows()` to return a `string` that contains a **unique**, comma separated list of states. ✔
 
@@ -40,7 +40,7 @@ The purpose of this assignment is to solidify your learning of:
    - Sort the list by State, City, and Zip. ✔
    - Be sure that `Person.Address` is also populated. ✔
    - Adding null validation to all the `Person` and `Address` properties.
-   - Consider using `ISampleData.CsvRows` in your test to verify your results. ❌✔
+   - Consider using `ISampleData.CsvRows` in your test to verify your results. ✔
 
 5. Implement `ISampleDate.FilterByEmailAddress(Predicate<string> filter)` to return a list of names where the email address matches the `filter`. ✔
 
@@ -62,12 +62,12 @@ The purpose of this assignment is to solidify your learning of:
 - Place all shared project properties into a `Directory.Build.Props` file.
 - Place all shared project items into a `Directory.Build.targets` file.
 - Ensure nullable reference types is enabled  ✔
-- Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ❌✔
-- Set `LangVersion` and the `TargetFramework` to the latest released versions available (preview versions optional)   ❌✔
-- and enabled .NET analyzers for both projects ❌✔
+- Ensure that you turn on code analysis for all projects(EnableNETAnalyzers)  ✔
+- Set `LangVersion` and the `TargetFramework` to the latest released versions available (preview versions optional)   ✔
+- and enabled .NET analyzers for both projects ✔
 - For this assignment, consider using `Assert.AreEqual<T>()` (the generic version)  ✔
-- All of the above should be unit tested ❌✔
+- All of the above should be unit tested ✔
 - Choose simplicity over complexity ✔
-- Make sure all exceptions are appropriately handled ❌✔
+- Make sure all exceptions are appropriately handled ✔
 
 ## See [Docs](Docs)
