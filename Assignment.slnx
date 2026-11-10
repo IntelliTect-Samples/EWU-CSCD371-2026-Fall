@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Assignment/Assignment.csproj" />
+  <Project Path="Assignment.Interfaces/Assignment.Interfaces.csproj" />
+  <Project Path="Assignment.Tests/Assignment.Tests.csproj" />
+</Solution>
