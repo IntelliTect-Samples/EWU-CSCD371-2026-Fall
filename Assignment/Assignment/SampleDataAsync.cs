@@ -44,18 +44,20 @@ public class SampleDataAsync : SampleDataBase, IAsyncSampleData
 
     public string GetAggregateListOfStatesGivenPeopleCollection(IAsyncEnumerable<IPerson> people)
     {
-        var states = people.Select(person => person.Address.State).Distinct().OrderBy(state => state);
+        var states = Task.Run(() => people.Select(person => person.Address.State).Distinct().OrderBy(state => state).ToListAsync().AsTask()).GetAwaiter().GetResult();
         return string.Join(", ", states);
     }
 
     public string GetAggregateSortedListOfStatesUsingCsvRows()
     {
         var states = GetUniqueSortedListOfStatesGivenCsvRows();
-        return string.Join(", ", states);
+        List<string> list = Task.Run(() => states.ToListAsync().AsTask()).GetAwaiter().GetResult();
+        return string.Join(", ", list);
     }
 
     public IAsyncEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()
     {
         return CsvRows.Select(row => GetState(row)).Distinct().OrderBy(State => State); // duplicate code
     }
+
 }
