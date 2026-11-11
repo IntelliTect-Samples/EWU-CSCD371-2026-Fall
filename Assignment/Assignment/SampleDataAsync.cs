@@ -42,7 +42,6 @@ public class SampleDataAsync : SampleDataBase, IAsyncSampleData
         return result;
     }
 
-
     public IAsyncEnumerable<string> CsvRows => ReadCsvRowsAsync(CsvFile);
 
     public IAsyncEnumerable<IPerson> People => GetPeopleAsync().OrderBy(p => p.Address.State)
