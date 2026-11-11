@@ -1,0 +1,8 @@
+<Project>
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)**/People.csv"
+          Exclude="$(MSBuildThisFileDirectory)**/bin/**;$(MSBuildThisFileDirectory)**/obj/**"
+          Link="People.csv"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
