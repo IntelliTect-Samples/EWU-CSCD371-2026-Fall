@@ -1,5 +1,11 @@
 <Project>
-  <ItemGroup Condition="'$(MSBuildProjectName)' == 'Assignment.Tests'">
-    <None Include="$(MSBuildThisFileDirectory)Assignment/People.csv" Link="People.csv" CopyToOutputDirectory="PreserveNewest" />
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="4.4.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="4.4.1" />
+    <PackageReference Include="coverlet.collector" Version="10.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

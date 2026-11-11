@@ -8,59 +8,89 @@ namespace Assignment;
 
 public class SampleData : ISampleData
 {
-    // 1.
-    public IEnumerable<string> CsvRows => File.ReadLines("People.csv").Skip(1);
+    public virtual IEnumerable<string> CsvRows =>
+        File.ReadAllLines("People.csv").Skip(1);
 
-    // 2.
     public IEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows() =>
-        CsvRows.Select(row => ParseRow(row)[6])
-               .Distinct(StringComparer.Ordinal)
-               .OrderBy(state => state, StringComparer.Ordinal);
+        CsvRows
+            .Select(ParseRow)
+            .Where(columns => columns.Length > 6 && !string.IsNullOrWhiteSpace(columns[6]))
+            .Select(columns => columns[6].Trim())
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(state => state, StringComparer.Ordinal);
 
-    // 3.
-    public string GetAggregateSortedListOfStatesUsingCsvRows()
-        => String.Join(",", GetUniqueSortedListOfStatesGivenCsvRows());
+    public string GetAggregateSortedListOfStatesUsingCsvRows() =>
+        string.Join(", ", GetUniqueSortedListOfStatesGivenCsvRows());
 
-    // 4.
-    public IEnumerable<IPerson> People =>  
-        CsvRows.Select(row =>
-        {
-            string[] columns = ParseRow(row);
-            return (IPerson)new Person(
-                columns[1], columns[2], columns[3],
-                new Address(columns[4], columns[5], columns[6], columns[7]));
-        })
-        .OrderBy(person => person.Address.State, StringComparer.Ordinal)
-        .ThenBy(person => person.Address.City, StringComparer.Ordinal)
-        .ThenBy(person => person.Address.Zip, StringComparer.Ordinal);
+    public IEnumerable<IPerson> People =>
+        CsvRows
+            .Select(TryParsePerson)
+            .OfType<Person>()
+            .Cast<IPerson>()
+            .OrderBy(person => person.Address.State, StringComparer.Ordinal)
+            .ThenBy(person => person.Address.City, StringComparer.Ordinal)
+            .ThenBy(person => person.Address.Zip, StringComparer.Ordinal);
 
-    // 5.
     public IEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(
         Predicate<string> filter)
     {
         ArgumentNullException.ThrowIfNull(filter);
-        return People.Where(person => filter(person.EmailAddress))
-                     .Select(person => (person.FirstName, person.LastName));
+
+        return People
+            .Where(person => filter(person.EmailAddress))
+            .Select(person => (person.FirstName, person.LastName));
     }
 
-    // 6.
-    public string GetAggregateListOfStatesGivenPeopleCollection(IEnumerable<IPerson> people)
+    public string GetAggregateListOfStatesGivenPeopleCollection(
+        IEnumerable<IPerson> people)
     {
         ArgumentNullException.ThrowIfNull(people);
-        return people.Select(person => person.Address.State)
-                     .Distinct(StringComparer.Ordinal)
-                     .OrderBy(state => state, StringComparer.Ordinal)
-                     .Aggregate(string.Empty, (result, state) =>
-                         result.Length == 0 ? state : result + "," + state);
+
+        return people
+            .Select(person => person.Address.State)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(state => state, StringComparer.Ordinal)
+            .Aggregate(string.Empty, (result, state) =>
+                result.Length == 0 ? state : $"{result}, {state}");
     }
 
     private static string[] ParseRow(string row)
     {
+        ArgumentNullException.ThrowIfNull(row);
+
         string[] columns = row.Split(',');
         if (columns.Length != 8)
         {
             throw new FormatException("Each People.csv row must contain exactly eight columns.");
         }
+
         return columns;
+    }
+
+    private static Person? TryParsePerson(string row)
+    {
+        try
+        {
+            string[] columns = ParseRow(row);
+
+            if (columns.Skip(1).Take(7).Any(string.IsNullOrWhiteSpace))
+            {
+                return null;
+            }
+
+            return new Person(
+                FirstName: columns[1],
+                LastName: columns[2],
+                EmailAddress: columns[3],
+                Address: new Address(
+                    StreetAddress: columns[4],
+                    City: columns[5],
+                    State: columns[6],
+                    Zip: columns[7]));
+        }
+        catch (FormatException)
+        {
+            return null;
+        }
     }
 }
