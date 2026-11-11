@@ -1,8 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <ProjectReference Include="..\Assignment.Interfaces\Assignment.Interfaces.csproj" />
-    <None Update="People.csv" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-</Project>
