@@ -26,13 +26,13 @@ public class Testing
     // ---------- 1. CsvRows ----------
 
     [TestMethod]
-    public void CsvRows_SkipsHeader_AndKeepsEveryDataLine()
+    public void CsvRowsSkipsHeaderAndKeepsEveryDataLine()
     {
         // No IDisposable to manage: File.ReadAllLines opens, reads and closes the file itself.
         string[] allLines = RawFileLines();
         string[] rows = new SampleData().CsvRows.ToArray();
 
-        Assert.AreEqual<int>(allLines.Length - 1, rows.Count());
+        Assert.AreEqual<int>(allLines.Length - 1, rows.Length);
         Assert.IsFalse(rows.Contains(allLines[0]));
         Assert.IsTrue(rows.Zip(allLines.Skip(1), (actual, expected) => actual == expected)
                           .All(match => match));
@@ -41,7 +41,7 @@ public class Testing
     // ---------- 2. Unique, sorted states ----------
 
     [TestMethod]
-    public void GetUniqueSortedStates_HardcodedRows_ReturnsExpectedStates()
+    public void GetUniqueSortedStatesHardcodedRowsReturnsExpectedStates()
     {
         string[] expected = ["ID", "TX", "WA"];
         string[] actual = new FakeSampleData()
@@ -52,7 +52,7 @@ public class Testing
     }
 
     [TestMethod]
-    public void GetUniqueSortedStates_RealData_IsSortedAndUnique()
+    public void GetUniqueSortedStatesRealDataIsSortedAndUnique()
     {
         SampleData data = new();
         string[] states = data.GetUniqueSortedListOfStatesGivenCsvRows().ToArray();
