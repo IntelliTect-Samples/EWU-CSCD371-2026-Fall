@@ -19,7 +19,7 @@ public class SampleDataTestsAsync : SampleDataTestsBase
         => await _sampleData.FilterByEmailAddress(filter).ToListAsync();
 
     protected override async Task<string> GetAggregateSortedListOfStatesUsingCsvRows()
-        => _sampleData.GetAggregateSortedListOfStatesUsingCsvRows();
+        => await _sampleData.GetAggregateSortedListOfStatesUsingCsvRows();
 
     protected override async Task<IReadOnlyList<string>> GetUniqueSortedListOfStatesGivenCsvRows()
         => await _sampleData.GetUniqueSortedListOfStatesGivenCsvRows().ToListAsync();
@@ -31,9 +31,9 @@ public class SampleDataTestsAsync : SampleDataTestsBase
     public async Task TestAggregateListOfStatesGivenPeopleCollection()
     {
         var people = _sampleData.People;
-        string expected = _sampleData.GetAggregateSortedListOfStatesUsingCsvRows();
+        string expected = await _sampleData.GetAggregateSortedListOfStatesUsingCsvRows();
 
-        string actual = _sampleData.GetAggregateListOfStatesGivenPeopleCollection(people);
+        string actual = await _sampleData.GetAggregateListOfStatesGivenPeopleCollection(people);
 
         Assert.AreEqual<string>(
             expected,

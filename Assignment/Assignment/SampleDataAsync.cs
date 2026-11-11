@@ -28,32 +28,46 @@ public class SampleDataAsync : SampleDataBase, IAsyncSampleData
         }
     }
 
+    private static async Task<string> JoinAsync(string seperator, IAsyncEnumerable<string> strings)
+    {
+        string result = "";
+        bool isFirst = true;
+
+        await foreach (var s in strings)
+        {
+            result = isFirst ? s : string.Join(seperator, [result, s]);
+            isFirst = false;
+        }
+
+        return result;
+    }
+
+
     public IAsyncEnumerable<string> CsvRows => ReadCsvRowsAsync(CsvFile);
 
     public IAsyncEnumerable<IPerson> People => GetPeopleAsync().OrderBy(p => p.Address.State)
         .ThenBy(p => p.Address.City)
-        .ThenBy(p => p.Address.Zip);//dup code
+        .ThenBy(p => p.Address.Zip);
 
     public IAsyncEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(Predicate<string> filter)
         => People.Where(async (person, ct) => await Task.FromResult(filter(person.EmailAddress)))
                 .Select(person => (person.FirstName, person.LastName));
 
-    public string GetAggregateListOfStatesGivenPeopleCollection(IAsyncEnumerable<IPerson> people)
+    public async Task<string> GetAggregateListOfStatesGivenPeopleCollection(IAsyncEnumerable<IPerson> people)
     {
-        var states = Task.Run(() => people.Select(person => person.Address.State).Distinct().OrderBy(state => state).ToListAsync().AsTask()).GetAwaiter().GetResult();
-        return string.Join(", ", states);
+        var states = people.Select(person => person.Address.State).Distinct().OrderBy(state => state);
+        return await JoinAsync(", ", states);
     }
 
-    public string GetAggregateSortedListOfStatesUsingCsvRows()
+    public async Task<string> GetAggregateSortedListOfStatesUsingCsvRows()
     {
         var states = GetUniqueSortedListOfStatesGivenCsvRows();
-        List<string> list = Task.Run(() => states.ToListAsync().AsTask()).GetAwaiter().GetResult();
-        return string.Join(", ", list);
+        return await JoinAsync(", ", states);
     }
 
     public IAsyncEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows()
     {
-        return CsvRows.Select(row => GetState(row)).Distinct().OrderBy(State => State); // duplicate code
+        return CsvRows.Select(row => GetState(row)).Distinct().OrderBy(State => State);
     }
 
 }
