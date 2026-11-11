@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Assignment;
 
@@ -7,21 +8,21 @@ public interface IAsyncSampleData
 {
     // Extra Credit 
     // // 1.
-    // IAsyncEnumerable<string> CsvRows { get; }
-    
+    IAsyncEnumerable<string> CsvRows { get; }
+
     // // 2.
-    // IAsyncEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows();
+    IAsyncEnumerable<string> GetUniqueSortedListOfStatesGivenCsvRows();
 
     // // 3.
-    // string GetAggregateSortedListOfStatesUsingCsvRows();
+    Task<string> GetAggregateSortedListOfStatesUsingCsvRows();
 
     // // 4.
-    // IAsyncEnumerable<IPerson> People { get; }
+    IAsyncEnumerable<IPerson> People { get; }
 
     // // 5.
-    // IAsyncEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(Predicate<string> filter);
+    IAsyncEnumerable<(string FirstName, string LastName)> FilterByEmailAddress(Predicate<string> filter);
 
     // // 6.
-    // string GetAggregateListOfStatesGivenPeopleCollection(IAsyncEnumerable<IPerson> people);
+    Task<string> GetAggregateListOfStatesGivenPeopleCollection(IAsyncEnumerable<IPerson> people);
 
 }
