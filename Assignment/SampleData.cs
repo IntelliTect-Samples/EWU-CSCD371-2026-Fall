@@ -20,7 +20,7 @@ public class SampleData : ISampleData
             .OrderBy(state => state, StringComparer.Ordinal);
 
     public string GetAggregateSortedListOfStatesUsingCsvRows() =>
-        string.Join(", ", GetUniqueSortedListOfStatesGivenCsvRows());
+        string.Join(", ", GetUniqueSortedListOfStatesGivenCsvRows().ToArray());
 
     public IEnumerable<IPerson> People =>
         CsvRows
