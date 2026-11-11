@@ -2,7 +2,20 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="AssemblyAttributes.cs" />
+    <Compile Include="AssignmentTests.cs" />
+    <Compile Include="InterfaceTests.cs" />
+    <Compile Include="SampleDataAsyncTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Assignment\Assignment.csproj" />
+    <ProjectReference Include="..\Assignment.Interfaces\Assignment.Interfaces.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
