@@ -36,7 +36,8 @@ public abstract class SampleDataTestsBase
         string[] actualStates = await GetUniqueSortedListOfStatesGivenCsvRowsAsync();
 
         Assert.IsTrue(expectedStates.All(
-            state => actualStates.Contains(state, StringComparer.Ordinal)));
+            state => actualStates.Contains(state, StringComparer.Ordinal)),
+            "GetUniqueSortedListOfStatesGivenCsvRowsAsync should include every state from the hardcoded CSV addresses.");
     }
 
     [TestMethod]
@@ -44,10 +45,12 @@ public abstract class SampleDataTestsBase
     {
         string[] states = await GetUniqueSortedListOfStatesGivenCsvRowsAsync();
 
-        Assert.AreEqual<int>(states.Length, states.Distinct(StringComparer.Ordinal).Count());
+        Assert.AreEqual<int>(states.Length, states.Distinct(StringComparer.Ordinal).Count(),
+            "GetUniqueSortedListOfStatesGivenCsvRowsAsync must return each state exactly once.");
         Assert.IsTrue(states
             .Zip(states.Skip(1), (current, next) => string.CompareOrdinal(current, next) <= 0)
-            .All(isSorted => isSorted));
+            .All(isSorted => isSorted),
+            "GetUniqueSortedListOfStatesGivenCsvRowsAsync must return states in alphabetical order.");
     }
 
     [TestMethod]
@@ -57,8 +60,10 @@ public abstract class SampleDataTestsBase
 
         string aggregatedStates = await GetAggregateSortedListOfStatesUsingCsvRowsAsync();
 
-        Assert.AreEqual<string>(string.Join(",", states), aggregatedStates);
-        Assert.AreEqual<int>(states.Length, aggregatedStates.Split(',').Distinct(StringComparer.Ordinal).Count());
+        Assert.AreEqual<string>(string.Join(",", states), aggregatedStates,
+            "GetAggregateSortedListOfStatesUsingCsvRowsAsync should match the unique, alphabetized state list from the CSV data.");
+        Assert.AreEqual<int>(states.Length, aggregatedStates.Split(',').Distinct(StringComparer.Ordinal).Count(),
+            "GetAggregateSortedListOfStatesUsingCsvRowsAsync must produce a comma-separated list with no duplicate states.");
     }
 
     [TestMethod]
@@ -73,7 +78,8 @@ public abstract class SampleDataTestsBase
 
         IPerson[] people = await GetPeopleAsync();
 
-        Assert.AreEqual<int>(expectedRows.Length, people.Length);
+        Assert.AreEqual<int>(expectedRows.Length, people.Length,
+            "GetPeopleAsync should return one Person per CSV row after sorting by state, city, and zip.");
         Assert.IsTrue(expectedRows
             .Zip(people, (columns, person) =>
                 columns[1] == person.FirstName
@@ -83,7 +89,8 @@ public abstract class SampleDataTestsBase
                 && columns[5] == person.Address.City
                 && columns[6] == person.Address.State
                 && columns[7] == person.Address.Zip)
-            .All(matches => matches));
+            .All(matches => matches),
+            "Each Person should match the corresponding CSV row values and address fields in sorted order.");
     }
 
     [TestMethod]
@@ -100,8 +107,10 @@ public abstract class SampleDataTestsBase
         (string FirstName, string LastName)[] actual =
             await FilterByEmailAddressAsync(email => email.EndsWith(".gov", StringComparison.Ordinal));
 
-        Assert.AreEqual<int>(expected.Length, actual.Length);
-        Assert.IsTrue(expected.Zip(actual, (left, right) => left == right).All(matches => matches));
+        Assert.AreEqual<int>(expected.Length, actual.Length,
+            "FilterByEmailAddressAsync should return exactly the 4 expected .gov matches in the People dataset.");
+        Assert.IsTrue(expected.Zip(actual, (left, right) => left == right).All(matches => matches),
+            "FilterByEmailAddressAsync should return the expected .gov names in the same order as the original People collection.");
     }
 
     [TestMethod]
@@ -116,9 +125,12 @@ public abstract class SampleDataTestsBase
 
         (string FirstName, string LastName)[] actual = await FilterByEmailAddressAsync(IsEduEmail);
 
-        Assert.IsTrue(expected.Length > 0);
-        Assert.AreEqual<int>(expected.Length, actual.Length);
-        Assert.IsTrue(expected.Zip(actual, (left, right) => left == right).All(matches => matches));
+        Assert.IsTrue(expected.Length > 0,
+            "Expected at least one email address containing 'edu' in the People dataset.");
+        Assert.AreEqual<int>(expected.Length, actual.Length,
+            "FilterByEmailAddressAsync should return the same number of people whose email addresses contain 'edu' as the LINQ-based expectation.");
+        Assert.IsTrue(expected.Zip(actual, (left, right) => left == right).All(matches => matches),
+            "FilterByEmailAddressAsync should match the same names as the LINQ filter for emails containing 'edu'.");
     }
 
     [TestMethod]
@@ -127,8 +139,10 @@ public abstract class SampleDataTestsBase
         (string FirstName, string LastName)[] actual =
             await FilterByEmailAddressAsync(email => email == "kjoder1@quantcast.com");
 
-        Assert.AreEqual<int>(1, actual.Length);
-        Assert.AreEqual<(string, string)>(("Karin", "Joder"), actual[0]);
+        Assert.AreEqual<int>(1, actual.Length,
+            "FilterByEmailAddressAsync should return exactly one person when the exact email address is specified.");
+        Assert.AreEqual<(string, string)>(("Karin", "Joder"), actual[0],
+            "FilterByEmailAddressAsync should return the matching person for the email 'kjoder1@quantcast.com'.");
     }
 
     [TestMethod]
@@ -137,14 +151,16 @@ public abstract class SampleDataTestsBase
         (string FirstName, string LastName)[] actual =
             await FilterByEmailAddressAsync(email => email.EndsWith(".invalid", StringComparison.Ordinal));
 
-        Assert.AreEqual<int>(0, actual.Length);
+        Assert.AreEqual<int>(0, actual.Length,
+            "FilterByEmailAddressAsync should return no results when no email ends with the invalid domain suffix.");
     }
 
     [TestMethod]
     public async Task FilterByEmailAddressNullFilterThrowsArgumentNullException()
     {
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(
-            () => FilterByEmailAddressAsync(null!));
+            () => FilterByEmailAddressAsync(null!),
+            "FilterByEmailAddressAsync should throw ArgumentNullException when the email filter is null.");
     }
 
     [TestMethod]
@@ -154,7 +170,8 @@ public abstract class SampleDataTestsBase
 
         string actual = await GetAggregateListOfStatesGivenPeopleCollectionAsync(await GetPeopleAsync());
 
-        Assert.AreEqual<string>(expected, actual);
+        Assert.AreEqual<string>(expected, actual,
+            "GetAggregateListOfStatesGivenPeopleCollectionAsync should match the unique sorted CSV states derived from the same people data.");
     }
 
     [TestMethod]
@@ -171,7 +188,8 @@ public abstract class SampleDataTestsBase
 
         string actual = await GetAggregateListOfStatesGivenPeopleCollectionAsync(people);
 
-        Assert.AreEqual<string>("AZ,CA,WA", actual);
+        Assert.AreEqual<string>("AZ,CA,WA", actual,
+            "GetAggregateListOfStatesGivenPeopleCollectionAsync should deduplicate and sort the provided states as AZ,CA,WA.");
     }
 
     [TestMethod]
@@ -179,14 +197,16 @@ public abstract class SampleDataTestsBase
     {
         string actual = await GetAggregateListOfStatesGivenPeopleCollectionAsync([]);
 
-        Assert.AreEqual<string>(string.Empty, actual);
+        Assert.AreEqual<string>(string.Empty, actual,
+            "GetAggregateListOfStatesGivenPeopleCollectionAsync should return an empty string when the collection is empty.");
     }
 
     [TestMethod]
     public async Task GetAggregateListOfStatesGivenPeopleCollectionNullPeopleThrowsArgumentNullException()
     {
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(
-            () => GetAggregateListOfStatesGivenPeopleCollectionAsync(null!));
+            () => GetAggregateListOfStatesGivenPeopleCollectionAsync(null!),
+            "GetAggregateListOfStatesGivenPeopleCollectionAsync should throw ArgumentNullException when people is null.");
     }
 
     private static Person CreatePerson(string state)
