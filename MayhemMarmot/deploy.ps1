@@ -7,7 +7,7 @@ param(
   [string]$EnvName = "mayhem-marmot-env"
 )
 $ErrorActionPreference = "Stop"
-$image = "$AcrName.azurecr.io/mayhemmarmot:latest"
+$image = "$AcrName.azurecr.io/mayhem-marmot:latest"
 
 az group create -n $ResourceGroup -l $Location | Out-Null
 az acr create -n $AcrName -g $ResourceGroup --sku Basic | Out-Null
