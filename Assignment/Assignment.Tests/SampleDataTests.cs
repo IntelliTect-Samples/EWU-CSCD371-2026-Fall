@@ -22,7 +22,7 @@ public class SampleDataTests
     }
 
     [TestMethod]
-    public void GetUniqueSortedListOfStates_ReturnsSortedUniqueStates()
+    public void GetUniqueSortedListOfStates_MatchesHardcodedExpectedStates()
     {
         // Arrange
         var data = new SampleData();
@@ -49,7 +49,7 @@ public class SampleDataTests
     }
 
     [TestMethod]
-    public void GetAggregateSortedListOfStates_ReturnsUniqueSortedStates()
+    public void GetAggregateSortedListOfStates_VerifiesUniqueSortedStatesUsingLinq()
     {
         // Arrange
         var data = new SampleData();
