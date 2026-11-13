@@ -10,7 +10,7 @@ env:
 jobs:
   build-and-push:
     # Only publish from the MayhemMarmot branch; runs from any other ref are skipped.
-    if: github.ref == 'refs/heads/lecture/exception-handling'
+    if: github.ref == 'refs/heads/mayhem-marmot'
     runs-on: ubuntu-latest
     permissions:
       contents: read
