@@ -2,12 +2,18 @@ using Bogus;
 using CsvHelper;
 using ShereSoft;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.WebHost.ConfigureKestrel(x =>
 {
     x.AllowSynchronousIO = true;
+});
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
 });
 
 builder.Services.AddOpenApi();
@@ -18,7 +24,7 @@ builder.Services.AddScoped(sp =>
     faker.RuleFor(p => p.FirstName, f => f.Name.FirstName());
     faker.RuleFor(p => p.LastName, f => f.Name.LastName());
     faker.RuleFor(p => p.EmailAddress, f => f.Internet.Email());
-    faker.RuleFor(p => p.ZipCode, f => 
+    faker.RuleFor(p => p.ZipCode, f =>
     {
         Random random = new(f.Random.Number(int.MaxValue));
         return Zip2City.GetRandomCityStateZip(random)[2];
@@ -35,7 +41,15 @@ if (app.Environment.IsDevelopment())
 
 var peopleGroup = app.MapGroup("/people");
 
-peopleGroup.MapGet("/{user}", (string user, Faker<Person> faker) =>
+/*
+ * Failure cases:
+ * 1. Invalid zip code
+ * 2. Invalid CSV data?
+ * 3. Timeout
+ * 4. 500
+ */
+
+peopleGroup.MapGet("/{user}", async (string user, ChaosModes? code, Faker<Person> faker) =>
 {
     int seed = HashCode.Combine(user);
 
@@ -44,25 +58,82 @@ peopleGroup.MapGet("/{user}", (string user, Faker<Person> faker) =>
         faker.UseSeed(seed);
         using CsvWriter csvWriter = CsvWriter.Create(stream);
         var people = faker.Generate(100);
+
+        switch (GetEffectiveChaosMode(code))
+        {
+            case ChaosModes.InvalidData:
+                for(int i = 0; i < people.Count; i+= Random.Shared.Next(1, 7))
+                {
+                    people[i].ZipCode = Random.Shared.Next(10000, 99999).ToString();
+                }
+                break;
+            case ChaosModes.Timeout:
+                await Task.Delay(TimeSpan.FromSeconds(30));
+                break;
+            case ChaosModes.Exception:
+                throw new InvalidOperationException("Chaos Monkey broke it");
+        }
+
         await csvWriter.WriteRecordsAsync(people);
     });
 })
 .WithName("GetPeople");
 
-peopleGroup.MapGet("zip/{zip}", (string zip, Faker<Person> faker) =>
+/*
+ * Failure cases:
+ * 1. 404 Not Found
+ * 2. Timeout
+ * 3. 418 - For fun, go get tea.
+ */
+peopleGroup.MapGet("zip/{zip}", async (string zip, ChaosModes? code, Faker<Person> faker) =>
 {
-    var cityAndState = Zip2City.GetDefaultCityState(zip);
-    if (cityAndState is null) return Results.NotFound();
+    byte[] csvData;
+    switch (GetEffectiveChaosMode(code))
+    {
+        case ChaosModes.InvalidData:
+            csvData = Encoding.ASCII.GetBytes("BAD_DATA");
+            break;
+        case ChaosModes.Timeout:
+            await Task.Delay(TimeSpan.FromSeconds(30));
+            goto default;
+        case ChaosModes.Exception:
+            return Results.StatusCode(418);
+        default:
+            var cityAndState = Zip2City.GetDefaultCityState(zip);
+            if (cityAndState is null) return Results.NotFound();
 
-    string city = cityAndState[0];
-    string state = cityAndState[1];
+            string city = cityAndState[0];
+            string state = cityAndState[1];
+            csvData = Encoding.ASCII.GetBytes($"\"{city}\",\"{state}\"");
+            break;
+    }
 
-    byte[] csvData = Encoding.ASCII.GetBytes($"\"{city}\",\"{state}\"");
+
     return Results.Bytes(csvData, "text/csv; charset=utf-8");
 })
 .WithName("GetZip");
 
 app.Run();
+
+static ChaosModes GetEffectiveChaosMode(ChaosModes? code)
+{
+    if (code is not null) return code.Value;
+
+    // Weighted random
+    /*
+     * None: 70%
+     * InvalidData: 10%
+     * Timeout: 10%
+     * Exception: 10%
+     */
+    return Random.Shared.Next(10) switch
+    {
+        7 => ChaosModes.InvalidData,
+        8 => ChaosModes.Timeout,
+        9 => ChaosModes.Exception,
+        _ => ChaosModes.None,
+    };
+}
 
 [CsvRecord]
 public sealed partial class Person
@@ -70,5 +141,23 @@ public sealed partial class Person
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
     public required string EmailAddress { get; init; }
-    public required string ZipCode { get; init; }
+    public required string ZipCode { get; set; }
+}
+
+[JsonSerializable(typeof(ChaosModes))]
+internal partial class AppJsonSerializerContext : JsonSerializerContext
+{
+
+}
+
+[Flags]
+public enum ChaosModes
+{
+    None = 0b000,
+
+    InvalidData = 0b0001,
+    Timeout = 0b0010,
+    Exception = 0b0100,
+
+    All = InvalidData | Timeout | Exception
 }

@@ -1,11 +1,56 @@
-@MayhemMarmot_HostAddress = http://localhost:32769
+@HostAddress = http://localhost:32770
+#@HostAddress = https://mayhem-marmot-api.livelystone-63fe914c.westus.azurecontainerapps.io
 
-GET {{MayhemMarmot_HostAddress}}/people/ben@email.com
-Accept: application/json
+@User = kevin
+@ZipCode = 99208
 
-###
+### Potential random failues
 
-GET {{MayhemMarmot_HostAddress}}/people/zip/30426
-Accept: application/json
+GET {{HostAddress}}/people/{{User}}
+Accept: text/csv
+
+### Always success
+ 
+GET {{HostAddress}}/people/{{User}}?code=None
+Accept: text/csv
+
+### Potentially Invalid Zip Codes
+ 
+GET {{HostAddress}}/people/{{User}}?code=InvalidData
+Accept: text/csv
+
+### Server exception
+ 
+GET {{HostAddress}}/people/{{User}}?code=Exception
+Accept: text/csv
+
+### Server slow/timeout
+ 
+GET {{HostAddress}}/people/{{User}}?code=Timeout
+Accept: text/csv
+
+### Potential random failues
+
+GET {{HostAddress}}/people/zip/{{ZipCode}}
+Accept: text/csv
+
+### Always success
+GET {{HostAddress}}/people/zip/{{ZipCode}}?code=None
+Accept: text/csv
+
+
+### Invalid returned data
+GET {{HostAddress}}/people/zip/{{ZipCode}}?code=InvalidData
+Accept: text/csv
+
+### Server exception
+ 
+GET {{HostAddress}}/people/zip/{{ZipCode}}?code=Exception
+Accept: text/csv
+
+### Server slow/timeout
+ 
+GET {{HostAddress}}/people/zip/{{ZipCode}}?code=Timeout
+Accept: text/csv
 
 ###
