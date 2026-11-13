@@ -1,0 +1,11 @@
+@MayhemMarmot_HostAddress = http://localhost:5053
+
+GET {{MayhemMarmot_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{MayhemMarmot_HostAddress}}/todos/1
+Accept: application/json
+
+###
