@@ -20,6 +20,11 @@ internal static class Telemetry
     public static readonly Counter<long> ChaosInjected = Meter.CreateCounter<long>(
         "marmot.chaos.injected", unit: "{event}", description: "Chaos modes applied to requests.");
 
+    // Tagged by user (the seed source). User is caller-supplied, so cardinality is unbounded;
+    // the OpenTelemetry SDK caps each metric at 2000 series and folds the rest into an overflow series.
+    public static readonly Counter<long> PeopleRequests = Meter.CreateCounter<long>(
+        "marmot.people.requests", unit: "{request}", description: "GET /people/{user} attempts, tagged by user.");
+
     public static readonly Counter<long> PeopleGenerated = Meter.CreateCounter<long>(
         "marmot.people.generated", unit: "{person}", description: "Fake people written to responses.");
 

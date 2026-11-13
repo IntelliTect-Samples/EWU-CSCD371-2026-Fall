@@ -51,6 +51,10 @@ peopleGroup.MapGet("/{user}", async (string user, ChaosModes? code, Faker<Person
 {
     int seed = HashCode.Combine(user);
 
+    // Attempts per user/seed. Counted up front so chaos failures and timeouts are included.
+    Telemetry.PeopleRequests.Add(1, new KeyValuePair<string, object?>("user", user));
+    Activity.Current?.SetTag("marmot.user", user);
+
     return Results.Stream(async stream =>
     {
         faker.UseSeed(seed);
