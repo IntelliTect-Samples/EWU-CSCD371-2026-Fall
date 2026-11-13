@@ -53,6 +53,11 @@ on:
         required: false
         type: string
         default: "auto"
+      test-timeout:
+        description: "Run-wide timeout for the MTP test run (e.g. 50s, 5m). Empty (default) disables it. Only applies to the MTP runner."
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -193,7 +198,12 @@ jobs:
         run: dotnet test --no-build --verbosity normal --settings ${{github.workspace}}/.runsettings /p:CollectCoverage=true --collect:"XPlat Code Coverage" --logger trx --results-directory coveragereport
       - name: Test (Microsoft.Testing.Platform)
         if: ${{ steps.runner.outputs.runner == 'MTP' }}
-        run: dotnet test --no-build --verbosity normal --results-directory coveragereport --report-trx --report-gh --coverage --coverage-output-format cobertura
+        env:
+          TEST_TIMEOUT: ${{ inputs.test-timeout }}
+        run: |
+          args=()
+          if [ -n "$TEST_TIMEOUT" ]; then args=(-- --timeout "$TEST_TIMEOUT"); fi
+          dotnet test --no-build --verbosity normal --results-directory coveragereport --report-trx --report-gh --coverage --coverage-output-format cobertura "${args[@]}"
 
       - name: ReportGenerator
         id: reportgenerator
