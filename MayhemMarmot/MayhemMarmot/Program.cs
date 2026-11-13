@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Bogus;
 using CsvHelper;
 using ShereSoft;
@@ -5,6 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateSlimBuilder(args);
+builder.AddTelemetry();
 
 builder.WebHost.ConfigureKestrel(x =>
 {
@@ -45,7 +47,7 @@ var peopleGroup = app.MapGroup("/people");
  * 4. 500
  */
 
-peopleGroup.MapGet("/{user}", async (string user, ChaosModes? code, Faker<Person> faker) =>
+peopleGroup.MapGet("/{user}", async (string user, ChaosModes? code, Faker<Person> faker, ILogger<Program> logger) =>
 {
     int seed = HashCode.Combine(user);
 
@@ -55,7 +57,9 @@ peopleGroup.MapGet("/{user}", async (string user, ChaosModes? code, Faker<Person
         using CsvWriter csvWriter = CsvWriter.Create(stream);
         var people = faker.Generate(100);
 
-        switch (GetEffectiveChaosMode(code))
+        var mode = GetEffectiveChaosMode(code);
+        RecordChaos(mode, "/people/{user}", logger);
+        switch (mode)
         {
             case ChaosModes.InvalidData:
                 for(int i = 0; i < people.Count; i+= Random.Shared.Next(1, 7))
@@ -71,6 +75,8 @@ peopleGroup.MapGet("/{user}", async (string user, ChaosModes? code, Faker<Person
         }
 
         await csvWriter.WriteRecordsAsync(people);
+        Telemetry.PeopleGenerated.Add(people.Count);
+        logger.PeopleGenerated(people.Count, user);
     });
 })
 .WithName("GetPeople");
@@ -81,10 +87,12 @@ peopleGroup.MapGet("/{user}", async (string user, ChaosModes? code, Faker<Person
  * 2. Timeout
  * 3. 418 - For fun, go get tea.
  */
-peopleGroup.MapGet("zip/{zip}", async (string zip, ChaosModes? code, Faker<Person> faker) =>
+peopleGroup.MapGet("zip/{zip}", async (string zip, ChaosModes? code, Faker<Person> faker, ILogger<Program> logger) =>
 {
     byte[] csvData;
-    switch (GetEffectiveChaosMode(code))
+    var mode = GetEffectiveChaosMode(code);
+    RecordChaos(mode, "/people/zip/{zip}", logger);
+    switch (mode)
     {
         case ChaosModes.InvalidData:
             csvData = Encoding.ASCII.GetBytes("BAD_DATA");
@@ -96,6 +104,8 @@ peopleGroup.MapGet("zip/{zip}", async (string zip, ChaosModes? code, Faker<Perso
             return Results.StatusCode(418);
         default:
             var cityAndState = Zip2City.GetDefaultCityState(zip);
+            Telemetry.ZipLookups.Add(1, new KeyValuePair<string, object?>("outcome", cityAndState is null ? "miss" : "hit"));
+            logger.ZipLookup(zip, cityAndState is not null);
             if (cityAndState is null) return Results.NotFound();
 
             string city = cityAndState[0];
@@ -110,6 +120,16 @@ peopleGroup.MapGet("zip/{zip}", async (string zip, ChaosModes? code, Faker<Perso
 .WithName("GetZip");
 
 app.Run();
+
+static void RecordChaos(ChaosModes mode, string endpoint, ILogger logger)
+{
+    if (mode == ChaosModes.None) return;
+
+    // Tag the current request span so failures are filterable by mode in the trace view.
+    Activity.Current?.SetTag("chaos.mode", mode.ToString());
+    Telemetry.ChaosInjected.Add(1, new KeyValuePair<string, object?>("mode", mode.ToString()));
+    logger.ChaosApplied(mode, endpoint);
+}
 
 static ChaosModes GetEffectiveChaosMode(ChaosModes? code)
 {
