@@ -33,11 +33,7 @@ builder.Services.AddScoped(sp =>
 });
 
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.MapOpenApi();
 
 var peopleGroup = app.MapGroup("/people");
 
