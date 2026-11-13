@@ -1,11 +1,11 @@
-@MayhemMarmot_HostAddress = http://localhost:5053
+@MayhemMarmot_HostAddress = http://localhost:32769
 
-GET {{MayhemMarmot_HostAddress}}/todos/
+GET {{MayhemMarmot_HostAddress}}/people/ben@email.com
 Accept: application/json
 
 ###
 
-GET {{MayhemMarmot_HostAddress}}/todos/1
+GET {{MayhemMarmot_HostAddress}}/people/zip/30426
 Accept: application/json
 
 ###
