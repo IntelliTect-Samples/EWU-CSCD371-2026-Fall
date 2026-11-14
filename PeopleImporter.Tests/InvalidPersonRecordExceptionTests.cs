@@ -1,4 +1,4 @@
-using Assignment;
+using PeopleImporter;
 
 namespace PeopleImporter.Tests;
 

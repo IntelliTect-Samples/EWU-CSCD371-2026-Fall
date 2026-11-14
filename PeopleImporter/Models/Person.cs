@@ -1,6 +1,6 @@
 using System;
 
-namespace Assignment;
+namespace PeopleImporter;
 
 /// <summary>
 /// Represents a person with an ID, first name, last name, address, and email address.

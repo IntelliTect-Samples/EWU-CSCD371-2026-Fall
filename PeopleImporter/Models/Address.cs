@@ -1,6 +1,6 @@
 using System;
 
-namespace Assignment;
+namespace PeopleImporter;
 
 /// <summary>
 /// Represents a physical address with street, city, state, and zip code.

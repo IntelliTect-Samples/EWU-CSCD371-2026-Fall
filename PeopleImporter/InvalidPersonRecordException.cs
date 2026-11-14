@@ -1,6 +1,6 @@
 using System;
 
-namespace Assignment;
+namespace PeopleImporter;
 
 /// <summary>
 /// Represents an error encountered while parsing or validating a person CSV record.

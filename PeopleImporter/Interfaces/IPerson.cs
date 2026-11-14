@@ -1,4 +1,4 @@
-﻿namespace Assignment;
+﻿namespace PeopleImporter;
 
 public interface IPerson
 {
