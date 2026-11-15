@@ -99,6 +99,7 @@ public sealed class Importer : IDisposable
                 else if (importMode == ImportMode.SkipInvalid)
                 {
                     onInvalidRecord?.Invoke(ex);
+                    continue;
                 }
 
                 throw;
@@ -123,4 +124,12 @@ public sealed class Importer : IDisposable
         _disposed = true;
     }
 
+}
+public sealed class ThrowingTextReader : TextReader
+{
+    public override string? ReadLine()
+    {
+        throw new IOException(
+            "Simulated I/O failure.");
+    }
 }
