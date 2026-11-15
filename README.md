@@ -33,14 +33,14 @@ Id,FirstName,LastName,Email,StreetAddress,City,State,Zip
 
 ### Exception handling
 
-- Validate public method and constructor arguments. Throw `ArgumentNullException`, `ArgumentException`, or `ArgumentOutOfRangeException` as appropriate. Ensure the appropriate argument name is set on the thrown exception. Consider helpers such as `ArgumentNullException.ThrowIfNull` and `nameof`. ❌✔
-- Define a custom exception, such as `InvalidPersonRecordException`, with a meaningful message, line number, and raw line text. Provide the standard constructors, including one that accepts an inner exception. ❌✔
-- Wrap parsing failures in your custom exception, preserving the original exception as `InnerException`. ❌✔
-- Let the caller choose between two import modes: ❌✔
-  - **Fail-fast:** Throw your custom exception on the first invalid record. ❌✔
-  - **Skip-invalid:** Report each invalid record and its exception through a caller-supplied callback, then continue. Do not silently discard records. ❌✔
-- Catch only record errors you can recover from. Let `IOException`, callback exceptions, and other unexpected exceptions propagate with their original stack traces. Do not use `throw ex;` or hide failures in a general catch block. Favor exception filters over catch-and-rethrow. ❌✔
-- Return the accepted people only after the import completes. A failed import must throw, not return a partial result as though it succeeded. ❌✔
+- Validate public method and constructor arguments. Throw `ArgumentNullException`, `ArgumentException`, or `ArgumentOutOfRangeException` as appropriate. Ensure the appropriate argument name is set on the thrown exception. Consider helpers such as `ArgumentNullException.ThrowIfNull` and `nameof`. ✔
+- Define a custom exception, such as `InvalidPersonRecordException`, with a meaningful message, line number, and raw line text. Provide the standard constructors, including one that accepts an inner exception. ✔
+- Wrap parsing failures in your custom exception, preserving the original exception as `InnerException`. ✔
+- Let the caller choose between two import modes: ✔
+  - **Fail-fast:** Throw your custom exception on the first invalid record. ✔
+  - **Skip-invalid:** Report each invalid record and its exception through a caller-supplied callback, then continue. Do not silently discard records. ✔
+- Catch only record errors you can recover from. Let `IOException`, callback exceptions, and other unexpected exceptions propagate with their original stack traces. Do not use `throw ex;` or hide failures in a general catch block. Favor exception filters over catch-and-rethrow. ✔
+- Return the accepted people only after the import completes. A failed import must throw, not return a partial result as though it succeeded. ✔
 
 ### Resource management (`IDisposable`)
 
@@ -51,9 +51,9 @@ Id,FirstName,LastName,Email,StreetAddress,City,State,Zip
 ### Tests
 
 - Test successful imports, including one from a temporary file. Delete the file when the test finishes. ❌✔
-- Test both import modes with several kinds of invalid records. Verify fail-fast reports the first bad line number, and skip-invalid returns only valid people and reports every rejected record. Use a closure to collect or count callback reports. ❌✔
-- Verify wrapped exceptions preserve the expected `InnerException` type, and argument exceptions identify the correct parameter. ❌✔
-- Use a fake `TextReader` or a mocking library to simulate an I/O failure. Verify reader and callback exceptions propagate as the same exception instance, without wrapping or swallowing them. ❌✔
+- Test both import modes with several kinds of invalid records. Verify fail-fast reports the first bad line number, and skip-invalid returns only valid people and reports every rejected record. Use a closure to collect or count callback reports. ✔
+- Verify wrapped exceptions preserve the expected `InnerException` type, and argument exceptions identify the correct parameter. ✔
+- Use a fake `TextReader` or a mocking library to simulate an I/O failure. Verify reader and callback exceptions propagate as the same exception instance, without wrapping or swallowing them. ✔
 - Test disposal after successful and failed imports, repeated disposal, and use after disposal. ❌✔
 
 ## Extra Credit
