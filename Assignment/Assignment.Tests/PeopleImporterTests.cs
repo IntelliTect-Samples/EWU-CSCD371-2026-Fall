@@ -17,11 +17,22 @@ public class PeopleImporterTests
         public override string? ReadLine() => throw toThrow;
     }
 
+    private sealed class TrackingReader(string text) : StringReader(text)
+    {
+        public int DisposeCount { get; private set; }
+
+        protected override void Dispose(bool disposing)
+        {
+            DisposeCount++;
+            base.Dispose(disposing);
+        }
+    }
+
     [TestMethod]
     public void Import_AllValid_ReturnsAllPeople()
     {
         // Arrange
-        var importer = new PeopleImporter(Csv(ValidLine1, ValidLine2));
+        using var importer = new PeopleImporter(Csv(ValidLine1, ValidLine2));
 
         // Act
         IReadOnlyList<Person> people = importer.Import(ImportMode.FailFast);
@@ -37,7 +48,7 @@ public class PeopleImporterTests
     public void Import_FailFast_ReportsFirstBadLineNumber()
     {
         // Arrange
-        var importer = new PeopleImporter(Csv(ValidLine1, "bad line", "also bad"));
+        using var importer = new PeopleImporter(Csv(ValidLine1, "bad line", "also bad"));
 
         // Act
         var ex = Assert.ThrowsExactly<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
@@ -51,7 +62,7 @@ public class PeopleImporterTests
     public void Import_FailFast_OverflowId_PreservesOverflowInnerException()
     {
         // Arrange
-        var importer = new PeopleImporter(Csv(OverflowIdLine));
+        using var importer = new PeopleImporter(Csv(OverflowIdLine));
 
         // Act
         var ex = Assert.ThrowsExactly<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
@@ -64,7 +75,7 @@ public class PeopleImporterTests
     public void Import_FailFast_WrongFieldCount_PreservesFormatInnerException()
     {
         // Arrange
-        var importer = new PeopleImporter(Csv(WrongFieldCountLine));
+        using var importer = new PeopleImporter(Csv(WrongFieldCountLine));
 
         // Act
         var ex = Assert.ThrowsExactly<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
@@ -77,7 +88,7 @@ public class PeopleImporterTests
     public void Import_SkipInvalid_ReturnsOnlyValidAndReportsEachRejected()
     {
         // Arrange
-        var importer = new PeopleImporter(Csv(
+        using var importer = new PeopleImporter(Csv(
             ValidLine1,            // line 2
             WrongFieldCountLine,   // line 3
             OverflowIdLine,        // line 4
@@ -111,7 +122,7 @@ public class PeopleImporterTests
     public void Import_UndefinedMode_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var importer = new PeopleImporter(Csv(ValidLine1));
+        using var importer = new PeopleImporter(Csv(ValidLine1));
 
         // Act
         var ex = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => importer.Import((ImportMode)42));
@@ -124,7 +135,7 @@ public class PeopleImporterTests
     public void Import_SkipInvalidWithoutCallback_ThrowsArgumentNullException()
     {
         // Arrange
-        var importer = new PeopleImporter(Csv(ValidLine1));
+        using var importer = new PeopleImporter(Csv(ValidLine1));
 
         // Act
         var ex = Assert.ThrowsExactly<ArgumentNullException>(() => importer.Import(ImportMode.SkipInvalid));
@@ -138,7 +149,7 @@ public class PeopleImporterTests
     {
         // Arrange
         var expected = new IOException("Simulated disk failure.");
-        var importer = new PeopleImporter(new ThrowingReader(expected));
+        using var importer = new PeopleImporter(new ThrowingReader(expected));
 
         // Act
         var actual = Assert.ThrowsExactly<IOException>(() => importer.Import(ImportMode.FailFast));
@@ -152,11 +163,185 @@ public class PeopleImporterTests
     {
         // Arrange
         var expected = new InvalidOperationException("Callback failed.");
-        var importer = new PeopleImporter(Csv(WrongFieldCountLine));
+        using var importer = new PeopleImporter(Csv(WrongFieldCountLine));
 
         // Act
         var actual = Assert.ThrowsExactly<InvalidOperationException>(
             () => importer.Import(ImportMode.SkipInvalid, _ => throw expected));
+
+        // Assert
+        Assert.AreSame(expected, actual);
+    }
+
+    [TestMethod]
+    public void ImportFromFile_TempFile_ReturnsPeopleAndFileIsReleased()
+    {
+        // Arrange
+        string path = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllLines(path, [PersonRecordParser.Header, ValidLine1, ValidLine2]);
+
+            // Act
+            IReadOnlyList<Person> people = PeopleImporter.ImportFromFile(path, ImportMode.FailFast);
+
+            // Assert
+            Assert.HasCount(2, people);
+            File.Delete(path); // would throw on Windows if the file were still open
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+        Assert.IsFalse(File.Exists(path));
+    }
+
+    [TestMethod]
+    public void ImportFromFile_InvalidRecord_ThrowsAndFileIsReleased()
+    {
+        // Arrange
+        string path = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllLines(path, [PersonRecordParser.Header, WrongFieldCountLine]);
+
+            // Act
+            var ex = Assert.ThrowsExactly<InvalidPersonRecordException>(
+                () => PeopleImporter.ImportFromFile(path, ImportMode.FailFast));
+
+            // Assert
+            Assert.AreEqual(2, ex.LineNumber);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+        Assert.IsFalse(File.Exists(path));
+    }
+
+    [TestMethod]
+    public void ImportFromFile_BlankPath_ThrowsArgumentException()
+    {
+        // Act
+        var ex = Assert.ThrowsExactly<ArgumentException>(() => PeopleImporter.ImportFromFile(" ", ImportMode.FailFast));
+
+        // Assert
+        Assert.AreEqual("path", ex.ParamName);
+    }
+
+    [TestMethod]
+    public void Dispose_AfterSuccessfulImport_DisposesReader()
+    {
+        // Arrange
+        var reader = new TrackingReader(PersonRecordParser.Header + Environment.NewLine + ValidLine1);
+        var importer = new PeopleImporter(reader);
+        importer.Import(ImportMode.FailFast);
+
+        // Act
+        importer.Dispose();
+
+        // Assert
+        Assert.AreEqual(1, reader.DisposeCount);
+    }
+
+    [TestMethod]
+    public void Dispose_AfterFailedImport_DisposesReader()
+    {
+        // Arrange
+        var reader = new TrackingReader(PersonRecordParser.Header + Environment.NewLine + WrongFieldCountLine);
+        using (var importer = new PeopleImporter(reader))
+        {
+            Assert.ThrowsExactly<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
+        }
+
+        // Assert
+        Assert.AreEqual(1, reader.DisposeCount);
+    }
+
+    [TestMethod]
+    public void Dispose_CalledRepeatedly_DisposesReaderOnlyOnce()
+    {
+        // Arrange
+        var reader = new TrackingReader(PersonRecordParser.Header);
+        var importer = new PeopleImporter(reader);
+
+        // Act
+        importer.Dispose();
+        importer.Dispose();
+        importer.Dispose();
+
+        // Assert
+        Assert.AreEqual(1, reader.DisposeCount);
+    }
+
+    [TestMethod]
+    public void Import_AfterDispose_ThrowsObjectDisposedException()
+    {
+        // Arrange
+        var importer = new PeopleImporter(Csv(ValidLine1));
+        importer.Dispose();
+
+        // Act & Assert
+        Assert.ThrowsExactly<ObjectDisposedException>(() => importer.Import(ImportMode.FailFast));
+    }
+
+    [TestMethod]
+    public void Import_ValidatorRejectsPerson_FailFast_ThrowsWithLineNumber()
+    {
+        // Arrange
+        using var importer = new PeopleImporter(Csv(ValidLine1, ValidLine2));
+
+        // Act
+        var ex = Assert.ThrowsExactly<InvalidPersonRecordException>(
+            () => importer.Import(ImportMode.FailFast, validator: p => p.Id != 2));
+
+        // Assert
+        Assert.AreEqual(3, ex.LineNumber);
+        Assert.IsInstanceOfType<FormatException>(ex.InnerException);
+    }
+
+    [TestMethod]
+    public void Import_ValidatorRejectsPerson_SkipInvalid_ReportsAndContinues()
+    {
+        // Arrange
+        using var importer = new PeopleImporter(Csv(ValidLine1, ValidLine2));
+        List<InvalidPersonRecordException> rejected = [];
+
+        // Act
+        IReadOnlyList<Person> people = importer.Import(ImportMode.SkipInvalid, rejected.Add, p => p.Id != 1);
+
+        // Assert
+        Assert.HasCount(1, people);
+        Assert.AreEqual(2, people[0].Id);
+        Assert.HasCount(1, rejected);
+        Assert.AreEqual(2, rejected[0].LineNumber);
+    }
+
+    [TestMethod]
+    public void Import_ValidatorThrows_PropagatesSameInstance()
+    {
+        // Arrange
+        var expected = new InvalidOperationException("Validator failed.");
+        using var importer = new PeopleImporter(Csv(ValidLine1));
+
+        // Act
+        var actual = Assert.ThrowsExactly<InvalidOperationException>(
+            () => importer.Import(ImportMode.FailFast, validator: _ => throw expected));
+
+        // Assert
+        Assert.AreSame(expected, actual);
+    }
+
+    [TestMethod]
+    public void Import_ValidatorThrowsFormatException_IsNotCaughtByRecordFilter()
+    {
+        // Arrange: a FormatException from the delegate is a bug in the delegate, not a bad record.
+        var expected = new FormatException("Delegate bug.");
+        using var importer = new PeopleImporter(Csv(ValidLine1));
+
+        // Act
+        var actual = Assert.ThrowsExactly<FormatException>(
+            () => importer.Import(ImportMode.SkipInvalid, _ => { }, _ => throw expected));
 
         // Assert
         Assert.AreSame(expected, actual);

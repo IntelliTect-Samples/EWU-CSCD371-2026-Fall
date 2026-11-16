@@ -1,8 +1,13 @@
 namespace Assignment;
 
-public sealed class PeopleImporter
+/// <remarks>
+/// Ownership: the importer takes ownership of the reader passed to its constructor and
+/// disposes it when the importer is disposed. Callers must not use or dispose the reader themselves.
+/// </remarks>
+public sealed class PeopleImporter : IDisposable
 {
     private readonly TextReader _reader;
+    private bool _disposed;
 
     public PeopleImporter(TextReader reader)
     {
@@ -10,8 +15,24 @@ public sealed class PeopleImporter
         _reader = reader;
     }
 
-    public IReadOnlyList<Person> Import(ImportMode mode, Action<InvalidPersonRecordException>? onInvalidRecord = null)
+    public static IReadOnlyList<Person> ImportFromFile(
+        string path,
+        ImportMode mode,
+        Action<InvalidPersonRecordException>? onInvalidRecord = null,
+        Func<Person, bool>? validator = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+
+        using var importer = new PeopleImporter(new StreamReader(path));
+        return importer.Import(mode, onInvalidRecord, validator);
+    }
+
+    public IReadOnlyList<Person> Import(
+        ImportMode mode,
+        Action<InvalidPersonRecordException>? onInvalidRecord = null,
+        Func<Person, bool>? validator = null)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
         if (!Enum.IsDefined(mode))
         {
             throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unknown import mode.");
@@ -29,21 +50,49 @@ public sealed class PeopleImporter
         while ((line = _reader.ReadLine()) is not null)
         {
             lineNumber++;
+            Person person;
             try
             {
-                people.Add(PersonRecordParser.Parse(line));
+                person = PersonRecordParser.Parse(line);
             }
             catch (Exception ex) when (ex is FormatException or OverflowException)
             {
-                var error = new InvalidPersonRecordException(lineNumber, line, ex);
-                if (mode == ImportMode.FailFast)
-                {
-                    throw error;
-                }
-                onInvalidRecord!(error);
+                Reject(mode, onInvalidRecord, new InvalidPersonRecordException(lineNumber, line, ex));
+                continue;
             }
+
+            if (validator is not null && !validator(person))
+            {
+                var inner = new FormatException("Person failed the custom validation rule.");
+                Reject(mode, onInvalidRecord, new InvalidPersonRecordException(lineNumber, line, inner));
+                continue;
+            }
+
+            people.Add(person);
         }
 
         return people;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        _disposed = true;
+        _reader.Dispose();
+    }
+
+    private static void Reject(
+        ImportMode mode,
+        Action<InvalidPersonRecordException>? onInvalidRecord,
+        InvalidPersonRecordException error)
+    {
+        if (mode == ImportMode.FailFast)
+        {
+            throw error;
+        }
+        onInvalidRecord!(error);
     }
 }

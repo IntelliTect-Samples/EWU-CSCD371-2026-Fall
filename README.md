@@ -44,27 +44,27 @@ Id,FirstName,LastName,Email,StreetAddress,City,State,Zip
 
 ### Resource management (`IDisposable`)
 
-- Create a sealed component that implements `IDisposable` and owns a `TextReader`. Document ownership of any reader passed to it. A finalizer is not required. ❌✔
-- Use `using` or `try`/`finally` to release owned resources after both successful and failed imports. ❌✔
-- Make repeated `Dispose()` calls safe. Using the component after disposal must throw `ObjectDisposedException`. ❌✔
+- Create a sealed component that implements `IDisposable` and owns a `TextReader`. Document ownership of any reader passed to it. A finalizer is not required. ✔
+- Use `using` or `try`/`finally` to release owned resources after both successful and failed imports. ✔
+- Make repeated `Dispose()` calls safe. Using the component after disposal must throw `ObjectDisposedException`. ✔
 
 ### Tests
 
-- Test successful imports, including one from a temporary file. Delete the file when the test finishes. ❌✔
+- Test successful imports, including one from a temporary file. Delete the file when the test finishes. ✔
 - Test both import modes with several kinds of invalid records. Verify fail-fast reports the first bad line number, and skip-invalid returns only valid people and reports every rejected record. Use a closure to collect or count callback reports. ✔
 - Verify wrapped exceptions preserve the expected `InnerException` type, and argument exceptions identify the correct parameter. ✔
 - Use a fake `TextReader` or a mocking library to simulate an I/O failure. Verify reader and callback exceptions propagate as the same exception instance, without wrapping or swallowing them. ✔
-- Test disposal after successful and failed imports, repeated disposal, and use after disposal. ❌✔
+- Test disposal after successful and failed imports, repeated disposal, and use after disposal. ✔
 
 ## Extra Credit
 
-- Support a caller-supplied validation delegate. Handle rule violations through the selected import mode, but let unexpected exceptions from the delegate propagate. ❌✔
-- Use a `when` filter to handle specific recoverable conditions. Include a test showing that non-matching exceptions are not caught. ❌✔
+- Support a caller-supplied validation delegate. Handle rule violations through the selected import mode, but let unexpected exceptions from the delegate propagate. ✔
+- Use a `when` filter to handle specific recoverable conditions. Include a test showing that non-matching exceptions are not caught. ✔
 
 ## Fundamentals
 
 - Target all projects at .NET 10 (`net10.0`) and use the latest `LangVersion`.  ✔
 - Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ✔
-- Ensure there are no build errors or warnings, including analyzer warnings. ❌✔
-- All of the above should be unit tested. ❌✔
-- Choose simplicity over complexity. No console UI, async, or multithreading is required. ❌✔
+- Ensure there are no build errors or warnings, including analyzer warnings. ✔
+- All of the above should be unit tested. ✔
+- Choose simplicity over complexity. No console UI, async, or multithreading is required. ✔
