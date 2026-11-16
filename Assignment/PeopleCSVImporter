@@ -1,0 +1,26 @@
+public sealed class PeopleCSVImporter : IDisposable
+{
+    private readonly TextReader _reader;
+
+    public PeopleCSVImporter(TextReader reader)
+    {
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+    }
+
+    public void Import(string filePath)
+    {
+    }
+
+    public void Import(string filePath, Action<Exception> onInvalidRecord)
+    {
+    }
+
+    private void Validate(string[] fields)
+    {
+    }
+
+    public void Dispose()
+    {
+        _reader.Dispose();
+    }
+}
