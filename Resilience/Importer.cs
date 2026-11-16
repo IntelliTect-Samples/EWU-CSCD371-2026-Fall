@@ -130,11 +130,3 @@ public sealed class Importer : IDisposable
     }
 
 }
-public sealed class ThrowingTextReader : TextReader
-{
-    public override string? ReadLine()
-    {
-        throw new IOException(
-            "Simulated I/O failure.");
-    }
-}
