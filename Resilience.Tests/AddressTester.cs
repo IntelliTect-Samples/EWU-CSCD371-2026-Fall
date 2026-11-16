@@ -48,7 +48,7 @@ public class AddressTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "streetAddress",
+                "StreetAddress",
                 ex.ParamName);
         }
     }
@@ -69,7 +69,7 @@ public class AddressTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "city",
+                "City",
                 ex.ParamName);
         }
     }
@@ -90,7 +90,7 @@ public class AddressTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "state",
+                "State",
                 ex.ParamName);
         }
     }
@@ -111,7 +111,7 @@ public class AddressTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "zip",
+                "Zip",
                 ex.ParamName);
         }
     }

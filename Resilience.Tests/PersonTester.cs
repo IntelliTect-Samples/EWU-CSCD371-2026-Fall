@@ -51,7 +51,7 @@ public sealed class PersonTester
         catch (ArgumentOutOfRangeException ex)
         {
             Assert.AreEqual(
-                "id",
+                "Id",
                 ex.ParamName);
         }
     }
@@ -80,7 +80,7 @@ public sealed class PersonTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "firstName",
+                "FirstName",
                 ex.ParamName);
         }
     }
@@ -109,7 +109,7 @@ public sealed class PersonTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "lastName",
+                "LastName",
                 ex.ParamName);
         }
     }
@@ -138,7 +138,7 @@ public sealed class PersonTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "emailAddress",
+                "EmailAddress",
                 ex.ParamName);
         }
     }
@@ -160,7 +160,7 @@ public sealed class PersonTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "streetAddress",
+                "StreetAddress",
                 ex.ParamName);
         }
     }
