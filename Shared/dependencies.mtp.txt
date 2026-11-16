@@ -1,3 +1,0 @@
-Microsoft.Testing.Extensions.CodeCoverage
-Microsoft.Testing.Extensions.GitHubActionsReport
-Microsoft.Testing.Extensions.TrxReport
