@@ -36,7 +36,7 @@ public sealed class Importer : IDisposable
 
             if (!int.TryParse(fields[0], out int id))
             {
-                throw new FormatException("Id must be a number.");
+                throw new FormatException("Id must be a valid 32-bit integer.");
             }
 
             if (!ids.Add(id))
@@ -62,8 +62,8 @@ public sealed class Importer : IDisposable
         catch (Exception ex)
             when (
                 ex is FormatException ||
-                ex is ArgumentException ||
-                ex is ArgumentOutOfRangeException)
+                ex is ArgumentOutOfRangeException ||
+                ex is ArgumentException)
         {
             throw new InvalidPersonRecordException(
                 $"Invalid record on line {lineNumber}.",
@@ -99,7 +99,7 @@ public sealed class Importer : IDisposable
             }
             catch (InvalidPersonRecordException ex) when (importMode == ImportMode.SkipInvalid)
             {
-                onInvalidRecord?.Invoke(ex);
+                onInvalidRecord!.Invoke(ex); //Can't be null, null exception already caught
                 continue;
             }
         }

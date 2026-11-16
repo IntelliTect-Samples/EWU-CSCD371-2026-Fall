@@ -1,4 +1,6 @@
-﻿public class InvalidPersonRecordException : Exception
+﻿namespace Resilience;
+
+public class InvalidPersonRecordException : Exception
 {
     public int LineNumber { get; }
     public string RawLine { get; }

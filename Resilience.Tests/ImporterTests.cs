@@ -29,14 +29,16 @@ public class ImporterTests
         importer.Dispose();
         importer.Dispose();
 
-        Assert.Throws<ObjectDisposedException>(() => importer.Import(ImportMode.FailFast));
+        Assert.Throws<ObjectDisposedException>(
+            () => importer.Import(ImportMode.FailFast));
     }
 
     [TestMethod]
     public void Import_ReaderException_Propagates()
     {
         using Importer importer = new(new ThrowingTextReader());
-        IOException exception = Assert.Throws<IOException>(() => importer.Import(ImportMode.FailFast));
+        IOException exception = Assert.Throws<IOException>(
+            () => importer.Import(ImportMode.FailFast));
 
         Assert.AreEqual("Simulated I/O failure.", exception.Message);
     }
@@ -73,9 +75,25 @@ public class ImporterTests
 
         using Importer importer = new(sr);
 
-        var exception = Assert.Throws<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
+        var exception = Assert.Throws<InvalidPersonRecordException>(
+            () => importer.Import(ImportMode.FailFast));
         Assert.IsNotNull(exception.InnerException);
         Assert.IsInstanceOfType<FormatException>(exception.InnerException);
+    }
+
+    [TestMethod]
+    [DataRow("0, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004")]
+    [DataRow("-1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004")]
+    public void Import_OutOfRange_Throws(string row1)
+    {
+        string fileContents = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
+            row1 + "\n";
+
+        StringReader sr = new(fileContents);
+        using Importer importer = new(sr);
+        var ex = Assert.Throws<InvalidPersonRecordException>(
+            () => importer.Import(ImportMode.FailFast));
+        Assert.IsInstanceOfType<ArgumentOutOfRangeException>(ex.InnerException);
     }
 
     [TestMethod]
@@ -89,8 +107,62 @@ public class ImporterTests
 
         using Importer importer = new(sr);
 
-        var exception = Assert.Throws<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
+        var exception = Assert.Throws<InvalidPersonRecordException>(
+            () => importer.Import(ImportMode.FailFast));
         Assert.IsNotNull(exception.InnerException);
         Assert.IsInstanceOfType<ArgumentException>(exception.InnerException);
     }
+
+
+    [TestMethod]
+    [DataRow("1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004")]
+    [DataRow("3, John, Doe, john@test.com, 123 Main, Cheney, WA")]
+    public void Import_SkipInvalid_DelegateCalled(string badLine)
+    {
+        string fileContents =
+            "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
+            "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004\n" +
+            "2, James, Smith, james@test.com, 456 Main, Cheney, WA, 99004\n" +
+            badLine + "\n";
+
+        StringReader sr = new(fileContents);
+
+        using Importer importer = new(sr);
+
+        bool importDelegateInvoked = false;
+        int lineNumberActual = 0;
+        string rawLineActual = "";
+        int lineNumberExpected = 4;
+
+        var people = importer.Import(ImportMode.SkipInvalid,
+            (InvalidPersonRecordException ex) =>
+            {
+                importDelegateInvoked = true;
+                lineNumberActual = ex.LineNumber;
+                rawLineActual = ex.RawLine;
+            });
+
+        Assert.IsTrue(importDelegateInvoked);
+        Assert.AreEqual(lineNumberExpected, lineNumberActual);
+        Assert.AreEqual(badLine, rawLineActual);
+        Assert.HasCount(2, people);
+    }
+
+    [TestMethod]
+    public void Import_SkipInvalid_NullThrows()
+    {
+        string fileContents =
+            "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
+            "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004\n" +
+            "2, James, Smith, james@test.com, 456 Main, Cheney, WA, 99004\n";
+
+        StringReader sr = new(fileContents);
+
+        using Importer importer = new(sr);
+
+        Assert.Throws<ArgumentNullException>(
+            () => importer.Import(ImportMode.SkipInvalid));
+    }
+
+
 }

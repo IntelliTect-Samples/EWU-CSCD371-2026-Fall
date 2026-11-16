@@ -28,4 +28,33 @@ public class InvalidPersonRecordExceptionTester
             inner,
             ex.InnerException);
     }
+
+    [TestMethod]
+    public void Constructor_NoArgs_DefaultsRawLineToStringDotEmpty()
+    {
+        InvalidPersonRecordException ex = new();
+        Assert.IsEmpty(ex.RawLine);
+    }
+
+    [TestMethod]
+    public void Constructor_OneArg_PassesMessageAndDefaultRawLine()
+    {
+        string message = "Data bad";
+        InvalidPersonRecordException ex = new(message);
+        Assert.AreEqual(message, ex.Message);
+        Assert.IsEmpty(ex.RawLine);
+    }
+
+    [TestMethod]
+    public void Constructor_TwoArgs_PassesMessageAndInnerDefaultsRawLine()
+    {
+        string innerMessage = "Bad argument";
+        string message = "Bad data";
+        ArgumentException inner = new(innerMessage);
+        InvalidPersonRecordException ex = new(message, inner);
+
+
+        Assert.AreEqual(inner, ex.InnerException);
+        Assert.IsEmpty(ex.RawLine);
+    }
 }
