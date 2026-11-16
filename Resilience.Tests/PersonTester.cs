@@ -109,7 +109,7 @@ public sealed class PersonTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "firstName",
+                "lastName",
                 ex.ParamName);
         }
     }
@@ -138,7 +138,7 @@ public sealed class PersonTester
         catch (ArgumentNullException ex)
         {
             Assert.AreEqual(
-                "firstName",
+                "emailAddress",
                 ex.ParamName);
         }
     }
@@ -147,11 +147,12 @@ public sealed class PersonTester
     {
         try
         {
-            _ = new Address(
-                null!,
-                "Cheney",
-                "WA",
-                "99004");
+            _ = new Person(
+                1,
+                "John",
+                "Doe",
+                "john@test.com",
+                null!);
 
             Assert.Fail(
                 "Expected ArgumentNullException.");
