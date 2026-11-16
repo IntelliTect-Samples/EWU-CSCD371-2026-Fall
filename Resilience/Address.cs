@@ -1,10 +1,6 @@
 ﻿using Resilience.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 
-namespace Assignment;
+namespace Resilience;
 
 public class Address : IAddress
 {

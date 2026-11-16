@@ -1,8 +1,4 @@
-﻿using Assignment;
-
-namespace Resilience;
-
-
+﻿namespace Resilience;
 
 public sealed class Importer : IDisposable
 {

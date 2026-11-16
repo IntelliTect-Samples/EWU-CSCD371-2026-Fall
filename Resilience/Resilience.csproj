@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Resilience.Interfaces\Resilience.Interfaces.csproj" />
+	  <InternalsVisibleTo Include="Resilience.Tests" />
   </ItemGroup>
 
   <PropertyGroup>

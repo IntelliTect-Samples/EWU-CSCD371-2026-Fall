@@ -1,5 +1,3 @@
-using Assignment;
-
 namespace Resilience.Tests;
 
 [TestClass]

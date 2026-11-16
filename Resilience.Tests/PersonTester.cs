@@ -1,6 +1,4 @@
-﻿using Assignment;
-
-namespace Resilience.Tests;
+﻿namespace Resilience.Tests;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass]
