@@ -1,124 +1,72 @@
-# EWU-CSCD371-2026-Fall
+# Assignment 8 - Resilient People Importer
 
-## About the Essential C# Class
+## Overview
 
-### Instructors
+Build a people CSV importer using the same format as Assignment 7. The purpose of this assignment is to learn **exception handling** and **resource management with `IDisposable`**. Your importer will either stop at the first invalid record or skip and report invalid records, and it must release its resources even when an exception occurs.
 
-[Mark Michaelis](https://github.com/MarkMichaelis), [Benjamin Michaelis](https://github.com/BenjaminMichaelis), and [Kevin Bost](https://github.com/Keboo)
+**No starting code is provided.** You may reuse your own Assignment 7 models (`Person`/`Address`), but this assignment must build and test independently.
 
-For any general questions, we suggest asking in [EWU-CSCD371-2026-Fall Microsoft Teams](https://teams.microsoft.com/l/team/19%3AAKcgFFJRsiO0qNS2E2rdFiyGdMTPWJ1OlMhvFK3PGUw1%40thread.tacv2/conversations?groupId=b160d26b-6ca1-4cde-83e3-dbcba8dc8b80&tenantId=37321907-14a5-4390-987d-ec0c66c655cd). This is a great place to collaborate and ask questions of both each other and the instructors. Though you can message people directly, we encourage open discussion on the meeting chat so that others can benefit as well.
+## Reading
 
-You may send an e-mail with questions that are specific to you to <EWU-Instructors@IntelliTect.com>. Examples include:
+- Essential C#: Exception Handling, including [Guidelines for Exception Handling](https://essentialcsharp.com/guidelines-for-exception-handling#guidelines-for-exception-handling).
+- Essential C#: Resource cleanup (`IDisposable`, `using` statements/declarations, and `try`/`finally`).
+- Review the exception handling guidelines covered in class.
 
-* a notification that you are bringing pizza for everyone or
-* you are dropping the class
+## Instructions
 
-#### Online Class
+### Project setup
 
-Class will NOT generally be available online.
+- Create a `.slnx` solution containing a class library and a unit test project that references it. ❌✔
 
-#### GitHub Information
+### CSV data
 
-Please fill out this [Essential C# 2026 Fall Information – Fill out form](https://forms.cloud.microsoft/r/uGzgTuXyi2) with your GitHub information. This is used by us so we can appropriately grade assignments.
+Use the same columns as Assignment 7:
 
-#### Book
+```text
+Id,FirstName,LastName,Email,StreetAddress,City,State,Zip
+```
 
-* [Essential C# Book Online](https://EssentialCSharp.com)
-* Essential C# 12.0 (8th Edition), ISBN-13: 978-0138219512
+- Parse each record into person/address models. ❌✔
+- Choose and document at least three validation rules, such as a wrong field count, an invalid or duplicate `Id`, or missing required values. ❌✔
+- Create test data with a header and one record per line. You do not need to support quoted fields, embedded commas, or multiline records. ❌✔
 
-#### General Information
+### Exception handling
 
-* [**Grading System**](./Docs/Homework-Grading.md)
-* **Office Hours**: Office hours are available before class on Tuesdays and Thursdays starting at 1 PM.  To ensure that an instructor will be available, please schedule an appointment 24-hours beforehand by sending a meeting request email to <EWU-Instructors@IntelliTect.com>.  Alternative times may be available after class upon request.
-* **Code for the Website**: <https://github.com/IntelliTect/EssentialCSharp.Web>
-* **Code for the Book Examples**: <https://github.com/IntelliTect/EssentialCSharp>
-* [Teams Chat Room](https://teams.microsoft.com/l/team/19%3AAKcgFFJRsiO0qNS2E2rdFiyGdMTPWJ1OlMhvFK3PGUw1%40thread.tacv2/conversations?groupId=b160d26b-6ca1-4cde-83e3-dbcba8dc8b80&tenantId=37321907-14a5-4390-987d-ec0c66c655cd)
+- Validate public method and constructor arguments. Throw `ArgumentNullException`, `ArgumentException`, or `ArgumentOutOfRangeException` as appropriate. Ensure the appropriate argument name is set on the thrown exception. Consider helpers such as `ArgumentNullException.ThrowIfNull` and `nameof`. ❌✔
+- Define a custom exception, such as `InvalidPersonRecordException`, with a meaningful message, line number, and raw line text. Provide the standard constructors, including one that accepts an inner exception. ❌✔
+- Wrap parsing failures in your custom exception, preserving the original exception as `InnerException`. ❌✔
+- Let the caller choose between two import modes: ❌✔
+  - **Fail-fast:** Throw your custom exception on the first invalid record. ❌✔
+  - **Skip-invalid:** Report each invalid record and its exception through a caller-supplied callback, then continue. Do not silently discard records. ❌✔
+- Catch only record errors you can recover from. Let `IOException`, callback exceptions, and other unexpected exceptions propagate with their original stack traces. Do not use `throw ex;` or hide failures in a general catch block. Favor exception filters over catch-and-rethrow. ❌✔
+- Return the accepted people only after the import completes. A failed import must throw, not return a partial result as though it succeeded. ❌✔
 
-#### Computer Setup
+### Resource management (`IDisposable`)
 
-##### Required
+- Create a sealed component that implements `IDisposable` and owns a `TextReader`. Document ownership of any reader passed to it. A finalizer is not required. ❌✔
+- Use `using` or `try`/`finally` to release owned resources after both successful and failed imports. ❌✔
+- Make repeated `Dispose()` calls safe. Using the component after disposal must throw `ObjectDisposedException`. ❌✔
 
-* [.NET latest](https://dotnet.microsoft.com/download)
+### Tests
 
-Most of the coursework is cross-platform. Our recommended IDEs are [JetBrains Rider](https://www.jetbrains.com/rider/), [Visual Studio Code](https://code.visualstudio.com/), and [Visual Studio 2026](https://visualstudio.microsoft.com/) — use whichever you're most comfortable with (latest release of any of the three is fine).
+- Test successful imports, including one from a temporary file. Delete the file when the test finishes. ❌✔
+- Test both import modes with several kinds of invalid records. Verify fail-fast reports the first bad line number, and skip-invalid returns only valid people and reports every rejected record. Use a closure to collect or count callback reports. ❌✔
+- Verify wrapped exceptions preserve the expected `InnerException` type, and argument exceptions identify the correct parameter. ❌✔
+- Use a fake `TextReader` or a mocking library to simulate an I/O failure. Verify reader and callback exceptions propagate as the same exception instance, without wrapping or swallowing them. ❌✔
+- Test disposal after successful and failed imports, repeated disposal, and use after disposal. ❌✔
 
-###### Recommended
+## Extra Credit
 
-* [JetBrains Rider](https://www.jetbrains.com/rider/) A cross-platform full C# IDE from JetBrains.
-* [Visual Studio Code](https://code.visualstudio.com/) A lightweight, cross-platform editor with excellent C# support via extensions.
-* [Visual Studio 2026](https://visualstudio.microsoft.com/) The community edition is fine, though we believe most students should have access to higher SKUs with EWU's MSDN (this assumption may be wrong). Lab computers should have Visual Studio Professional (or higher) already installed. When installing, select the **“ASP.NET and web development” workload**.
-* [GitHub Student Developer Pack](https://education.github.com/students)
-  There are lots of great development tools and resources. The JetBrains ReSharper (a plugin for Visual Studio) is a great tool for helping you write better code.
-* [GitKraken](https://gitkraken.cello.so/tl7bYaRLgzT)
-  Though you can do all of the git interaction from within your IDE or on the command line, GitKraken is free for open-source work. It also provides a nice graphical version of the commit history so you can see how various commits and branches relate.
+- Support a caller-supplied validation delegate. Handle rule violations through the selected import mode, but let unexpected exceptions from the delegate propagate. ❌✔
+- Use a `when` filter to handle specific recoverable conditions. Include a test showing that non-matching exceptions are not caught. ❌✔
 
-###### Optional
+## Fundamentals
 
-* [Visual Studio Live Share](https://visualstudio.microsoft.com/services/live-share/) This lets you easily collaborate with other people on a shared set of code.
-* [GitExtensions](https://gitextensions.github.io/), [GitHub Desktop](https://desktop.github.com/), (or any other git tool): There are lots of options out there for working with git. If there is a tool you like, use it!
-
-#### Class Video
-
-We will try to record the class so that students can review it at a later time. Recordings will be available under Files in the [Teams channel](https://teams.microsoft.com/l/team/19%3AAKcgFFJRsiO0qNS2E2rdFiyGdMTPWJ1OlMhvFK3PGUw1%40thread.tacv2/conversations?groupId=b160d26b-6ca1-4cde-83e3-dbcba8dc8b80&tenantId=37321907-14a5-4390-987d-ec0c66c655cd) (SharePoint link to be added once the 2026 Recordings folder is created).
-
-Please note:
-
-* **Do not expect or rely on video recordings.**  We are not making any commitment to having video recordings of the class.
-* Please keep all videos ***confidential***. These videos are for people enrolled in this class.  No videos or parts of videos may be copied/distributed/shared.
-
-#### [Calendar](./Docs/Schedule.md)
-
-## Assignment CI for maintainers
-
-Assignment branches use `pull_request` to call the public reusable workflow in
-`.github/workflows/build-and-test.yml@main`. Builds run in this repository with
-read-only permissions, including PRs from student forks. Students do not need to
-enable Actions on their forks; maintainers must still approve runs when required
-by the repository's external-contributor policy.
-
-The build publishes its coverage summary as an artifact and job summary, including
-available coverage when tests fail. The job summary links to an HTML coverage
-summary that opens directly in the browser, and to the full line-by-line HTML
-report (`coverage-html-<attempt>` zip artifact). `Report PR results`, installed on `main`,
-responds to the completed run and posts a sticky PR comment with the outcome,
-commit, run link, and available coverage. Build failures without coverage still
-receive a status comment. Reporting errors are visible in the reporter's logs.
-The reporter alone can write comments: it validates the PR association and result
-freshness, and never checks out or executes student code. These results provide
-feedback, not tamper-proof grading.
-
-When releasing an assignment from the private instructor repository:
-
-1. Keep its workflow name `Build and Test .NET`, use `pull_request`, and grant only
-   `contents: read`. Preserve that assignment's existing workflow inputs.
-2. Call
-   `IntelliTect-Samples/EWU-CSCD371-2026-Fall/.github/workflows/build-and-test.yml@main`,
-   not the private instructor workflow. Instructor branches are release templates;
-   running CI in the instructor repository is not required.
-3. Publish shared build/reporting changes to public `main` before releasing callers.
-   Do not replace public `main` with the old instructor workflow implementation.
-4. For an existing fork or PR, sync the updated public assignment branch into the
-   student's branch and resolve its workflow to the new caller. Updating `main`
-   alone does not trigger a run. Push the synced branch, or reopen the PR after its
-   workflow is corrected, to generate a new PR event.
-
-Do not use `pull_request_target` or enable unsafe PR checkout for student builds.
-
-### PR metadata check
-
-`.github/workflows/pr-metadata.yml` (check name `PR metadata`) validates PRs targeting
-`Assignment*` branches. It reruns automatically when the title or description changes:
-
-- The title must contain `Assignment <number>`, for example `Assignment 1` or `Assignment1`.
-- The description must @mention a partner, either on a line containing only mentions
-  or on a line with a pairing word such as "partner", "paired", "collaborated", or
-  "worked with" (for example `Partner: @username`). These rules match `Get-DeclaredPartners` in the instructor
-  `Scripts/grading-report.ps1`. CI is stricter than grading: it ignores mentions in code,
-  HTML comments, and quotes, as well as self-mentions, bots, organizations, and
-  nonexistent users. Any partner CI accepts is also detected by grading.
-
-The check fails and posts a comment explaining the fix while a rule fails, then
-deletes the comment once both rules pass.
+- Target all projects at .NET 10 (`net10.0`) and use the latest `LangVersion`. ❌✔
+- Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ❌✔
+- Ensure there are no build errors or warnings, including analyzer warnings. ❌✔
+- All of the above should be unit tested. ❌✔
+- Choose simplicity over complexity. No console UI, async, or multithreading is required. ❌✔
 
 This is the only workflow that uses `pull_request_target`, so it runs without
 fork-run approval and students cannot modify it. It reads only PR metadata through
