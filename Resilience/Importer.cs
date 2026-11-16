@@ -10,7 +10,8 @@ public sealed class Importer : IDisposable
     private bool _disposed = false;
 
     public Importer(string fileName)
-        : this(new StreamReader(fileName))
+        : this(new StreamReader(
+            fileName ?? throw new ArgumentNullException(nameof(fileName))))
     { }
 
     /// <summary>
@@ -37,7 +38,10 @@ public sealed class Importer : IDisposable
                     "Expected exactly 8 fields.");
             }
 
-            int id = int.Parse(fields[0]);
+            if (!int.TryParse(fields[0], out int id))
+            {
+                throw new FormatException("Id must be a number.");
+            }
 
             if (!ids.Add(id))
             {
@@ -73,46 +77,47 @@ public sealed class Importer : IDisposable
         }
     }
 
-    private IEnumerable<Person> ImportCsvRows(ImportMode importMode,
+    public IReadOnlyList<Person> Import(ImportMode importMode,
         Action<InvalidPersonRecordException>? onInvalidRecord = null)
     {
         ThrowIfDisposed();
-        int rowCount = 0;
-        string? line;
+        if (importMode == ImportMode.SkipInvalid)
+        {
+            ArgumentNullException.ThrowIfNull(onInvalidRecord);
+        }
+
+        int lineNumber = 1;
+
         _ = _textReader.ReadLine(); //skips first line
+
+        HashSet<int> ids = [];
+        List<Person> people = [];
+
+        string? line;
         while ((line = _textReader.ReadLine()) != null)
         {
-            Person person;
-            ++rowCount;
-            HashSet<int> ids = new HashSet<int>();
+            ++lineNumber;
             try
             {
-                person = ParsePerson(line, rowCount, ids);
-                
+                people.Add(ParsePerson(line, lineNumber, ids));
             }
-            catch (InvalidPersonRecordException ex)
+            catch (InvalidPersonRecordException ex) when (importMode == ImportMode.SkipInvalid)
             {
-                if (importMode == ImportMode.FailFast)
-                {
-                    throw new InvalidPersonRecordException($"Error parsing row {rowCount}: [{line}]", ex);
-                }
-                else if (importMode == ImportMode.SkipInvalid)
-                {
-                    onInvalidRecord?.Invoke(ex);
-                    continue;
-                }
-
-                throw;
+                onInvalidRecord?.Invoke(ex);
+                continue;
             }
-            yield return person;
         }
+
+        return people;
     }
+
     private void ThrowIfDisposed()
     {
         ObjectDisposedException.ThrowIf(
             _disposed,
             this);
     }
+
     public void Dispose()
     {
         if (_disposed)
