@@ -68,3 +68,11 @@ Id,FirstName,LastName,Email,StreetAddress,City,State,Zip
 - All of the above should be unit tested. ❌✔
 - Choose simplicity over complexity. No console UI, async, or multithreading is required. ❌✔
 
+This is the only workflow that uses `pull_request_target`, so it runs without
+fork-run approval and students cannot modify it. It reads only PR metadata through
+the API and never checks out or executes PR content; keep it that way. GitHub blocks
+`pull_request_target` by default in public repositories from November 2, 2026, so
+this repository has an Actions policy (**Settings → Actions → Policies**) named
+`Allow PR metadata check`. That policy allows `pull_request_target` only for
+`.github/workflows/pr-metadata.yml`. If you rename the file, update the policy; without the policy,
+this check stops running.
