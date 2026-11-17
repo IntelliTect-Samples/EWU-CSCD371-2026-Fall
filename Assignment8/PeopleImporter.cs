@@ -98,21 +98,6 @@ public sealed class PeopleImporter : IDisposable
     Action<InvalidPersonException>? onInvalid = null,
     Func<Person, string?>? validate = null) => Import(mode, onInvalid, validate);
 
-    private static bool TryParsePerson(string line, out Person person, out IReadOnlyList<string> errors)
-    {
-        try
-        {
-            person = ParsePerson(line);
-            errors = Array.Empty<string>();
-            return true;
-        }
-        catch (Exception ex) when (ex is FormatException or OverflowException)
-        {
-            person = default!;
-            errors = new[] { ex.Message };
-            return false;
-        }
-    }
     // Fail-fast throws invalid records; skip-invalid reports through the callback and continues.
     private static void HandleInvalid(InvalidPersonException failure, ImportMode mode,
         Action<InvalidPersonException>? onInvalid)
