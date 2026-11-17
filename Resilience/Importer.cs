@@ -73,7 +73,7 @@ public sealed class Importer : IDisposable
         }
     }
 
-    public IReadOnlyList<Person> Import(ImportMode importMode,
+    public IReadOnlyList<Person> Import(ImportMode importMode, Func<Person, (bool, string)>? validate,
         Action<InvalidPersonRecordException>? onInvalidRecord = null)
     {
         ThrowIfDisposed();
@@ -95,7 +95,18 @@ public sealed class Importer : IDisposable
             ++lineNumber;
             try
             {
-                people.Add(ParsePerson(line, lineNumber, ids));
+                Person person = ParsePerson(line, lineNumber, ids);
+
+                var (isValid, message) = validate?.Invoke(person) ?? (true, string.Empty);
+
+                if (!isValid)
+                {
+                    throw new InvalidPersonRecordException(
+                        $"Error validating person on line {lineNumber}: {message}"
+                        , lineNumber, line, new ArgumentException(message));
+                }
+
+                people.Add(person);
             }
             catch (InvalidPersonRecordException ex) when (importMode == ImportMode.SkipInvalid)
             {
@@ -105,6 +116,12 @@ public sealed class Importer : IDisposable
         }
 
         return people;
+    }
+
+    public IReadOnlyList<Person> Import(ImportMode importMode,
+        Action<InvalidPersonRecordException>? onInvalidRecord = null)
+    {
+        return Import(importMode, null, onInvalidRecord);
     }
 
     private void ThrowIfDisposed()

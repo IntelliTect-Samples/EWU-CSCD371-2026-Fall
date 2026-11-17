@@ -3,6 +3,20 @@
 [TestClass]
 public class ImporterTests
 {
+    const string _header = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip";
+    const string _goodRows =
+           "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004\n" +
+           "2, Doe, John, john@test.com, 123 Main, Cheney, WA, 99004\n" +
+           "3, James, Smith, james@test.com, 456 Main, Cheney, WA, 99004";
+
+    const string _goodRow = "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004";
+    const string _rowMissingFirstArgument = "John, Doe, john@test.com, 123 Main, Cheney, WA, 99204";
+    const string _rowMissingLastArgument = "4, John, Doe, john@test.com, 123 Main, Cheney, WA";
+    const string _rowWithInvalidStringID = "one, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004";
+    const string _rowWithZeroID = "0, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004";
+    const string _rowWithNegativeID = "-1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004";
+    const string _badCsv = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\nbad";
+
     [TestMethod]
     public void Constructor_NullFilename_Throws()
     {
@@ -36,29 +50,27 @@ public class ImporterTests
     [TestMethod]
     public void Import_Successful_DisposesOfTextReader()
     {
-        TrackingTextReader sr = new(new StringReader(
-            "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
-            "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004"));
+        StringReader sr = new StringReader(_header + "\n" + _goodRows);
 
         using (Importer importer = new Importer(sr))
         {
             importer.Import(ImportMode.FailFast);
         }
 
-        Assert.IsTrue(sr.IsDisposed);
+        Assert.Throws<ObjectDisposedException>(() => sr.ReadLine());
     }
 
     [TestMethod]
     public void Import_Unsuccessful_DisposesOfTextReader()
     {
-        TrackingTextReader sr = new(new ThrowingTextReader());
+        var sr = new StringReader("bad import\nbad csv");
 
         using (Importer importer = new Importer(sr))
         {
-            var ex = Assert.Throws<IOException>(() => importer.Import(ImportMode.FailFast));
+            var ex = Assert.Throws<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
         }
 
-        Assert.IsTrue(sr.IsDisposed);
+        Assert.Throws<ObjectDisposedException>(() => sr.ReadLine());
     }
 
     [TestMethod]
@@ -91,13 +103,12 @@ public class ImporterTests
     }
 
     [TestMethod]
-    [DataRow("one, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004")]
-    [DataRow("1, John, Doe, john@test.com, 123 Main, Cheney, WA")]
-    [DataRow("John, Doe, 123 Main, Cheney, WA")]
+    [DataRow(_rowWithInvalidStringID)]
+    [DataRow(_rowMissingLastArgument)]
+    [DataRow(_rowMissingFirstArgument)]
     public void Import_BadLineFormat_Throws(string row1)
     {
-        string fileContents = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
-            row1 + "\n";
+        string fileContents = _header + "\n" + row1 + "\n";
 
         StringReader sr = new(fileContents);
 
@@ -110,17 +121,17 @@ public class ImporterTests
     }
 
     [TestMethod]
-    [DataRow("0, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004")]
-    [DataRow("-1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004")]
+    [DataRow(_rowWithZeroID)]
+    [DataRow(_rowWithNegativeID)]
     public void Import_OutOfRange_Throws(string row1)
     {
-        string fileContents = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
-            row1 + "\n";
+        string fileContents = _header + "\n" + row1 + "\n";
 
         StringReader sr = new(fileContents);
         using Importer importer = new(sr);
         var ex = Assert.Throws<InvalidPersonRecordException>(
             () => importer.Import(ImportMode.FailFast));
+
         Assert.IsInstanceOfType<ArgumentOutOfRangeException>(ex.InnerException);
     }
 
@@ -143,14 +154,12 @@ public class ImporterTests
 
 
     [TestMethod]
-    [DataRow("1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004")]
-    [DataRow("3, John, Doe, john@test.com, 123 Main, Cheney, WA")]
+    [DataRow(_goodRow)]
+    [DataRow(_rowMissingLastArgument)]
     public void Import_SkipInvalid_DelegateCalled(string badLine)
     {
-        string fileContents =
-            "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
-            "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004\n" +
-            "2, James, Smith, james@test.com, 456 Main, Cheney, WA, 99004\n" +
+        string fileContents = _header + "\n"
+            + _goodRows + "\n" +
             badLine + "\n";
 
         StringReader sr = new(fileContents);
@@ -160,7 +169,7 @@ public class ImporterTests
         bool importDelegateInvoked = false;
         int lineNumberActual = 0;
         string rawLineActual = "";
-        int lineNumberExpected = 4;
+        int lineNumberExpected = 5;
 
         var people = importer.Import(ImportMode.SkipInvalid,
             (InvalidPersonRecordException ex) =>
@@ -173,16 +182,13 @@ public class ImporterTests
         Assert.IsTrue(importDelegateInvoked);
         Assert.AreEqual(lineNumberExpected, lineNumberActual);
         Assert.AreEqual(badLine, rawLineActual);
-        Assert.HasCount(2, people);
+        Assert.HasCount(3, people);
     }
 
     [TestMethod]
     public void Import_SkipInvalid_NullThrows()
     {
-        string fileContents =
-            "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
-            "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004\n" +
-            "2, James, Smith, james@test.com, 456 Main, Cheney, WA, 99004\n";
+        string fileContents = _header + "\n" + _goodRows;
 
         StringReader sr = new(fileContents);
 
@@ -192,5 +198,55 @@ public class ImporterTests
             () => importer.Import(ImportMode.SkipInvalid));
     }
 
+    [TestMethod]
+    public void Import_TestValidationDelegate_UnhandledExceptionsPropagate()
+    {
+        string fileContents = _header + "\n" + _goodRows;
+
+        StringReader sr = new(fileContents);
+
+        using Importer importer = new(sr);
+
+        Assert.Throws<IOException>(
+            () => importer.Import(ImportMode.SkipInvalid, person =>
+            {
+                throw new IOException("failed");
+            }, ex => { }));
+    }
+
+    [TestMethod]
+    public void Import_TestValidationDelegate_SkipsInvalid()
+    {
+        string fileContents = _header + "\n" + _goodRows;
+
+        StringReader sr = new(fileContents);
+
+        using Importer importer = new(sr);
+
+        var list = importer.Import(ImportMode.SkipInvalid, person =>
+            {
+                return (person.ID % 2 == 0, "bad row!");
+            }, ex => { });
+
+        Assert.HasCount(1, list);
+    }
+
+    [TestMethod]
+    public void Import_TestValidationDelegate_FailFast()
+    {
+        string fileContents = _header + "\n" + _goodRows;
+
+        StringReader sr = new(fileContents);
+
+        using Importer importer = new(sr);
+
+        var ex = Assert.Throws<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast, person =>
+        {
+            return (person.ID % 2 == 0, "bad row!");
+        }, ex => { }));
+
+        Assert.IsInstanceOfType<InvalidPersonRecordException>(ex);
+        Assert.AreEqual("bad row!", ex.InnerException!.Message);
+    }
 
 }
