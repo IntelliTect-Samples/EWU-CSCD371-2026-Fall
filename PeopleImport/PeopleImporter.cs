@@ -28,6 +28,7 @@ public sealed class PeopleImporter : IDisposable
         }
 
         List<Person> people = [];
+        HashSet<int> importedIds = [];
         _Reader.ReadLine();
         int lineNumber = 1;
         while (_Reader.ReadLine() is { } line)
@@ -37,6 +38,13 @@ public sealed class PeopleImporter : IDisposable
             try
             {
                 person = ParseRecord(line, lineNumber);
+
+                if (!importedIds.Add(person.Id))
+                {
+                    throw new InvalidPersonRecordException(
+                        lineNumber, line,
+                        "Duplicate Id was encountered");
+                }
             }
             catch (InvalidPersonRecordException exception) when (mode == ImportMode.SkipInvalid)
             {

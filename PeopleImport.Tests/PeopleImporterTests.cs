@@ -221,6 +221,35 @@ public class PeopleImporterTests
         Assert.ThrowsExactly<ObjectDisposedException>(() => importer.Import());
     }
 
+    [TestMethod]
+    public void Import_DuplicateId_ThrowsInvalidPersonRecordException()
+    {
+        using PeopleImporter importer = new(new StringReader($"{Header}\n{Ada}\n{Ada}"));
+
+        InvalidPersonRecordException exception =
+            Assert.ThrowsExactly<InvalidPersonRecordException>(
+                () => importer.Import());
+        
+        Assert.AreEqual<int>(3, exception.LineNumber);
+        Assert.AreEqual<string>(Ada, exception.RawLine);
+    }
+
+    [TestMethod]
+    public void Import_SkipInvalidWithDuplicateId_CapturesAndSkipsInvalid()
+    {
+        using PeopleImporter importer = new(new StringReader($"{Header}\n{Ada}\n{Ada}\n{Grace}"));
+        
+        List<InvalidPersonRecordException> errors = [];
+        
+        IReadOnlyList<Person> people = importer.Import(ImportMode.SkipInvalid, errors.Add);
+        
+        Assert.IsTrue(people.Select(person => person.Id).SequenceEqual([1, 2]));
+        
+        Assert.AreEqual<int>(1, errors.Count);
+        Assert.AreEqual<int>(3, errors[0].LineNumber);
+        Assert.AreEqual<string>(Ada, errors[0].RawLine);
+    }
+
     private sealed class TrackingReader(params string[] rows) : StringReader(string.Join('\n', rows))
     {
         public int ReadCount { get; private set; }
