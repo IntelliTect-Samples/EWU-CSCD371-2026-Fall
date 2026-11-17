@@ -10,14 +10,14 @@ public sealed class PeopleImporterTests
     private static PeopleImporter Create(params string[] lines) =>
     new(new StringReader(string.Join("\n", lines)));
     [TestMethod]
-    public void Constructor_NullReader_ThrowsWithParamName()
+    public void ConstructorNullReaderThrowsWithParamName()
     {
         var ex = Assert.ThrowsExactly<ArgumentNullException>(() => new PeopleImporter((TextReader)null!));
         Assert.AreEqual("reader", ex.ParamName);
     }
 
     [TestMethod]
-    public void Import_ValidRows_MapsAllFieldsAndSkipsHeader()
+    public void ImportValidRowsMapsAllFieldsAndSkipsHeader()
     {
         using var importer = NewImporter(Header, Good);
         var people = importer.Import();
@@ -33,7 +33,7 @@ public sealed class PeopleImporterTests
     }
 
     [TestMethod]
-    public void Import_FailFast_ThrowsWithLineRawAndInnerException()
+    public void ImportFailFastThrowsWithLineRawAndInnerException()
     {
         using var importer = NewImporter(Header, Good, Bad);
         var exception = Assert.ThrowsExactly<InvalidPersonException>(() => importer.Import());
@@ -44,7 +44,7 @@ public sealed class PeopleImporterTests
     }
 
     [TestMethod]
-    public void Import_SkipInvalid_ReportsFailuresAndContinues()
+    public void ImportSkipInvalidReportsFailuresAndContinues()
     {
         using var importer = NewImporter(Header, Bad, Good, "3,Invalid");
         var errors = new List<InvalidPersonException>();
@@ -56,14 +56,14 @@ public sealed class PeopleImporterTests
     }
 
     [TestMethod]
-    public void Import_SkipInvalid_WithoutCallback_StillReturnsValidRecords()
+    public void ImportSkipInvalidWithoutCallbackStillReturnsValidRecords()
     {
         using var importer = NewImporter(Header, Bad, Good);
         Assert.AreEqual(1, importer.Import(ImportMode.SkipInvalid).Count);
     }
 
     [TestMethod]
-    public void Import_ValidatesRequiredFieldsEmailStateAndZip()
+    public void ImportValidatesRequiredFieldsEmailStateAndZip()
     {
         string[] invalidRows =
         [
@@ -80,7 +80,7 @@ public sealed class PeopleImporterTests
     }
 
     [TestMethod]
-    public void Import_FilePath_ReadsRealTemporaryFile()
+    public void ImportFilePathReadsRealTemporaryFile()
     {
         string path = Path.GetTempFileName();
         try
@@ -96,7 +96,7 @@ public sealed class PeopleImporterTests
     }
 
     [TestMethod]
-    public void Dispose_DisposesOwnedReader_AndCanBeCalledTwice()
+    public void DisposeDisposesOwnedReaderAndCanBeCalledTwice()
     {
         var reader = new TrackingReader(Good);
         var importer = new PeopleImporter(reader);
@@ -106,7 +106,7 @@ public sealed class PeopleImporterTests
         Assert.ThrowsExactly<ObjectDisposedException>(() => importer.Import());
     }
     [TestMethod]
-    public void Dispose_AfterFailedImport_DisposesReader()
+    public void DisposeAfterFailedImportDisposesReader()
     {
         var reader = new TrackingReader(Header + "\n" + Bad);
         var importer = new PeopleImporter(reader);
@@ -118,21 +118,21 @@ public sealed class PeopleImporterTests
     }
 
     [TestMethod]
-    public void Import_ReadFailure_IsNotMistakenForInvalidRow()
+    public void ImportReadFailureIsNotMistakenForInvalidRow()
     {
         using var importer = new PeopleImporter(new ThrowingReader());
         Assert.ThrowsExactly<IOException>(() => importer.Import(ImportMode.SkipInvalid));
     }
 
     [TestMethod]
-    public void Import_InvalidCallbackException_Propagates()
+    public void ImportInvalidCallbackExceptionPropagates()
     {
         using var importer = NewImporter(Header, Bad);
         Assert.ThrowsExactly<InvalidOperationException>(() =>
             importer.Import(ImportMode.SkipInvalid, _ => throw new InvalidOperationException("callback")));
     }
     [TestMethod]
-    public void Import_Validate_RuleViolation_FailFast_Throws()
+    public void ImportValidateRuleViolationFailFastThrows()
     {
         using var importer = Create(Header, Good, Bad);
 
@@ -143,7 +143,7 @@ public sealed class PeopleImporterTests
     }
 
     [TestMethod]
-    public void Import_Validate_UnexpectedException_Propagates()
+    public void ImportValidateUnexpectedExceptionPropagates()
     {
         var boom = new ArgumentException("delegate bug");
         using var importer = Create(Header, Good);
@@ -154,7 +154,7 @@ public sealed class PeopleImporterTests
         Assert.AreSame(boom, ex);
     }
     [TestMethod]
-    public void Import_CalledTwice_Throws()
+    public void ImportCalledTwiceThrows()
     {
         using var importer = NewImporter(Header, Good);
         importer.Import();
