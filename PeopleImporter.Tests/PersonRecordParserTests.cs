@@ -142,8 +142,7 @@ public sealed class PersonRecordParserTests
     [TestMethod]
     public void Parse_ExceptionContainsRawLine()
     {
-        const string record =
-            "ABC,John,Doe,john.doe@example.com,123 Main St,Seattle,WA,98101";
+        const string record = "ABC,John,Doe,john.doe@example.com,123 Main St,Seattle,WA,98101";
 
         InvalidPersonRecordException exception =
             Assert.Throws<InvalidPersonRecordException>(
@@ -164,6 +163,5 @@ public sealed class PersonRecordParserTests
 
         Assert.IsNotNull(exception.InnerException);
         Assert.IsInstanceOfType<FormatException>(exception.InnerException);
-//For A COMMIT
-
     }
+}
