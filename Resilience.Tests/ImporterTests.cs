@@ -34,6 +34,21 @@ public class ImporterTests
     }
 
     [TestMethod]
+    public void Importer_DisposesOfTextReader()
+    {
+        TrackingStringReader sr = new(
+            "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
+            "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004");
+
+        using (Importer importer = new Importer(sr))
+        {
+            importer.Import(ImportMode.FailFast);
+        }
+
+        Assert.IsTrue(sr.IsDisposed);
+    }
+
+    [TestMethod]
     public void Import_ReaderException_Propagates()
     {
         using Importer importer = new(new ThrowingTextReader());
