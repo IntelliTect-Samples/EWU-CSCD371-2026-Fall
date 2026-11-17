@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("PeopleImporter.Tests")]
 
@@ -97,7 +98,7 @@ internal static class PersonRecordParser
 
         try
         {
-            int id = int.Parse(fields[0]);
+            int id = int.Parse(fields[0], CultureInfo.InvariantCulture);
 
             Address address = new(
                 fields[4],
