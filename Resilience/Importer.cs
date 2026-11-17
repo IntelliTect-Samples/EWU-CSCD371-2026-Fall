@@ -3,7 +3,7 @@
 public sealed class Importer : IDisposable
 {
     private readonly TextReader _textReader;
-    private bool _disposed = false;
+    private bool _disposed;
 
     public Importer(string fileName)
         : this(new StreamReader(

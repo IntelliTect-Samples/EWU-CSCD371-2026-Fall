@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Resilience
+namespace Resilience;
+
+public enum ImportMode
 {
-    public enum ImportMode
-    {
-        FailFast,
-        SkipInvalid
-    }
+    FailFast,
+    SkipInvalid
 }
