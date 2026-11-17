@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 public sealed class PersonTester
 {
     [TestMethod]
-    public void Constructor_CreatesPerson_WhenArgumentsValid()
+    public void ConstructorCreatesPersonWhenArgumentsValid()
     {
         Address address =
             new("123 Main", "Cheney", "WA", "99004");
@@ -25,7 +25,7 @@ public sealed class PersonTester
         Assert.AreSame(address, person.Address);
     }
     [TestMethod]
-    public void Constructor_Throws_WhenIdIsZero()
+    public void ConstructorThrowsWhenIdIsZero()
     {
         Address address =
         new(
@@ -54,7 +54,7 @@ public sealed class PersonTester
         }
     }
     [TestMethod]
-    public void Constructor_Throws_WhenFirstNameNull()
+    public void ConstructorThrowsWhenFirstNameNull()
     {
         Address address =
             new(
@@ -83,7 +83,7 @@ public sealed class PersonTester
         }
     }
     [TestMethod]
-    public void Constructor_Throws_WhenLastNameNull()
+    public void ConstructorThrowsWhenLastNameNull()
     {
         Address address =
             new(
@@ -112,7 +112,7 @@ public sealed class PersonTester
         }
     }
     [TestMethod]
-    public void Constructor_Throws_WhenEmailNull()
+    public void ConstructorThrowsWhenEmailNull()
     {
         Address address =
             new(
@@ -141,7 +141,7 @@ public sealed class PersonTester
         }
     }
     [TestMethod]
-    public void Constructor_Throws_WhenAddressNull()
+    public void ConstructorThrowsWhenAddressNull()
     {
         try
         {

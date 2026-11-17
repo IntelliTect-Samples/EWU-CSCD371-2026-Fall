@@ -4,7 +4,7 @@ namespace Resilience.Tests;
 public class InvalidPersonRecordExceptionTester
 {
     [TestMethod]
-    public void Constructor_SavesProperties()
+    public void ConstructorSavesProperties()
     {
         FormatException inner =
             new("Bad data");
@@ -30,14 +30,14 @@ public class InvalidPersonRecordExceptionTester
     }
 
     [TestMethod]
-    public void Constructor_NoArgs_DefaultsRawLineToStringDotEmpty()
+    public void ConstructorNoArgsDefaultsRawLineToStringDotEmpty()
     {
         InvalidPersonRecordException ex = new();
         Assert.IsEmpty(ex.RawLine);
     }
 
     [TestMethod]
-    public void Constructor_OneArg_PassesMessageAndDefaultRawLine()
+    public void ConstructorOneArgPassesMessageAndDefaultRawLine()
     {
         string message = "Data bad";
         InvalidPersonRecordException ex = new(message);
@@ -46,7 +46,7 @@ public class InvalidPersonRecordExceptionTester
     }
 
     [TestMethod]
-    public void Constructor_TwoArgs_PassesMessageAndInnerDefaultsRawLine()
+    public void ConstructorTwoArgsPassesMessageAndInnerDefaultsRawLine()
     {
         string innerMessage = "Bad argument";
         string message = "Bad data";

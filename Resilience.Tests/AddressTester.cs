@@ -4,7 +4,7 @@ namespace Resilience.Tests;
 public class AddressTester
 {
     [TestMethod]
-    public void Constructor_CreatesAddress_WhenArgumentsValid()
+    public void ConstructorCreatesAddressWhenArgumentsValid()
     {
         Address address =
             new(
@@ -30,7 +30,7 @@ public class AddressTester
             address.Zip);
     }
     [TestMethod]
-    public void Constructor_Throws_WhenStreetAddressNull()
+    public void ConstructorThrowsWhenStreetAddressNull()
     {
         try
         {
@@ -51,7 +51,7 @@ public class AddressTester
         }
     }
     [TestMethod]
-    public void Constructor_Throws_WhenCityNull()
+    public void ConstructorThrowsWhenCityNull()
     {
         try
         {
@@ -72,7 +72,7 @@ public class AddressTester
         }
     }
     [TestMethod]
-    public void Constructor_Throws_WhenStateNull()
+    public void ConstructorThrowsWhenStateNull()
     {
         try
         {
@@ -93,7 +93,7 @@ public class AddressTester
         }
     }
     [TestMethod]
-    public void Constructor_Throws_WhenZipNull()
+    public void ConstructorThrowsWhenZipNull()
     {
         try
         {
