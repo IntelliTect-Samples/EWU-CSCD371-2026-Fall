@@ -1,0 +1,7 @@
+.vs/
+.idea/
+[Bb]in/
+[Oo]bj/
+artifacts/
+*.user
+*.suo
