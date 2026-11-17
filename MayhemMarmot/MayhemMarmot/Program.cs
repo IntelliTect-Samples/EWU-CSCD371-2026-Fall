@@ -164,7 +164,7 @@ public sealed partial class Person
     public required string ZipCode { get; set; }
 }
 
-[JsonSerializable(typeof(ChaosModes))]
+[JsonSerializable(typeof(ChaosModes?))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext
 {
 

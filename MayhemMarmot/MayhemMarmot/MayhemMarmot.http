@@ -1,8 +1,11 @@
-@HostAddress = http://localhost:32770
+@HostAddress = http://localhost:32768
 #@HostAddress = https://mayhem-marmot-api.livelystone-63fe914c.westus.azurecontainerapps.io
 
 @User = kevin
 @ZipCode = 99208
+
+### OpenAPI
+GET {{HostAddress}}/openapi/v1.json
 
 ### Potential random failues
 
