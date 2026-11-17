@@ -28,9 +28,9 @@ Both endpoints are intentionally unreliable. Any request may succeed or fail in 
 
 Base URL: `https://mayhem-marmot-api.livelystone-63fe914c.westus.azurecontainerapps.io`
 
-| Endpoint | Returns |
-| --- | --- |
-| `GET /people/{user}` | A CSV of 100 people for the given `{user}`. Use your own name or ID. |
+| Endpoint                  | Returns                                                                          |
+| ------------------------- | -------------------------------------------------------------------------------- |
+| `GET /people/{user}`    | A CSV of 100 people for the given `{user}`. Use your own name or ID.           |
 | `GET /people/zip/{zip}` | One CSV line with the city and state for a ZIP code, such as `"Spokane","WA"`. |
 
 The people CSV has this header:
@@ -61,7 +61,7 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 
 ### Project setup
 
-- Create a `.slnx` solution containing a class library and a unit test project that references it. ❌✔
+- Create a `.slnx` solution containing a class library and a unit test project that references it. ✔
 - Add a small console (or other) entry point so the program can run against the live endpoints. The unit tests must **not** call the live endpoints. ❌✔
 - Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request. ❌✔
 
