@@ -18,7 +18,7 @@ public class ImporterTests
     const string _badCsv = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\nbad";
 
     [TestMethod]
-    public void ConstructorNullFilenameThrows()
+    public void Constructor_NullFilename_Throws()
     {
         string s = null!;
         Importer importer;
@@ -26,7 +26,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ConstructorNullTextReaderThrows()
+    public void Constructor_NullTextReader_Throws()
     {
         TextReader t = null!;
         Importer importer;
@@ -34,7 +34,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void DisposeIsSafeToCallRepeatedly()
+    public void Dispose_IsSafeToCallRepeatedly()
     {
         using Importer importer =
             new(new StringReader(
@@ -48,7 +48,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportSuccessfulDisposesOfTextReader()
+    public void Import_Successful_DisposesOfTextReader()
     {
         StringReader sr = new StringReader(_header + "\n" + _goodRows);
 
@@ -61,7 +61,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportUnsuccessfulDisposesOfTextReader()
+    public void Import_Unsuccessful_DisposesOfTextReader()
     {
         var sr = new StringReader("bad import\nbad csv");
 
@@ -74,7 +74,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportReaderExceptionPropagates()
+    public void Import_ReaderException_Propagates()
     {
         using Importer importer = new(new ThrowingTextReader());
         IOException exception = Assert.Throws<IOException>(
@@ -84,7 +84,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportReadsFromFile()
+    public void Import_ReadsFromFile()
     {
         string path = Path.GetTempFileName();
         try
@@ -106,7 +106,7 @@ public class ImporterTests
     [DataRow(_rowWithInvalidStringID)]
     [DataRow(_rowMissingLastArgument)]
     [DataRow(_rowMissingFirstArgument)]
-    public void ImportBadLineFormatThrows(string row1)
+    public void Import_BadLineFormat_Throws(string row1)
     {
         string fileContents = _header + "\n" + row1 + "\n";
 
@@ -123,7 +123,7 @@ public class ImporterTests
     [TestMethod]
     [DataRow(_rowWithZeroID)]
     [DataRow(_rowWithNegativeID)]
-    public void ImportOutOfRangeThrows(string row1)
+    public void Import_OutOfRange_Throws(string row1)
     {
         string fileContents = _header + "\n" + row1 + "\n";
 
@@ -136,7 +136,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportDuplicateIdThrows()
+    public void Import_DuplicateId_Throws()
     {
         string fileContents = "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
             "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004\n" +
@@ -156,7 +156,7 @@ public class ImporterTests
     [TestMethod]
     [DataRow(_goodRow)]
     [DataRow(_rowMissingLastArgument)]
-    public void ImportSkipInvalidDelegateCalled(string badLine)
+    public void Import_SkipInvalid_DelegateCalled(string badLine)
     {
         string fileContents = _header + "\n"
             + _goodRows + "\n" +
@@ -186,7 +186,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportSkipInvalidNullThrows()
+    public void Import_SkipInvalid_NullThrows()
     {
         string fileContents = _header + "\n" + _goodRows;
 
@@ -199,7 +199,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportTestValidationDelegateUnhandledExceptionsPropagate()
+    public void Import_TestValidationDelegate_UnhandledExceptionsPropagate()
     {
         string fileContents = _header + "\n" + _goodRows;
 
@@ -215,7 +215,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportTestValidationDelegateSkipsInvalid()
+    public void Import_TestValidationDelegate_SkipsInvalid()
     {
         string fileContents = _header + "\n" + _goodRows;
 
@@ -232,7 +232,7 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void ImportTestValidationDelegateFailFast()
+    public void Import_TestValidationDelegate_FailFast()
     {
         string fileContents = _header + "\n" + _goodRows;
 
