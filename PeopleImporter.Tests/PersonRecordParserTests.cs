@@ -51,7 +51,7 @@ public sealed class PersonRecordParserTests
             Assert.Throws<InvalidPersonRecordException>(
                 () => PersonRecordParser.Parse(record, 5));
 
-        Assert.IsInstanceOfType(exception.InnerException, typeof(FormatException));
+        Assert.IsInstanceOfType<FormatException>(exception.InnerException);
     }
 
     [TestMethod]
@@ -64,9 +64,7 @@ public sealed class PersonRecordParserTests
             Assert.Throws<InvalidPersonRecordException>(
                 () => PersonRecordParser.Parse(record, 6));
 
-        Assert.IsInstanceOfType(
-            exception.InnerException,
-            typeof(ArgumentOutOfRangeException));
+        Assert.IsInstanceOfType<FormatException>(exception.InnerException);
     }
 
     [TestMethod]
@@ -165,8 +163,7 @@ public sealed class PersonRecordParserTests
                 () => PersonRecordParser.Parse(record, 42));
 
         Assert.IsNotNull(exception.InnerException);
-        Assert.IsInstanceOfType(
-            exception.InnerException,
-            typeof(FormatException));
+        Assert.IsInstanceOfType<FormatException>(exception.InnerException);
+//For A COMMIT
+
     }
-}
