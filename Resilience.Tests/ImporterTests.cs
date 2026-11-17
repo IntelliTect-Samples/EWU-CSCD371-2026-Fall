@@ -34,15 +34,28 @@ public class ImporterTests
     }
 
     [TestMethod]
-    public void Importer_DisposesOfTextReader()
+    public void Import_Successful_DisposesOfTextReader()
     {
-        TrackingStringReader sr = new(
+        TrackingTextReader sr = new(new StringReader(
             "Id,FirstName,LastName,Email,StreetAddress,City,State,Zip\n" +
-            "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004");
+            "1, John, Doe, john@test.com, 123 Main, Cheney, WA, 99004"));
 
         using (Importer importer = new Importer(sr))
         {
             importer.Import(ImportMode.FailFast);
+        }
+
+        Assert.IsTrue(sr.IsDisposed);
+    }
+
+    [TestMethod]
+    public void Import_Unsuccessful_DisposesOfTextReader()
+    {
+        TrackingTextReader sr = new(new ThrowingTextReader());
+
+        using (Importer importer = new Importer(sr))
+        {
+            var ex = Assert.Throws<IOException>(() => importer.Import(ImportMode.FailFast));
         }
 
         Assert.IsTrue(sr.IsDisposed);
