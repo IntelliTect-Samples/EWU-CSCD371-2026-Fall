@@ -45,9 +45,9 @@ public class ExceptionTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public void Constructor_BlankFilePath_ThrowsArgumentException(string filePath)
+    public void Constructor_BlankFilePath_ThrowsArgumentException(string blankPath)
     {
-        Assert.Throws<ArgumentException>("filePath", () => new PeopleCSVImporter(filePath));
+        Assert.Throws<ArgumentException>("filePath", () => new PeopleCSVImporter(blankPath));
     }
 
     [Fact]

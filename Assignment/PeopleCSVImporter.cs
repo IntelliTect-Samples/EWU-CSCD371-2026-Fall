@@ -48,7 +48,7 @@ public sealed class PeopleCSVImporter : IDisposable
         return ImportRecords(onInvalidRecord);
     }
 
-    private IReadOnlyList<IPerson> ImportRecords(Action<Exception>? onInvalidRecord)
+    private List<IPerson> ImportRecords(Action<Exception>? onInvalidRecord)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
