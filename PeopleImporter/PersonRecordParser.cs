@@ -100,6 +100,11 @@ internal static class PersonRecordParser
         {
             int id = int.Parse(fields[0], CultureInfo.InvariantCulture);
 
+            if (id <= 0)
+            {
+                throw new FormatException("Id must be greater than zero.");
+            }
+
             Address address = new(
                 fields[4],
                 fields[5],
