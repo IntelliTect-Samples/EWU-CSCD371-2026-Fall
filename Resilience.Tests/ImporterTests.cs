@@ -63,7 +63,7 @@ public class ImporterTests
     [TestMethod]
     public void Import_Unsuccessful_DisposesOfTextReader()
     {
-        var sr = new StringReader("bad import\nbad csv");
+        var sr = new StringReader(_badCsv);
 
         using (Importer importer = new Importer(sr))
         {
