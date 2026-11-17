@@ -11,5 +11,6 @@ jobs:
     name: Run Shared Build and Test Workflow
     uses: IntelliTect-Samples/EWU-CSCD371-2026-Fall/.github/workflows/build-and-test.yml@main
     with:
+      working-directory: ./Assignment
       check-formatting: false
       add-analyzers: false
