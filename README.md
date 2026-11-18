@@ -62,21 +62,21 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 ### Project setup
 
 - Create a `.slnx` solution containing a class library and a unit test project that references it. ✔
-- Add a small console (or other) entry point so the program can run against the live endpoints. The unit tests must **not** call the live endpoints. ❌✔
-- Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request. ❌✔
+- Add a small console (or other) entry point so the program can run against the live endpoints. The unit tests must **not** call the live endpoints. ✔
+- Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request. ✔
 
 ### Download and parse
 
-- Download the people CSV asynchronously and parse each row into a person model. ❌✔
-- Validate the data you receive from **both** endpoints. Decide, and document, what makes a person's data invalid. ❌✔
-- A person with bad data is **removed**, wherever in the process the problem is discovered. Do not attempt to repair it, and do not stop the whole run because of one bad person. ❌✔
-- Report what was removed and why (for example, a summary of rejected rows and their reasons). Do not silently discard people. ❌✔
+- Download the people CSV asynchronously and parse each row into a person model. ✔
+- Validate the data you receive from **both** endpoints. Decide, and document, what makes a person's data invalid. ✔
+- A person with bad data is **removed**, wherever in the process the problem is discovered. Do not attempt to repair it, and do not stop the whole run because of one bad person. ✔
+- Report what was removed and why (for example, a summary of rejected rows and their reasons). Do not silently discard people. ✔
 
 ### Enrich with city and state
 
-- For each valid person, call the location endpoint and attach the `City` and `State`. ❌✔
+- For each valid person, call the location endpoint and attach the `City` and `State`. ✔
 - Look up people **concurrently** (not one after another), but limit how many requests are in flight at once. ❌✔
-- If a person's lookup fails for good, or returns bad data, remove that person from the final CSV. ❌✔
+- If a person's lookup fails for good, or returns bad data, remove that person from the final CSV. ✔
 
 ### Exception handling and resilience
 
@@ -103,7 +103,7 @@ We expect every disposable resource you create or are handed to be cleaned up de
 
 ### Output
 
-- Write the final CSV with the header above, containing only fully enriched, valid people. ❌✔
+- Write the final CSV with the header above, containing only fully enriched, valid people. ✔
 
 ### Tests
 
@@ -116,8 +116,8 @@ We expect every disposable resource you create or are handed to be cleaned up de
 
 ## Fundamentals
 
-- Target all projects at .NET 10 (`net10.0`) or .NET 11 (`net11.0`; you will need to fix the `global.json` if you go this route) and use the latest `LangVersion`. ❌✔
-- Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ❌✔
-- Ensure there are no build errors or warnings, including analyzer warnings. ❌✔
+- Target all projects at .NET 10 (`net10.0`) or .NET 11 (`net11.0`; you will need to fix the `global.json` if you go this route) and use the latest `LangVersion`. ✔
+- Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ✔
+- Ensure there are no build errors or warnings, including analyzer warnings. ✔
 - All of the above should be unit tested. ❌✔
 - Choose simplicity over complexity.
