@@ -319,15 +319,15 @@ public class ImporterTests
         using Importer importer = new(sr);
 
         IReadOnlyList<Person> people =
-            importer.Import(
-                ImportMode.SkipInvalid,
-                errors.Add);
+    importer.Import(
+        ImportMode.SkipInvalid,
+        errors.Add);
 
-        Assert.AreEqual(1, people.Count());
+        Assert.HasCount(1, people);
 
-        Assert.AreEqual(1, people[0].ID);
-
-        Assert.AreEqual(1, errors.Count());
+        Assert.AreEqual(1,people[0].ID);
+         
+        Assert.HasCount(1, errors);
     }
     [TestMethod]
     public void Import_FailFast_ReportsFirstBadLine()
