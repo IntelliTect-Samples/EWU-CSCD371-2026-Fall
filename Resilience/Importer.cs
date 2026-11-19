@@ -163,13 +163,21 @@ public sealed class Importer : IDisposable
         Action<InvalidPersonRecordException>? onInvalidRecord = null)
     {
         ThrowIfDisposed();
-        
+
+        if (_imported)
+        {
+            throw new InvalidOperationException(
+                "Import can only be called once.");
+        }
+
+        _imported = true;
+
         if (importMode == ImportMode.SkipInvalid)
         {
             ArgumentNullException.ThrowIfNull(onInvalidRecord);
         }
 
-        _imported = true;
+
         int lineNumber = 1;
 
         _ = _textReader.ReadLine(); //skips first line
