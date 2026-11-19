@@ -28,7 +28,7 @@ Id,FirstName,LastName,Email,StreetAddress,City,State,Zip
 
 - Parse each record into person/address models. ✔
 - Choose and document at least three validation rules, such as a wrong field count, an invalid or duplicate `Id`, or missing required values. ✔
-- Here's our rules: exactly 8 fields; Id is a positive integer; all other fields are non-empty
+- Here's our rules: exactly 8 fields; Id is a positive integer; all other fields are non-empty; line 1 must be the exact expected header (always fails the import, in either mode)
 - Create test data with a header and one record per line. You do not need to support quoted fields, embedded commas, or multiline records. ✔
 
 ### Exception handling

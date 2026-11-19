@@ -43,8 +43,8 @@ public sealed class PeopleImporter : IDisposable
         }
 
         List<Person> people = [];
-        _reader.ReadLine(); // skip the header (line 1)
         int lineNumber = 1;
+        ValidateHeader(_reader.ReadLine());
 
         string? line;
         while ((line = _reader.ReadLine()) is not null)
@@ -82,6 +82,24 @@ public sealed class PeopleImporter : IDisposable
         }
         _disposed = true;
         _reader.Dispose();
+    }
+
+    /// <summary>
+    /// Line 1 must exactly match <see cref="PersonRecordParser.Header"/>. A missing or wrong header
+    /// means the column layout is unknown, so it always throws regardless of the import mode.
+    /// </summary>
+    private static void ValidateHeader(string? header)
+    {
+        if (header is null)
+        {
+            throw new InvalidPersonRecordException(1, string.Empty,
+                new FormatException("Input is empty; expected a CSV header."));
+        }
+        if (!string.Equals(header, PersonRecordParser.Header, StringComparison.Ordinal))
+        {
+            throw new InvalidPersonRecordException(1, header,
+                new FormatException($"Expected header '{PersonRecordParser.Header}'."));
+        }
     }
 
     private static void Reject(

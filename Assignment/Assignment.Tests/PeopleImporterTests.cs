@@ -109,6 +109,68 @@ public class PeopleImporterTests
     }
 
     [TestMethod]
+    [DataRow(ImportMode.FailFast)]
+    [DataRow(ImportMode.SkipInvalid)]
+    public void Import_WrongHeader_ThrowsOnLineOneInEitherMode(ImportMode mode)
+    {
+        // Arrange
+        const string wrongHeader = "Id,LastName,FirstName,Email,StreetAddress,City,State,Zip";
+        using var importer = new PeopleImporter(new StringReader(wrongHeader + Environment.NewLine + ValidLine1));
+        int callbackCount = 0;
+
+        // Act
+        var ex = Assert.ThrowsExactly<InvalidPersonRecordException>(
+            () => importer.Import(mode, _ => callbackCount++));
+
+        // Assert
+        Assert.AreEqual(1, ex.LineNumber);
+        Assert.AreEqual(wrongHeader, ex.RawLine);
+        Assert.IsInstanceOfType<FormatException>(ex.InnerException);
+        Assert.AreEqual(0, callbackCount);
+    }
+
+    [TestMethod]
+    public void Import_HeaderMissing_FirstLineIsRecord_Throws()
+    {
+        // Arrange: a file with no header must not silently drop its first record.
+        using var importer = new PeopleImporter(new StringReader(ValidLine1 + Environment.NewLine + ValidLine2));
+
+        // Act
+        var ex = Assert.ThrowsExactly<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
+
+        // Assert
+        Assert.AreEqual(1, ex.LineNumber);
+        Assert.AreEqual(ValidLine1, ex.RawLine);
+    }
+
+    [TestMethod]
+    public void Import_EmptyInput_Throws()
+    {
+        // Arrange
+        using var importer = new PeopleImporter(new StringReader(string.Empty));
+
+        // Act
+        var ex = Assert.ThrowsExactly<InvalidPersonRecordException>(() => importer.Import(ImportMode.FailFast));
+
+        // Assert
+        Assert.AreEqual(1, ex.LineNumber);
+        Assert.IsInstanceOfType<FormatException>(ex.InnerException);
+    }
+
+    [TestMethod]
+    public void Import_HeaderOnly_ReturnsEmptyList()
+    {
+        // Arrange
+        using var importer = new PeopleImporter(Csv());
+
+        // Act
+        IReadOnlyList<Person> people = importer.Import(ImportMode.FailFast);
+
+        // Assert
+        Assert.IsEmpty(people);
+    }
+
+    [TestMethod]
     public void Constructor_NullReader_ThrowsArgumentNullException()
     {
         // Act
