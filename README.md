@@ -16,7 +16,7 @@ Build a people CSV importer using the same format as Assignment 7. The purpose o
 
 ### Project setup
 
-- Create a `.slnx` solution containing a class library and a unit test project that references it. ❌✔
+- Create a `.slnx` solution containing a class library and a unit test project that references it. ✔
 
 ### CSV data
 
@@ -26,45 +26,45 @@ Use the same columns as Assignment 7:
 Id,FirstName,LastName,Email,StreetAddress,City,State,Zip
 ```
 
-- Parse each record into person/address models. ❌✔
-- Choose and document at least three validation rules, such as a wrong field count, an invalid or duplicate `Id`, or missing required values. ❌✔
-- Create test data with a header and one record per line. You do not need to support quoted fields, embedded commas, or multiline records. ❌✔
+- Parse each record into person/address models. ✔
+- Choose and document at least three validation rules, such as a wrong field count, an invalid or duplicate `Id`, or missing required values. ✔
+- Here's our rules: exactly 8 fields; Id is a positive integer; all other fields are non-empty; line 1 must be the exact expected header (always fails the import, in either mode)
+- Create test data with a header and one record per line. You do not need to support quoted fields, embedded commas, or multiline records. ✔
 
 ### Exception handling
 
-- Validate public method and constructor arguments. Throw `ArgumentNullException`, `ArgumentException`, or `ArgumentOutOfRangeException` as appropriate. Ensure the appropriate argument name is set on the thrown exception. Consider helpers such as `ArgumentNullException.ThrowIfNull` and `nameof`. ❌✔
-- Define a custom exception, such as `InvalidPersonRecordException`, with a meaningful message, line number, and raw line text. Provide the standard constructors, including one that accepts an inner exception. ❌✔
-- Wrap parsing failures in your custom exception, preserving the original exception as `InnerException`. ❌✔
-- Let the caller choose between two import modes: ❌✔
-  - **Fail-fast:** Throw your custom exception on the first invalid record. ❌✔
-  - **Skip-invalid:** Report each invalid record and its exception through a caller-supplied callback, then continue. Do not silently discard records. ❌✔
-- Catch only record errors you can recover from. Let `IOException`, callback exceptions, and other unexpected exceptions propagate with their original stack traces. Do not use `throw ex;` or hide failures in a general catch block. Favor exception filters over catch-and-rethrow. ❌✔
-- Return the accepted people only after the import completes. A failed import must throw, not return a partial result as though it succeeded. ❌✔
+- Validate public method and constructor arguments. Throw `ArgumentNullException`, `ArgumentException`, or `ArgumentOutOfRangeException` as appropriate. Ensure the appropriate argument name is set on the thrown exception. Consider helpers such as `ArgumentNullException.ThrowIfNull` and `nameof`. ✔
+- Define a custom exception, such as `InvalidPersonRecordException`, with a meaningful message, line number, and raw line text. Provide the standard constructors, including one that accepts an inner exception. ✔
+- Wrap parsing failures in your custom exception, preserving the original exception as `InnerException`. ✔
+- Let the caller choose between two import modes: ✔
+  - **Fail-fast:** Throw your custom exception on the first invalid record. ✔
+  - **Skip-invalid:** Report each invalid record and its exception through a caller-supplied callback, then continue. Do not silently discard records. ✔
+- Catch only record errors you can recover from. Let `IOException`, callback exceptions, and other unexpected exceptions propagate with their original stack traces. Do not use `throw ex;` or hide failures in a general catch block. Favor exception filters over catch-and-rethrow. ✔
+- Return the accepted people only after the import completes. A failed import must throw, not return a partial result as though it succeeded. ✔
 
 ### Resource management (`IDisposable`)
 
-- Create a sealed component that implements `IDisposable` and owns a `TextReader`. Document ownership of any reader passed to it. A finalizer is not required. ❌✔
-- Use `using` or `try`/`finally` to release owned resources after both successful and failed imports. ❌✔
-- Make repeated `Dispose()` calls safe. Using the component after disposal must throw `ObjectDisposedException`. ❌✔
+- Create a sealed component that implements `IDisposable` and owns a `TextReader`. Document ownership of any reader passed to it. A finalizer is not required. ✔
+- Use `using` or `try`/`finally` to release owned resources after both successful and failed imports. ✔
+- Make repeated `Dispose()` calls safe. Using the component after disposal must throw `ObjectDisposedException`. ✔
 
 ### Tests
 
-- Test successful imports, including one from a temporary file. Delete the file when the test finishes. ❌✔
-- Test both import modes with several kinds of invalid records. Verify fail-fast reports the first bad line number, and skip-invalid returns only valid people and reports every rejected record. Use a closure to collect or count callback reports. ❌✔
-- Verify wrapped exceptions preserve the expected `InnerException` type, and argument exceptions identify the correct parameter. ❌✔
-- Use a fake `TextReader` or a mocking library to simulate an I/O failure. Verify reader and callback exceptions propagate as the same exception instance, without wrapping or swallowing them. ❌✔
-- Test disposal after successful and failed imports, repeated disposal, and use after disposal. ❌✔
+- Test successful imports, including one from a temporary file. Delete the file when the test finishes. ✔
+- Test both import modes with several kinds of invalid records. Verify fail-fast reports the first bad line number, and skip-invalid returns only valid people and reports every rejected record. Use a closure to collect or count callback reports. ✔
+- Verify wrapped exceptions preserve the expected `InnerException` type, and argument exceptions identify the correct parameter. ✔
+- Use a fake `TextReader` or a mocking library to simulate an I/O failure. Verify reader and callback exceptions propagate as the same exception instance, without wrapping or swallowing them. ✔
+- Test disposal after successful and failed imports, repeated disposal, and use after disposal. ✔
 
 ## Extra Credit
 
-- Support a caller-supplied validation delegate. Handle rule violations through the selected import mode, but let unexpected exceptions from the delegate propagate. ❌✔
-- Use a `when` filter to handle specific recoverable conditions. Include a test showing that non-matching exceptions are not caught. ❌✔
+- Support a caller-supplied validation delegate. Handle rule violations through the selected import mode, but let unexpected exceptions from the delegate propagate. ✔
+- Use a `when` filter to handle specific recoverable conditions. Include a test showing that non-matching exceptions are not caught. ✔
 
 ## Fundamentals
 
-- Target all projects at .NET 10 (`net10.0`) and use the latest `LangVersion`. ❌✔
-- Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ❌✔
-- Ensure there are no build errors or warnings, including analyzer warnings. ❌✔
-- All of the above should be unit tested. ❌✔
-- Choose simplicity over complexity. No console UI, async, or multithreading is required. ❌✔
-
+- Target all projects at .NET 10 (`net10.0`) and use the latest `LangVersion`.  ✔
+- Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ✔
+- Ensure there are no build errors or warnings, including analyzer warnings. ✔
+- All of the above should be unit tested. ✔
+- Choose simplicity over complexity. No console UI, async, or multithreading is required. ✔

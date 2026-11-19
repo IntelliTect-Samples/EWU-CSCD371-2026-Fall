@@ -1,0 +1,7 @@
+root = true
+
+[*.Tests/**.cs]
+# Test names use the Method_Scenario_Expected convention
+dotnet_diagnostic.CA1707.severity = none
+# Assignment requires Assert.AreEqual<T>() rather than Assert.HasCount
+dotnet_diagnostic.MSTEST0037.severity = none
