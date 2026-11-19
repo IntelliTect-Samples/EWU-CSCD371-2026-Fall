@@ -248,5 +248,108 @@ public class ImporterTests
         Assert.IsInstanceOfType<InvalidPersonRecordException>(ex);
         Assert.AreEqual("bad row!", ex.InnerException!.Message);
     }
+    [TestMethod]
+    public void Import_CalledTwice_Throws()
+    {
+        string csv =
+            _header +
+            "\n" +
+            _goodRow;
 
+        using StringReader sr = new(csv);
+        using Importer importer = new(sr);
+
+        importer.Import(ImportMode.FailFast);
+
+        Assert.Throws<InvalidOperationException>(
+            () => importer.Import(ImportMode.FailFast));
+    }
+    [TestMethod]
+    public void Constructor_EmptyFilenameOrWhitespaceFilename_Throws()
+    {
+        ArgumentException ex =
+            Assert.Throws<ArgumentException>(
+                () => new Importer(""));
+        ArgumentException ex2 =
+            Assert.Throws<ArgumentException>(
+                () => new Importer("   "));
+
+        Assert.AreEqual(
+            "fileName",
+            ex.ParamName);
+        Assert.AreEqual(
+            "fileName",
+            ex2.ParamName);
+
+    }
+    [TestMethod]
+    public void Import_BlankFirstName_Throws()
+    {
+        string csv =
+            _header +
+            "\n" +
+            "1, ,Doe,john@test.com,123 Main,Cheney,WA,99004";
+
+        using StringReader sr = new(csv);
+        using Importer importer = new(sr);
+
+        InvalidPersonRecordException ex =
+            Assert.Throws<InvalidPersonRecordException>(
+                () => importer.Import(ImportMode.FailFast));
+
+        Assert.AreEqual(
+            2,
+            ex.LineNumber);
+
+        Assert.IsInstanceOfType<FormatException>(
+            ex.InnerException);
+    }
+    [TestMethod]
+    public void Import_InvalidRecordDoesNotReserveId()
+    {
+        List<InvalidPersonRecordException> errors = [];
+
+        string csv =
+            _header +
+            "\n" +
+            "1, ,Doe,john@test.com,123 Main,Cheney,WA,99004\n" +
+            "1,John,Doe,john@test.com,123 Main,Cheney,WA,99004";
+
+        using StringReader sr = new(csv);
+        using Importer importer = new(sr);
+
+        IReadOnlyList<Person> people =
+            importer.Import(
+                ImportMode.SkipInvalid,
+                errors.Add);
+
+        Assert.AreEqual(1, people.Count());
+
+        Assert.AreEqual(1, people[0].ID);
+
+        Assert.AreEqual(1, errors.Count());
+    }
+    [TestMethod]
+    public void Import_FailFast_ReportsFirstBadLine()
+    {
+        string csv =
+            _header +
+            "\n" +
+            _goodRow +
+            "\n" +
+            _rowMissingLastArgument +
+            "\n" +
+            _rowWithInvalidStringID;
+
+        using StringReader sr = new(csv);
+        using Importer importer = new(sr);
+
+        InvalidPersonRecordException ex =
+            Assert.Throws<InvalidPersonRecordException>(
+                () => importer.Import(ImportMode.FailFast));
+
+        Assert.AreEqual(
+            3,
+            ex.LineNumber);
+    }
 }
