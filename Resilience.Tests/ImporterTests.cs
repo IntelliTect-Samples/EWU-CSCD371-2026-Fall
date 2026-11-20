@@ -24,7 +24,9 @@ public class ImporterTests
     {
         string s = null!;
         Importer importer;
-        Assert.Throws<ArgumentNullException>(() => importer = new(s));
+        ArgumentNullException exception =
+            Assert.Throws<ArgumentNullException>(() => importer = new(s));
+        Assert.AreEqual("fileName", exception.ParamName);
     }
 
     [TestMethod]
@@ -32,7 +34,9 @@ public class ImporterTests
     {
         TextReader t = null!;
         Importer importer;
-        Assert.Throws<ArgumentNullException>(() => importer = new(t));
+        ArgumentNullException exception =
+            Assert.Throws<ArgumentNullException>(() => importer = new(t));
+        Assert.AreEqual("textReader", exception.ParamName);
     }
 
     [TestMethod]
