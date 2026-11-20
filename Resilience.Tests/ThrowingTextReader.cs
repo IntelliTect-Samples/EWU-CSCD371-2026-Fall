@@ -2,9 +2,9 @@
 
 public sealed class ThrowingTextReader : TextReader
 {
-    public IOException exception = new("Simulated I/O failure.");
+    public IOException Exception = new("Simulated I/O failure.");
     public override string? ReadLine()
     {
-        throw exception;
+        throw Exception;
     }
 }
