@@ -87,7 +87,7 @@ public class ImporterTests
         IOException exception = Assert.Throws<IOException>(
             () => importer.Import(ImportMode.FailFast));
 
-        Assert.AreSame(exception, reader.Exception);
+        Assert.AreSame(exception, reader._exception);
         Assert.AreEqual("Simulated I/O failure.", exception.Message);
     }
 
