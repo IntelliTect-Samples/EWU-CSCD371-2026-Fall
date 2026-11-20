@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Resilience.Tests;
 
-namespace Resilience.Tests;
 public sealed class ThrowingTextReader : TextReader
 {
+    public IOException exception = new("Simulated I/O failure.");
     public override string? ReadLine()
     {
-        throw new IOException(
-            "Simulated I/O failure.");
+        throw exception;
     }
 }
