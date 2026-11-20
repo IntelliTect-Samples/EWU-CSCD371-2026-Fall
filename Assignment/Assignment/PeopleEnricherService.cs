@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace Assignment;
 
 public sealed record RunSummary(int Written, IReadOnlyDictionary<string, int> RejectionCounts);
@@ -14,12 +16,17 @@ public sealed record Rejection(string Row, string Reason);
 /// Transient failures (HTTP errors, timeouts, empty/malformed bodies) are retried up to
 /// <c>maxAttempts</c> times per request.
 
-public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 5, int maxConcurrency = 5)
+public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10, int maxConcurrency = 5)
 {
     internal const string PeopleHeader = "FirstName,LastName,EmailAddress,ZipCode";
     internal const string OutputHeader = "FirstName,LastName,EmailAddress,ZipCode,City,State";
 
     private readonly HttpClient _http = http;
+
+    // At most this many ZIP lookups are in flight at once. Zero would deadlock the semaphore.
+    private readonly int _maxConcurrency = maxConcurrency >= 1
+        ? maxConcurrency
+        : throw new ArgumentOutOfRangeException(nameof(maxConcurrency), maxConcurrency, "Must be at least 1.");
 
     public async Task<RunSummary> RunAsync(string user, string outputPath, CancellationToken cancellationToken)
     {
@@ -42,13 +49,33 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 5, 
 
     private async Task<string> DownloadPeopleAsync(string user, CancellationToken ct)
     {
-        string? csv = await RetryAsync(async token =>
+        // A good response is identical every time, but "invalid data" swaps random ZIPs for
+        // fake ones that still look valid. So only trust the CSV once two downloads agree.
+        // (One extra pass: comparing always takes at least two downloads.)
+        string? previous = null;
+        for (int i = 0; i <= maxAttempts; i++)
+        {
+            string csv = await DownloadPeopleOnceAsync(user, ct);
+            if (csv == previous)
+            {
+                return csv;
+            }
+
+            previous = csv;
+        }
+
+        throw new InvalidOperationException("The people CSV never came back the same twice in a row.");
+    }
+
+    private async Task<string> DownloadPeopleOnceAsync(string user, CancellationToken ct)
+    {
+        (string? csv, Exception? lastError) = await RetryAsync(async token =>
         {
             string body = await _http.GetStringAsync($"/people/{Uri.EscapeDataString(user)}", token);
             return body.Split('\n')[0].Trim() == PeopleHeader ? body : null;
         }, ct);
 
-        return csv ?? throw new InvalidOperationException("The people CSV could not be downloaded.");
+        return csv ?? throw new InvalidOperationException("The people CSV could not be downloaded.", lastError);
     }
 
     private static IEnumerable<(Person? Person, Rejection? Rejection)> ParsePeople(string csv) =>
@@ -88,7 +115,7 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 5, 
     private async Task<(EnrichedPerson? Result, Rejection? Rejection)[]> LookupAllAsync(
         IReadOnlyList<Person> people, CancellationToken ct)
     {
-        using SemaphoreSlim gate = new(maxConcurrency);
+        using SemaphoreSlim gate = new(_maxConcurrency);
 
         IEnumerable<Task<(EnrichedPerson?, Rejection?)>> tasks = people.Select(async person =>
         {
@@ -112,7 +139,7 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 5, 
 
     private async Task<EnrichedPerson?> LookupAsync(Person person, CancellationToken ct)
     {
-        EnrichedPerson? enriched = await RetryAsync(async token =>
+        (EnrichedPerson? enriched, _) = await RetryAsync(async token =>
         {
             string body = await _http.GetStringAsync($"/people/zip/{person.ZipCode}", token);
             (string City, string State)? location = ParseLocation(body);
@@ -129,9 +156,16 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 5, 
     /// A null result, an HTTP failure, or a request timeout counts as a failed attempt;
     /// real cancellation and any other exception propagate.
     /// </summary>
-    private async Task<T?> RetryAsync<T>(Func<CancellationToken, Task<T?>> attempt, CancellationToken ct)
+        /// <summary>
+    /// Runs <paramref name="attempt"/> until it yields a non-null value or attempts run out.
+    /// A null result, an HTTP failure, or a request timeout counts as a failed attempt;
+    /// a 404 is permanent and is not retried. Real cancellation and any other exception propagate.
+    /// Returns the value (or null) and the last exception caught, so callers can report why it failed.
+    /// </summary>
+    private async Task<(T? Value, Exception? LastError)> RetryAsync<T>(Func<CancellationToken, Task<T?>> attempt, CancellationToken ct)
         where T : class
     {
+        Exception? lastError = null;
         for (int i = 0; i < maxAttempts; i++)
         {
             ct.ThrowIfCancellationRequested();
@@ -140,21 +174,26 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 5, 
                 T? result = await attempt(ct);
                 if (result is not null)
                 {
-                    return result;
+                    return (result, null);
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
             {
-                // transient; try again
+                return (null, e);   // permanent: asking again won't change the answer
             }
-            catch (TaskCanceledException) when (!ct.IsCancellationRequested)
+            catch (HttpRequestException e)
             {
-                // request timeout (not caller cancellation); try again
+                lastError = e;      // transient (418, 5xx, connection reset); try again
+            }
+            catch (TaskCanceledException e) when (!ct.IsCancellationRequested)
+            {
+                lastError = e;      // request timeout (not caller cancellation); try again
             }
         }
 
-        return null;
+        return (null, lastError);
     }
+
 
     private static async Task WriteCsvAsync(string outputPath, IReadOnlyList<EnrichedPerson> people, CancellationToken ct)
     {

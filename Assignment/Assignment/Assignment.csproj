@@ -4,4 +4,8 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Assignment.Tests" />
+  </ItemGroup>
+
 </Project>

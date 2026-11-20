@@ -75,7 +75,7 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 ### Enrich with city and state
 
 - For each valid person, call the location endpoint and attach the `City` and `State`. ✔
-- Look up people **concurrently** (not one after another), but limit how many requests are in flight at once. ❌✔
+- Look up people **concurrently** (not one after another), but limit how many requests are in flight at once. ✔
 - If a person's lookup fails for good, or returns bad data, remove that person from the final CSV. ✔
 
 ### Exception handling and resilience
