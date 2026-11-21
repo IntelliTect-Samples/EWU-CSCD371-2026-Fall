@@ -82,6 +82,105 @@ public sealed class ResilienceTests
         Assert.IsFalse(File.Exists(_output + ".tmp"));
     }
 
+    [TestMethod]
+    public async Task PeopleDownloadRetriesConnectionResetMidBody()
+    {
+        using FakeHandler handler = new(call => call switch
+        {
+            { Endpoint: Endpoint.People, Number: 1 } => ResetMidBody(),
+            { Endpoint: Endpoint.People } => Ok(PeopleCsv("99201")),
+            _ => Ok(Spokane),
+        });
+
+        RunSummary summary = await RunAsync(handler);
+
+        Assert.AreEqual(1, summary.Written);
+        Assert.AreEqual(3, handler.PeopleCalls);   // 1 reset, then 2 good downloads that agree
+    }
+
+    [TestMethod]
+    public async Task PeopleDownloadsThatNeverAgreeThrowAndWriteNothing()
+    {
+        using FakeHandler handler = new(call => call.Endpoint == Endpoint.People
+            ? Ok(PeopleCsv($"{10000 + call.Number}"))   // a different CSV every time
+            : Ok(Spokane));
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => RunAsync(handler));
+
+        Assert.AreEqual(4, handler.PeopleCalls);   // maxAttempts (3) + 1 extra pass
+        Assert.IsFalse(File.Exists(_output));
+    }
+
+    // ---------- validation ----------
+
+    [TestMethod]
+    public async Task InvalidRowsAreRemovedAndCountedByReason()
+    {
+        string csv = string.Join('\n',
+            PeopleEnricherService.PeopleHeader,
+            "Ann,Lee,ann@example.com,99201",     // valid
+            "Bob,Ray,bob@example.com",           // 3 columns
+            "Cy,,cy@example.com,99201",          // empty last name
+            "Di,Fox,di.example.com,99201",       // no @
+            "Ed,Kim,ed@example.com,9920",        // 4-digit ZIP
+            "Flo,Orr,flo@example.com,ABCDE");    // ZIP not digits
+        using FakeHandler handler = new(call => call.Endpoint == Endpoint.People ? Ok(csv) : Ok(Spokane));
+
+        RunSummary summary = await RunAsync(handler);
+
+        Assert.AreEqual(1, summary.Written);
+        Assert.AreEqual(1, summary.RejectionCounts["Wrong number of columns"]);
+        Assert.AreEqual(1, summary.RejectionCounts["Empty field"]);
+        Assert.AreEqual(1, summary.RejectionCounts["Invalid email address"]);
+        Assert.AreEqual(2, summary.RejectionCounts["Invalid ZIP code"]);
+        Assert.AreEqual(1, handler.ZipCalls);   // rejected rows are never looked up
+    }
+
+    // ---------- output and resource cleanup ----------
+
+    [TestMethod]
+    public async Task OutputFieldsWithQuotesAreEscaped()
+    {
+        string csv = string.Join('\n', PeopleEnricherService.PeopleHeader, "Pat,O\"Hara,pat@example.com,99201");
+        using FakeHandler handler = new(call => call.Endpoint == Endpoint.People ? Ok(csv) : Ok(Spokane));
+
+        await RunAsync(handler);
+
+        string[] lines = await File.ReadAllLinesAsync(_output, TestContext.CancellationToken);
+        Assert.AreEqual("Pat,\"O\"\"Hara\",pat@example.com,99201,SPOKANE,WA", lines[1]);
+    }
+
+    [TestMethod]
+    public async Task FailedWriteLeavesNoTempFile()
+    {
+        using FakeHandler handler = new(call => call.Endpoint == Endpoint.People ? Ok(PeopleCsv("99201")) : Ok(Spokane));
+        Directory.CreateDirectory(_output);   // a directory in the way makes the final move fail after the temp file is written
+        try
+        {
+            await Assert.ThrowsAsync<IOException>(() => RunAsync(handler));
+
+            Assert.IsFalse(File.Exists(_output + ".tmp"));
+        }
+        finally
+        {
+            Directory.Delete(_output);
+        }
+    }
+
+    [TestMethod]
+    public async Task ServiceDoesNotDisposeTheHttpClientItWasHanded()
+    {
+        using FakeHandler handler = new(call => call.Endpoint == Endpoint.People ? Ok(PeopleCsv("99201")) : Ok(Spokane));
+        using HttpClient http = new(handler, disposeHandler: false) { BaseAddress = new Uri("http://test") };
+        PeopleEnricherService service = new(http);
+
+        await service.RunAsync("tester", _output, TestContext.CancellationToken);
+        // A second run on the same client would throw ObjectDisposedException if the first had disposed it.
+        RunSummary second = await service.RunAsync("tester", _output, TestContext.CancellationToken);
+
+        Assert.AreEqual(1, second.Written);
+    }
+
     // ---------- zip endpoint ----------
 
     [TestMethod]

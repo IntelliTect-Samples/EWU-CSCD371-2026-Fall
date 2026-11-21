@@ -25,6 +25,10 @@ internal sealed class FakeHandler(Func<Call, HttpResponseMessage?> respond) : Ht
 
     public static HttpResponseMessage Status(HttpStatusCode code) => new(code);
 
+    /// <summary>A 200 whose body fails partway through, like the people endpoint's Exception mode.</summary>
+    public static HttpResponseMessage ResetMidBody() =>
+        new(HttpStatusCode.OK) { Content = new StreamContent(new ResettingStream()) };
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         string path = request.RequestUri!.AbsolutePath;
@@ -39,5 +43,20 @@ internal sealed class FakeHandler(Func<Call, HttpResponseMessage?> respond) : Ht
     {
         await Task.Delay(Timeout.Infinite, cancellationToken);
         throw new UnreachableException();
+    }
+
+    private sealed class ResettingStream : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+
+        public override int Read(byte[] buffer, int offset, int count) => throw new IOException("Connection reset.");
+        public override void Flush() { }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 }

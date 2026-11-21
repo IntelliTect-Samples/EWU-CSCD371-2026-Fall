@@ -91,15 +91,15 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 
 ### LINQ
 
-- Use LINQ for the data shaping: filtering out invalid rows, projecting each person into its enriched form, grouping or counting rejection reasons, and producing the final CSV lines. ❌✔
-- Keep side effects (HTTP calls, file writes) out of your LINQ queries. ❌✔
+- Use LINQ for the data shaping: filtering out invalid rows, projecting each person into its enriched form, grouping or counting rejection reasons, and producing the final CSV lines. ✔
+- Keep side effects (HTTP calls, file writes) out of your LINQ queries. ✔
 
 ### Resource management (`IDisposable`)
 
 We expect every disposable resource you create or are handed to be cleaned up deterministically, on the success path **and** on every failure, retry, timeout, and cancellation path.
 
-- Make sure to Dispose what you own. ❌✔
-- A failed run must not leave partial or temporary files behind. ❌✔
+- Make sure to Dispose what you own. ✔
+- A failed run must not leave partial or temporary files behind. ✔
 
 ### Output
 
@@ -107,7 +107,7 @@ We expect every disposable resource you create or are handed to be cleaned up de
 
 ### Tests
 
-- Write tests that cover **all** of the required conditions above, including every failure mode on both endpoints, retries, cancellation, bad data, and resource cleanup. ❌✔
+- Write tests that cover **all** of the required conditions above, including every failure mode on both endpoints, retries, cancellation, bad data, and resource cleanup. ✔
 
 ## Extra Credit
 
@@ -119,5 +119,5 @@ We expect every disposable resource you create or are handed to be cleaned up de
 - Target all projects at .NET 10 (`net10.0`) or .NET 11 (`net11.0`; you will need to fix the `global.json` if you go this route) and use the latest `LangVersion`. ✔
 - Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ✔
 - Ensure there are no build errors or warnings, including analyzer warnings. ✔
-- All of the above should be unit tested. ❌✔
+- All of the above should be unit tested. ✔
 - Choose simplicity over complexity.

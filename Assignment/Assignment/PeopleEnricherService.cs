@@ -6,6 +6,7 @@ public sealed record RunSummary(int Written, IReadOnlyDictionary<string, int> Re
 public sealed record Person(string FirstName, string LastName, string Email, string ZipCode);
 public sealed record EnrichedPerson(Person Person, string City, string State);
 public sealed record Rejection(string Row, string Reason);
+internal sealed record Location(string City, string State);
 
 /// <summary>
 /// Downloads people, validates them, looks up each person's city and state by ZIP, and writes
@@ -45,10 +46,18 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
         var people = parsed.Where(r => r.Person is not null).Select(r => r.Person!).ToList();
         var rejections = parsed.Where(r => r.Rejection is not null).Select(r => r.Rejection!).ToList();
 
-        var lookups = await LookupAllAsync(people, cancellationToken);      // concurrent, limited
+        Location?[] locations = await LookupAllAsync(people, cancellationToken);      // concurrent, limited
 
-        var enriched = lookups.Where(l => l.Result is not null).Select(l => l.Result!).ToList();
-        rejections.AddRange(lookups.Where(l => l.Rejection is not null).Select(l => l.Rejection!));
+        var lookups = people.Zip(locations, (person, location) => (Person: person, Location: location)).ToList();
+        var enriched = lookups
+            .Where(l => l.Location is not null)
+            .Select(l => new EnrichedPerson(l.Person, l.Location!.City, l.Location!.State))
+            .ToList();
+        rejections.AddRange(lookups
+            .Where(l => l.Location is null)
+            .Select(l => new Rejection(
+                $"{l.Person.FirstName},{l.Person.LastName},{l.Person.Email},{l.Person.ZipCode}",
+                "ZIP lookup failed or returned invalid data")));
 
         await WriteCsvAsync(outputPath, enriched, cancellationToken);       // temp file then move
 
@@ -121,43 +130,34 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
         return (new Person(fields[0], fields[1], fields[2], fields[3]), null);
     }
 
-    private async Task<(EnrichedPerson? Result, Rejection? Rejection)[]> LookupAllAsync(
-        IReadOnlyList<Person> people, CancellationToken ct)
+    private async Task<Location?[]> LookupAllAsync(List<Person> people, CancellationToken ct)
     {
         using SemaphoreSlim gate = new(_maxConcurrency);
 
-        IEnumerable<Task<(EnrichedPerson?, Rejection?)>> tasks = people.Select(async person =>
+        // Start every lookup at once; the semaphore limits how many are in flight. This is a plain
+        // loop rather than Select so the HTTP calls stay out of LINQ queries.
+        List<Task<Location?>> tasks = new(people.Count);
+        foreach (Person person in people)
         {
-            await gate.WaitAsync(ct);
-            try
-            {
-                EnrichedPerson? result = await LookupAsync(person, ct);
-                return result is null
-                    ? (null, new Rejection($"{person.FirstName},{person.LastName},{person.Email},{person.ZipCode}",
-                        "ZIP lookup failed or returned invalid data"))
-                    : ((EnrichedPerson?)result, (Rejection?)null);
-            }
-            finally
-            {
-                gate.Release();
-            }
-        });
+            tasks.Add(LookupAsync(person.ZipCode, gate, ct));
+        }
 
         return await Task.WhenAll(tasks);
     }
 
-    private async Task<EnrichedPerson?> LookupAsync(Person person, CancellationToken ct)
+    private async Task<Location?> LookupAsync(string zipCode, SemaphoreSlim gate, CancellationToken ct)
     {
-        (EnrichedPerson? enriched, _) = await RetryAsync(async token =>
+        await gate.WaitAsync(ct);
+        try
         {
-            string body = await _http.GetStringAsync($"/people/zip/{person.ZipCode}", token);
-            (string City, string State)? location = ParseLocation(body);
-            return location is { } loc
-                ? new EnrichedPerson(person, loc.City, loc.State.ToUpperInvariant())
-                : null;
-        }, ct);
-
-        return enriched;
+            (Location? location, _) = await RetryAsync(async token =>
+                ParseLocation(await _http.GetStringAsync($"/people/zip/{zipCode}", token)), ct);
+            return location;
+        }
+        finally
+        {
+            gate.Release();
+        }
     }
 
     /// <summary>
@@ -236,7 +236,7 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
         zip.Length == 5 && zip.All(char.IsAsciiDigit);
 
     // location line: "CITY","ST" (non-empty city, 2-letter state)
-    private static (string City, string State)? ParseLocation(string body)
+    private static Location? ParseLocation(string body)
     {
         string[] parts = body.Trim().Split(',');
         if (parts.Length != 2)
@@ -248,7 +248,7 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
         string state = parts[1].Trim('"');
 
         return city.Length > 0 && state.Length == 2 && state.All(char.IsAsciiLetter)
-            ? (city, state)
+            ? new Location(city, state.ToUpperInvariant())
             : null;
     }
 }
