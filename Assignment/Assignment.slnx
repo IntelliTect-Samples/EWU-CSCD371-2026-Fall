@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Assignment.Console/Assignment.Console.csproj" Id="5d77c4bf-96be-410a-a8af-961ad6fe17ab" />
+  <Project Path="Assignment.Interfaces/Assignment.Interfaces.csproj" />
+  <Project Path="Assignment.Tests/Assignment.Tests.csproj" />
+  <Project Path="Assignment/Assignment.csproj" />
+</Solution>
