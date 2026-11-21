@@ -6,9 +6,8 @@ public interface IPerson
 
     string LastName { get; }
 
-    IAddress Address { get; }
+    string ZipCode { get; }
 
     string EmailAddress { get; }
 
-    int ID { get; }
 }

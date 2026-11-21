@@ -2,7 +2,6 @@
 
 public sealed class HttpClientWrapper
 {
-    //TODO: Might make this more testable later on (use like IHttpClientFactory or have it injectable before it's initialized)
     private static readonly Lazy<HttpClient> _httpClient = new(
         () =>
         {
@@ -18,4 +17,13 @@ public sealed class HttpClientWrapper
         });
 
     public static HttpClient Client => _httpClient.Value;
+
+    public static async Task<string> DownloadCsvAsync(CancellationToken cancellationToken = default)
+    {
+        string rows = await Client.GetStringAsync("/people/user", cancellationToken);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return rows;
+    }
 }
