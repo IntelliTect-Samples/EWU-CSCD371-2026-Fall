@@ -80,14 +80,14 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 
 ### Exception handling and resilience
 
-- Honor a caller-supplied `CancellationToken`. ❌✔
-- Catch only failures you can recover from. Let unexpected exceptions propagate with their original stack traces. ❌✔
-- If the **people CSV itself** cannot be downloaded, fail the run with an exception. Do not write a partial or empty file as though it succeeded. ❌✔
+- Honor a caller-supplied `CancellationToken`. ✔
+- Catch only failures you can recover from. Let unexpected exceptions propagate with their original stack traces. ✔
+- If the **people CSV itself** cannot be downloaded, fail the run with an exception. Do not write a partial or empty file as though it succeeded. ✔
 
 ### Async/await
 
-- Use `async`/`await` end to end. Do not block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. ❌✔
-- Async methods accept a `CancellationToken` and pass it down to the calls they make. ❌✔
+- Use `async`/`await` end to end. Do not block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. ✔
+- Async methods accept a `CancellationToken` and pass it down to the calls they make. ✔
 
 ### LINQ
 
