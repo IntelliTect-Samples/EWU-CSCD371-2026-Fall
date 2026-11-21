@@ -7,15 +7,6 @@ public sealed record Person(string FirstName, string LastName, string Email, str
 public sealed record EnrichedPerson(Person Person, string City, string State);
 public sealed record Rejection(string Row, string Reason);
 
-
-/// Downloads people, validates them, looks up city/state per ZIP, and writes the enriched CSV.
-/// A person is invalid (and removed, never repaired) when any of these hold:
-/// the row does not have exactly 4 columns; first name, last name or email is empty;
-/// the email is not of the form "x@y"; the ZIP is not exactly 5 digits; the ZIP lookup
-/// never returns a well-formed <c>"City","ST"</c> line (non-empty city, 2-letter state).
-/// Transient failures (HTTP errors, timeouts, empty/malformed bodies) are retried up to
-/// <c>maxAttempts</c> times per request.
-
 public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10, int maxConcurrency = 5)
 {
     internal const string PeopleHeader = "FirstName,LastName,EmailAddress,ZipCode";
@@ -23,7 +14,6 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
 
     private readonly HttpClient _http = http;
 
-    // At most this many ZIP lookups are in flight at once. Zero would deadlock the semaphore.
     private readonly int _maxConcurrency = maxConcurrency >= 1
         ? maxConcurrency
         : throw new ArgumentOutOfRangeException(nameof(maxConcurrency), maxConcurrency, "Must be at least 1.");
@@ -49,9 +39,6 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
 
     private async Task<string> DownloadPeopleAsync(string user, CancellationToken ct)
     {
-        // A good response is identical every time, but "invalid data" swaps random ZIPs for
-        // fake ones that still look valid. So only trust the CSV once two downloads agree.
-        // (One extra pass: comparing always takes at least two downloads.)
         string? previous = null;
         for (int i = 0; i <= maxAttempts; i++)
         {
@@ -151,17 +138,6 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
         return enriched;
     }
 
-    /// <summary>
-    /// Runs <paramref name="attempt"/> until it yields a non-null value or attempts run out.
-    /// A null result, an HTTP failure, or a request timeout counts as a failed attempt;
-    /// real cancellation and any other exception propagate.
-    /// </summary>
-        /// <summary>
-    /// Runs <paramref name="attempt"/> until it yields a non-null value or attempts run out.
-    /// A null result, an HTTP failure, or a request timeout counts as a failed attempt;
-    /// a 404 is permanent and is not retried. Real cancellation and any other exception propagate.
-    /// Returns the value (or null) and the last exception caught, so callers can report why it failed.
-    /// </summary>
     private async Task<(T? Value, Exception? LastError)> RetryAsync<T>(Func<CancellationToken, Task<T?>> attempt, CancellationToken ct)
         where T : class
     {
