@@ -26,6 +26,10 @@ internal sealed record Location(string City, string State);
 /// One bad person never stops the run. If the people CSV itself cannot be downloaded, the run
 /// throws and no output file is written.
 /// </para>
+/// <para>
+/// Failed attempts are retried with exponential backoff and jitter (see <see cref="Backoff"/>),
+/// so concurrent lookups that fail together don't all retry at the same moment.
+/// </para>
 /// </remarks>
 public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10, int maxConcurrency = 5)
 {
@@ -37,6 +41,24 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
     private readonly int _maxConcurrency = maxConcurrency >= 1
         ? maxConcurrency
         : throw new ArgumentOutOfRangeException(nameof(maxConcurrency), maxConcurrency, "Must be at least 1.");
+
+    internal static readonly TimeSpan BaseDelay = TimeSpan.FromMilliseconds(200);
+    internal static readonly TimeSpan MaxDelay = TimeSpan.FromSeconds(5);
+
+    /// <summary>How the service waits between attempts. Tests replace it so they don't really sleep.</summary>
+    internal Func<TimeSpan, CancellationToken, Task> Delay { get; init; } = Task.Delay;
+
+    /// <summary>
+    /// The wait after <paramref name="failedAttempts"/> failures: <see cref="BaseDelay"/> doubled per
+    /// failure, capped at <see cref="MaxDelay"/>, then scaled to between 50% and 100% by
+    /// <paramref name="jitter"/> (a random number in [0, 1)).
+    /// </summary>
+    internal static TimeSpan Backoff(int failedAttempts, double jitter)
+    {
+        double exponential = BaseDelay.TotalMilliseconds * Math.Pow(2, failedAttempts - 1);
+        double capped = Math.Min(exponential, MaxDelay.TotalMilliseconds);
+        return TimeSpan.FromMilliseconds(capped * (0.5 + (jitter / 2)));
+    }
 
     public async Task<RunSummary> RunAsync(string user, string outputPath, CancellationToken cancellationToken)
     {
@@ -163,7 +185,8 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
     /// <summary>
     /// Runs <paramref name="attempt"/> until it yields a non-null value or attempts run out.
     /// A null result (invalid data), an HTTP error, or a request timeout counts as a failed attempt;
-    /// a 404 is permanent and is not retried. Caller cancellation and any other exception propagate.
+    /// a 404 is permanent and is not retried. Between attempts it waits <see cref="Backoff"/>.
+    /// Caller cancellation (including during a wait) and any other exception propagate.
     /// Returns the value (or null) and the last exception caught, so callers can report why it failed.
     /// </summary>
     private async Task<(T? Value, Exception? LastError)> RetryAsync<T>(Func<CancellationToken, Task<T?>> attempt, CancellationToken ct)
@@ -192,6 +215,11 @@ public sealed class PeopleEnricherService(HttpClient http, int maxAttempts = 10,
             catch (TaskCanceledException e) when (!ct.IsCancellationRequested)
             {
                 lastError = e;      // request timeout (not caller cancellation); try again
+            }
+
+            if (i < maxAttempts - 1)
+            {
+                await Delay(Backoff(i + 1, Random.Shared.NextDouble()), ct);
             }
         }
 

@@ -111,7 +111,7 @@ We expect every disposable resource you create or are handed to be cleaned up de
 
 ## Extra Credit
 
-- Add a circuit-breaker or backoff with jitter, and test it. ❌✔
+- Add a circuit-breaker or backoff with jitter, and test it. ✔
 - Use a tool to generate an HttpClient wrapper from the OpenAPI specification (Kiota, NSwag, and Swagger are things you want to research). Use only the generated wrapper in your application. The OpenAPI spec can be found at `https://mayhem-marmot-api.livelystone-63fe914c.westus.azurecontainerapps.io/openapi/v1.json`. ❌✔
 
 ## Fundamentals

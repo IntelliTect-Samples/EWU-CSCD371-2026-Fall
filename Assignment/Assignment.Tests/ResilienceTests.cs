@@ -298,7 +298,8 @@ public sealed class ResilienceTests
             BaseAddress = new Uri("http://test"),
             Timeout = TimeSpan.FromMilliseconds(300),
         };
-        PeopleEnricherService service = new(http, maxAttempts: 3);
+        // Backoff has its own tests (BackoffTests); skip the real waits here to keep these fast.
+        PeopleEnricherService service = new(http, maxAttempts: 3) { Delay = (_, _) => Task.CompletedTask };
         return await service.RunAsync("tester", _output, cancellationToken ?? TestContext.CancellationToken);
     }
 }
