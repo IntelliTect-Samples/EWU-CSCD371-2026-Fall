@@ -69,6 +69,13 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 
 - Download the people CSV asynchronously and parse each row into a person model. ❌✔
 - Validate the data you receive from **both** endpoints. Decide, and document, what makes a person's data invalid. ❌✔
+    NOTE: *What makes a person invalid* 
+        The row doesn't have exactly 4 columns (a quoted comma counts as an extra column; rows are removed, not repaired)
+        First or last name is empty
+        The email isn't a plain address (`a@b.com`; display names like `Bob <a@b.com>` are rejected)
+        The ZIP isn't exactly 5 digits
+        The ZIP lookup never returns `"City","ST"` with a non-empty city and 2 uppercase letters within 8 attempts
+
 - A person with bad data is **removed**, wherever in the process the problem is discovered. Do not attempt to repair it, and do not stop the whole run because of one bad person. ❌✔
 - Report what was removed and why (for example, a summary of rejected rows and their reasons). Do not silently discard people. ❌✔
 
