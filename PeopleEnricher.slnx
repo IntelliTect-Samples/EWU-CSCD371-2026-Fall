@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PeopleEnricher.Tests/PeopleEnricher.Tests.csproj" />
+  <Project Path="PeopleEnricher/PeopleEnricher.csproj" />
+</Solution>
