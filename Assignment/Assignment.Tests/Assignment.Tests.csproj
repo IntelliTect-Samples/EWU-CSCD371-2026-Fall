@@ -1,0 +1,11 @@
+<Project Sdk="MSTest.Sdk/4.5.3">
+
+  <PropertyGroup>
+    <RootNamespace>Assignment9.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Assignment\Assignment.csproj" />
+  </ItemGroup>
+
+</Project>
