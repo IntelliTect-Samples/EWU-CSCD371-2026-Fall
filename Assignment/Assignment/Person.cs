@@ -24,4 +24,9 @@ public sealed class Person : IPerson
         ZipCode = zipCode.Trim();
         EmailAddress = email.Trim();
     }
+
+    public override string ToString()
+    {
+        return $"{FirstName}, {LastName}, {EmailAddress}, {ZipCode}";
+    }
 }

@@ -1,4 +1,4 @@
-﻿using Assignment;
+using Assignment;
 
 //Setup the HttpClientFactory
 var services = new ServiceCollection();
