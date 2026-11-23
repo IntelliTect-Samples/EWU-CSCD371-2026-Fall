@@ -21,6 +21,9 @@ public class CsvParserTests
     [InlineData("John,Doe,Bob <bob@x.com>,99201", "Invalid email")]
     [InlineData("John,Doe,john@example.com,123", "Invalid ZIP")]
     [InlineData("John,Doe,john@example.com,12A45", "Invalid ZIP")]
+    [InlineData("John,Doe,john@example.com, 99201", "Invalid ZIP")]
+    [InlineData(" John ,Doe,john@example.com,99201", "Missing name")]
+    [InlineData("John,Doe, john@example.com,99201", "Invalid email")]
     public void InvalidPersonIsRejectedWithReason(string row, string expectedReason)
     {
         (Person? person, string? reason) = CsvParser.ParsePerson(row);
@@ -33,6 +36,7 @@ public class CsvParserTests
     [InlineData("\"Spokane\",\"WA\"", "Spokane", "WA")]
     [InlineData("\"New York\",\"NY\"", "New York", "NY")]
     [InlineData("\"Coeur d'Alene\",\"ID\"\n", "Coeur d'Alene", "ID")]
+    [InlineData("\"Washington, D.C.\",\"DC\"", "Washington, D.C.", "DC")]
     public void ValidLocationParses(string line, string city, string state) =>
         Assert.Equal(new Location(city, state), CsvParser.ParseLocation(line));
 
