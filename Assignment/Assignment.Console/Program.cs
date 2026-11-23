@@ -1,22 +1,23 @@
-﻿
+﻿using Assignment;
 
-using Assignment;
+Console.WriteLine("Hello, World!");
 
-//Console.WriteLine("Hello, World!");
+var client = HttpClientWrapper.Client;
 
-//var client = HttpClientWrapper.Client;
+string response = await client.GetStringAsync("/people/zip/99252?code=None");
 
-//string response = await client.GetStringAsync("/people/Ben");
 
-//Console.WriteLine(response);
 
-Importer importer = new();
+Console.WriteLine(response);
 
-var list = await importer.ImportPeopleAsync();
+//Importer importer = new();
 
-foreach (var item in list)
-{
-    Console.WriteLine(item.ToString());
-}
+//var list = await importer.ImportPeopleAsync();
 
-importer.PrintErrorsAndFlush();
+//foreach (var item in list)
+//{
+//    Console.WriteLine(item.ToString());
+//}
+
+//importer.PrintErrorsAndFlush();
+
