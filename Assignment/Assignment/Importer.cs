@@ -2,56 +2,55 @@
 
 namespace Assignment;
 
-public class Importer
+public class Importer(HttpClientWrapper httpClient, TextWriter writer)
 {
+    private readonly List<string> _errors = [];
 
-    private readonly TextWriter _writer;
-
-    public Importer(TextWriter writer = null!)
-        => _writer = writer ?? Console.Out;
-
-    private ConcurrentBag<string> _errorMessageCache = [];
-
-    public async Task<IReadOnlyList<Person>> ImportPeopleAsync(CancellationToken cancellationToken = default)
+    public Importer(HttpClientWrapper httpClient) : this(httpClient, Console.Out)
     {
-        string csv = await HttpClientWrapper.DownloadCsvAsync(cancellationToken);
+    }
 
-        var rowLines = csv.Split("\n", StringSplitOptions.TrimEntries);
+    public async Task<IReadOnlyList<Person>> ImportPeopleAsync(
+        string user, CancellationToken cancellationToken = default)
+    {
+        DownloadResult download = await httpClient.DownloadPeopleCsvAsync(user, cancellationToken);
+
+        if (download.Status != DownloadStatus.Success)
+        {
+            _errors.Add($"Download failed: {download.Status} {download.Error?.Message}");
+            return [];
+        }
+        if (download.Csv is null)
+        {
+            _errors.Add("Download returned null CSV");
+            return [];
+        }
 
         List<Person> people = [];
 
-        for (int i = 1; i < rowLines.Length; ++i)
+        // Skip(1) skips the header row
+        foreach (string line in download.Csv
+            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .Skip(1))
         {
-            string line = rowLines[i];
             ParseResult result = PersonParser.Parse(line);
 
             if (result.IsValid)
             {
-                ArgumentNullException.ThrowIfNull(result.Person);
-                people.Add(result.Person);
+                people.Add(result.Person!);
             }
-
             else
             {
-                string errorMessage = string.Join(", ", result.Errors);
-                _errorMessageCache.Add($"Error parsing line [{line}] - {errorMessage}\nResult removed");
+                _errors.Add($"Error parsing line [{line}] - {string.Join(", ", result.Errors)}");
             }
-
         }
 
         return people;
     }
 
-
     public void PrintErrorsAndFlush()
     {
-        foreach (var error in _errorMessageCache)
-        {
-            _writer.WriteLine(error);
-        }
-
-        _errorMessageCache.Clear();
+        _errors.ForEach(writer.WriteLine);
+        _errors.Clear();
     }
-
-
 }
