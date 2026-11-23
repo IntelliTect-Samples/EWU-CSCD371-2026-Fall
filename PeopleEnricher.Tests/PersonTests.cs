@@ -9,7 +9,7 @@ public class PersonTests
         const string firstName = "validFirstName";
         const string lastName = "validLastName";
         const string emailAddress = "validEmailAddress";
-        const string zipCode = "validZipCode";
+        const string zipCode = "12345";
         
         Person person = TestData.CreatePerson(
             firstName: firstName,
@@ -113,6 +113,19 @@ public class PersonTests
     {
         ArgumentException exception = Assert.ThrowsExactly<ArgumentException>(() =>
             TestData.CreatePerson(zipCode: zipCode));
+        
+        Assert.AreEqual("zipCode", exception.ParamName);
+    }
+
+    [TestMethod]
+    [DataRow("1234")]
+    [DataRow("123456")]
+    [DataRow("ABCDE")]
+    public void Person_WhenZipCodeIsInvalid_ThrowsArgumentException(string zipCode)
+    {
+        ArgumentException exception = 
+            Assert.ThrowsExactly<ArgumentException>(() =>
+                TestData.CreatePerson(zipCode: zipCode));
         
         Assert.AreEqual("zipCode", exception.ParamName);
     }

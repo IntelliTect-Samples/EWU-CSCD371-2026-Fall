@@ -12,7 +12,15 @@ public record Person
         ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
         ArgumentException.ThrowIfNullOrWhiteSpace(emailAddress);
         ArgumentException.ThrowIfNullOrWhiteSpace(zipCode);
-        
+
+        if (zipCode.Length != 5 ||
+            !zipCode.All(char.IsDigit))
+        {
+            throw new ArgumentException(
+                "Zip Code must be exactly 5 digits.",
+                nameof(zipCode));
+        }
+
         FirstName = firstName;
         LastName = lastName;
         EmailAddress = emailAddress;
