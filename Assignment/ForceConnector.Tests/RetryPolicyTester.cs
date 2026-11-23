@@ -6,14 +6,12 @@ namespace ForceConnector.Tests;
 public class RetryPolicyTester
 {
     [TestMethod]
-    public async Task ExecuteAsync_SucceedsImmediately()
+    public async Task ExecuteAsyncSucceedsImmediately()
     {
-        RetryPolicy retry = new();
-
         int calls = 0;
 
         int result =
-            await retry.ExecuteAsync(() =>
+            await RetryPolicy.ExecuteAsync(() =>
             {
                 calls++;
                 return Task.FromResult(5);
@@ -23,14 +21,14 @@ public class RetryPolicyTester
         Assert.AreEqual(5, result);
     }
     [TestMethod]
-    public async Task ExecuteAsync_RetriesBeforeSuccess()
+    public async Task ExecuteAsyncRetriesBeforeSuccess()
     {
         RetryPolicy retry = new();
 
         int calls = 0;
 
         int result =
-            await retry.ExecuteAsync(() =>
+            await RetryPolicy.ExecuteAsync(() =>
             {
                 calls++;
 
@@ -51,7 +49,7 @@ public class RetryPolicyTester
         RetryPolicy retry = new();
 
         object value = await Assert.ThrowsAsync<HttpRequestException>(
-                () => retry.ExecuteAsync<int>(() =>
+                () => RetryPolicy.ExecuteAsync<int>(() =>
                 {
                     throw new HttpRequestException();
                 }));

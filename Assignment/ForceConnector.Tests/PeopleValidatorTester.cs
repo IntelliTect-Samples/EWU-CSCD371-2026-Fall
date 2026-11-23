@@ -9,7 +9,7 @@ public class PeopleValidatorTester
     private readonly PersonValidator _validator =
         new();
     [TestMethod]
-    public void IsValid_ReturnsFalse_WhenFirstNameBlank()
+    public void IsValidReturnsFalseWhenFirstNameBlank()
     {
         Person person = new()
         {
@@ -23,7 +23,7 @@ public class PeopleValidatorTester
             _validator.IsValid(person));
     }
     [TestMethod]
-    public void IsValid_ReturnsFalse_WhenEmailInvalid()
+    public void IsValidReturnsFalseWhenEmailInvalid()
     {
         Person person = new()
         {
@@ -37,7 +37,7 @@ public class PeopleValidatorTester
             _validator.IsValid(person));
     }
     [TestMethod]
-    public void IsValid_ReturnsFalse_WhenZipInvalid()
+    public void IsValidReturnsFalseWhenZipInvalid()
     {
         Person person = new()
         {

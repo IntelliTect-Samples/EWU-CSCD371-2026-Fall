@@ -6,22 +6,18 @@ namespace ForceConnector.Tests;
 public class CsvWriterTester
 {
     [TestMethod]
-    public async Task WriteAsync_CreatesCsv()
+    public async Task WriteAsyncCreatesCsv()
     {
-        CsvWriter writer = new();
-
-        string path =
-            Path.GetTempFileName();
+        string path = Path.GetTempFileName();
 
         try
         {
-            await writer.WriteAsync(
+            await CsvWriter.WriteAsync(
                 path,
                 [],
                 CancellationToken.None);
 
-            Assert.IsTrue(
-                File.Exists(path));
+            Assert.IsTrue(File.Exists(path));
         }
         finally
         {
