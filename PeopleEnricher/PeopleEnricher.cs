@@ -160,7 +160,7 @@ public class PeopleEnricher(IPeopleEndpointClient peopleEndpointClient, TimeSpan
         {
             return new ZipLookupResult(
                 Location: null,
-                FailureReason: "Zip Lookup Endpoint Returned Data deemed Invalid.");
+                FailureReason: "Zip Lookup Endpoint returned Data deemed as Invalid.");
         }
     }
 
