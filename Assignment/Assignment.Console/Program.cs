@@ -14,10 +14,10 @@ services.AddTransient<HttpClientWrapper>();
 
 using ServiceProvider provider = services.BuildServiceProvider();
 //Get the HttpClientWrapper from the service provider
-var httpClientWrapper = provider.GetRequiredService<HttpClientWrapper>(); 
+var httpClientWrapper = provider.GetRequiredService<HttpClientWrapper>();
 
 //CancellationToken token = CancellationToken.None; //todo: implement cancelation token if needed
-using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
+using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(300));
 CancellationToken token = cts.Token;
 //hard-coding the user 
 var user = "JohnM";
