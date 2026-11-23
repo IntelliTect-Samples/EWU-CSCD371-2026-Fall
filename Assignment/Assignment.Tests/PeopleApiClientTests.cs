@@ -11,6 +11,19 @@ public class PeopleApiClientTests
 
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
+    [Theory]
+    [InlineData(1, 0, 100)]
+    [InlineData(1, 99, 199)]
+    [InlineData(2, 0, 200)]
+    [InlineData(2, 99, 299)]
+    [InlineData(3, 0, 400)]
+    [InlineData(3, 99, 499)]
+    public void RetryDelayDoublesAndIncludesJitter(int attempt, int jitterMilliseconds, int expected)
+    {
+        Assert.Equal(expected,
+            PeopleApiClient.GetRetryDelayMilliseconds(attempt, jitterMilliseconds));
+    }
+
     // ---------- happy paths ----------
 
     [Fact]

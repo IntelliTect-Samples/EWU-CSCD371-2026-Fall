@@ -5,6 +5,8 @@ namespace Assignment;
 public sealed class PeopleApiClient(HttpClient httpClient)
 {
     public const int MaxAttempts = 8;
+    private const int BaseRetryDelayMilliseconds = 100;
+    private const int MaxJitterMilliseconds = 100;
     private const string BaseUrl =
         "https://mayhem-marmot-api.livelystone-63fe914c.westus.azurecontainerapps.io/";
     private const string PeopleHeader = "FirstName,LastName,EmailAddress,ZipCode";
@@ -44,11 +46,18 @@ public sealed class PeopleApiClient(HttpClient httpClient)
             }
 
             if (attempt < MaxAttempts)
-                await Task.Delay(100, ct);
+            {
+                // Increase the wait each retry and add jitter to spread concurrent requests.
+                int jitterMilliseconds = Random.Shared.Next(MaxJitterMilliseconds);
+                await Task.Delay(GetRetryDelayMilliseconds(attempt, jitterMilliseconds), ct);
+            }
         }
 
         throw new HttpRequestException($"GET {path} failed after {MaxAttempts} attempts.", lastError);
     }
+
+    internal static int GetRetryDelayMilliseconds(int attempt, int jitterMilliseconds) =>
+        BaseRetryDelayMilliseconds * (1 << (attempt - 1)) + jitterMilliseconds;
 
     private static bool IsRetryable(HttpStatusCode? code) =>
         code is null or HttpStatusCode.RequestTimeout or HttpStatusCode.TooManyRequests ||
