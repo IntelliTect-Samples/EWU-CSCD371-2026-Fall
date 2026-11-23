@@ -61,53 +61,53 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 
 ### Project setup
 
-- Create a `.slnx` solution containing a class library and a unit test project that references it. ❌✔
-- Add a small console (or other) entry point so the program can run against the live endpoints. The unit tests must **not** call the live endpoints. ❌✔
-- Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request. ❌✔
+- Create a `.slnx` solution containing a class library and a unit test project that references it. ✔
+- Add a small console (or other) entry point so the program can run against the live endpoints. The unit tests must **not** call the live endpoints. ✔
+- Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request. ✔
 
 ### Download and parse
 
-- Download the people CSV asynchronously and parse each row into a person model. ❌✔
-- Validate the data you receive from **both** endpoints. Decide, and document, what makes a person's data invalid. ❌✔
+- Download the people CSV asynchronously and parse each row into a person model. ✔
+- Validate the data you receive from **both** endpoints. Decide, and document, what makes a person's data invalid. ✔
 - A person with bad data is **removed**, wherever in the process the problem is discovered. Do not attempt to repair it, and do not stop the whole run because of one bad person. ❌✔
-- Report what was removed and why (for example, a summary of rejected rows and their reasons). Do not silently discard people. ❌✔
+- Report what was removed and why (for example, a summary of rejected rows and their reasons). Do not silently discard people. ✔
 
 ### Enrich with city and state
 
-- For each valid person, call the location endpoint and attach the `City` and `State`. ❌✔
-- Look up people **concurrently** (not one after another), but limit how many requests are in flight at once. ❌✔
-- If a person's lookup fails for good, or returns bad data, remove that person from the final CSV. ❌✔
+- For each valid person, call the location endpoint and attach the `City` and `State`. ✔
+- Look up people **concurrently** (not one after another), but limit how many requests are in flight at once. ✔
+- If a person's lookup fails for good, or returns bad data, remove that person from the final CSV. ✔
 
 ### Exception handling and resilience
 
-- Honor a caller-supplied `CancellationToken`. ❌✔
-- Catch only failures you can recover from. Let unexpected exceptions propagate with their original stack traces. ❌✔
-- If the **people CSV itself** cannot be downloaded, fail the run with an exception. Do not write a partial or empty file as though it succeeded. ❌✔
+- Honor a caller-supplied `CancellationToken`. ✔
+- Catch only failures you can recover from. Let unexpected exceptions propagate with their original stack traces. ✔
+- If the **people CSV itself** cannot be downloaded, fail the run with an exception. Do not write a partial or empty file as though it succeeded. ✔
 
 ### Async/await
 
-- Use `async`/`await` end to end. Do not block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. ❌✔
-- Async methods accept a `CancellationToken` and pass it down to the calls they make. ❌✔
+- Use `async`/`await` end to end. Do not block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. ✔
+- Async methods accept a `CancellationToken` and pass it down to the calls they make. ✔
 
 ### LINQ
 
-- Use LINQ for the data shaping: filtering out invalid rows, projecting each person into its enriched form, grouping or counting rejection reasons, and producing the final CSV lines. ❌✔
-- Keep side effects (HTTP calls, file writes) out of your LINQ queries. ❌✔
+- Use LINQ for the data shaping: filtering out invalid rows, projecting each person into its enriched form, grouping or counting rejection reasons, and producing the final CSV lines. ✔
+- Keep side effects (HTTP calls, file writes) out of your LINQ queries. ✔
 
 ### Resource management (`IDisposable`)
 
 We expect every disposable resource you create or are handed to be cleaned up deterministically, on the success path **and** on every failure, retry, timeout, and cancellation path.
 
-- Make sure to Dispose what you own. ❌✔
-- A failed run must not leave partial or temporary files behind. ❌✔
+- Make sure to Dispose what you own. ✔
+- A failed run must not leave partial or temporary files behind. ✔
 
 ### Output
 
-- Write the final CSV with the header above, containing only fully enriched, valid people. ❌✔
+- Write the final CSV with the header above, containing only fully enriched, valid people. ✔
 
 ### Tests
 
-- Write tests that cover **all** of the required conditions above, including every failure mode on both endpoints, retries, cancellation, bad data, and resource cleanup. ❌✔
+- Write tests that cover **all** of the required conditions above, including every failure mode on both endpoints, retries, cancellation, bad data, and resource cleanup. ✔
 
 ## Extra Credit
 
