@@ -13,6 +13,17 @@ try
     Console.WriteLine("Success!");
     
     Console.WriteLine($"Rejected Rows: {result.RejectedRows.Count}");
+
+    foreach (RejectedRow rejectedRow in result.RejectedRows)
+    {
+        Console.WriteLine();
+        
+        Console.WriteLine(
+            $"Line {rejectedRow.LineNumber}: {rejectedRow.RawData}");
+        
+        Console.WriteLine(
+            $"    - {rejectedRow.Reason}");
+    }
 }
 catch (Exception exception) when (exception is EnrichmentException)
 {
