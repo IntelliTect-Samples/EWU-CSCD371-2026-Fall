@@ -1,77 +1,57 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Concurrent;
 
 namespace Assignment;
 
-public partial class Importer
+public class Importer
 {
-
-    [GeneratedRegex(@"^[^@]*@[^@]*\.[^@]*$")]
-    private static partial Regex ValidEmail();
 
     private readonly TextWriter _writer;
 
-    Importer(TextWriter writer = null!)
+    public Importer(TextWriter writer = null!)
         => _writer = writer ?? Console.Out;
 
-    /// <summary>
-    /// Rarses a line into a Person object.
-    /// Returns (true, null) if the string is valid.
-    /// Returns (false, reason) if the string is invalid.
-    /// Rules:
-    /// - email must have exactly 1 @ symbol folowed by at least one . 
-    ///     example: email@website.com
-    /// - zipcode must be 5 digits
-    /// - all fields must have at least 1 character
-    /// </summary>
-    /// <param name="line"></param>
-    /// <param name="result"></param>
-    /// <returns></returns>
-    private static (bool, string?) ValidateAndParse(string line, out Person? result)
+    private ConcurrentBag<string> _errorMessageCache = [];
+
+    public async Task<IReadOnlyList<Person>> ImportPeopleAsync(CancellationToken cancellationToken = default)
     {
-        result = null;
-        var rawTokens = line.Split(',', StringSplitOptions.TrimEntries);
+        string csv = await HttpClientWrapper.DownloadCsvAsync(cancellationToken);
 
-        string[] fieldNames =
-        [
-            "firstName",
-            "lastName",
-            "email",
-            "zip",
-            "city"
-        ];
+        var rowLines = csv.Split("\n", StringSplitOptions.TrimEntries);
 
-        if (rawTokens.Length != fieldNames.Length)
+        List<Person> people = [];
+
+        for (int i = 1; i < rowLines.Length; ++i)
         {
-            return (false, "Each line is expected to have 5 fields");
-        }
+            string line = rowLines[i];
+            ParseResult result = PersonParser.Parse(line);
 
-        for (int i = 0; i < fieldNames.Length; ++i)
-        {
-            if (string.IsNullOrWhiteSpace(rawTokens[i]))
+            if (result.IsValid)
             {
-                return (false, $"{fieldNames[i]} must have at least 1 character");
+                ArgumentNullException.ThrowIfNull(result.Person);
+                people.Add(result.Person);
             }
+
+            else
+            {
+                string errorMessage = string.Join(", ", result.Errors);
+                _errorMessageCache.Add($"Error parsing line [{line}] - {errorMessage}\nResult removed");
+            }
+
         }
 
-        string firstName = rawTokens[0];
-        string lastName = rawTokens[1];
-        string email = rawTokens[2];
-        string zip = rawTokens[3];
-
-        if (!ValidEmail().IsMatch(email))
-        {
-            return (false, $"{email} is not in a valid email format");
-        }
-
-        if (zip.Length != 5)
-        {
-            return (false, $"{zip} is not a valid US zipcode. Must be 5 digits");
-        }
-
-        result = new Person(firstName, lastName, email, zip);
-        return (true, null);
+        return people;
     }
 
+
+    public void PrintErrorsAndFlush()
+    {
+        foreach (var error in _errorMessageCache)
+        {
+            _writer.WriteLine(error);
+        }
+
+        _errorMessageCache.Clear();
+    }
 
 
 }

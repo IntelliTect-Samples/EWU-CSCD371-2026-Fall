@@ -2,10 +2,21 @@
 
 using Assignment;
 
-Console.WriteLine("Hello, World!");
+//Console.WriteLine("Hello, World!");
 
-var client = HttpClientWrapper.Client;
+//var client = HttpClientWrapper.Client;
 
-string response = await client.GetStringAsync("/people/Ben");
+//string response = await client.GetStringAsync("/people/Ben");
 
-Console.WriteLine(response);
+//Console.WriteLine(response);
+
+Importer importer = new();
+
+var list = await importer.ImportPeopleAsync();
+
+foreach (var item in list)
+{
+    Console.WriteLine(item.ToString());
+}
+
+importer.PrintErrorsAndFlush();
