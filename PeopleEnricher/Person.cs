@@ -3,28 +3,24 @@
 public record Person
 {
     public Person(
-        int id,
         string firstName,
         string lastName,
         string emailAddress,
-        Address address)
+        string zipCode)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
         ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
         ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
         ArgumentException.ThrowIfNullOrWhiteSpace(emailAddress);
-        ArgumentNullException.ThrowIfNull(address);
+        ArgumentException.ThrowIfNullOrWhiteSpace(zipCode);
         
-        Id = id;
         FirstName = firstName;
         LastName = lastName;
         EmailAddress = emailAddress;
-        Address = address;
+        ZipCode = zipCode;
     }
-
-    public int Id { get; }
+    
     public string FirstName { get; }
     public string LastName { get; }
     public string EmailAddress { get; }
-    public Address Address { get; }
+    public string ZipCode { get; }
 }
