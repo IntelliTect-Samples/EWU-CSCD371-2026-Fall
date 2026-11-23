@@ -6,7 +6,7 @@ namespace ForceConnector.Tests;
 public sealed class ModelTests
 {
     [TestMethod]
-    public void Person_StoresValues()
+    public void PersonStoresValues()
     {
         Person person = new()
         {
@@ -23,7 +23,7 @@ public sealed class ModelTests
     }
 
     [TestMethod]
-    public void Location_StoresValues()
+    public void LocationStoresValues()
     {
         Location location = new()
         {
@@ -36,7 +36,7 @@ public sealed class ModelTests
     }
 
     [TestMethod]
-    public void Rejection_StoresValues()
+    public void RejectionStoresValues()
     {
         Rejection rejection = new()
         {

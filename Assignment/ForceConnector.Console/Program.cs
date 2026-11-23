@@ -20,7 +20,7 @@ ILocationClient locationClient =
 ICsvParser csvParser =
     new CsvParser();
 
-IPeopleEnricher enricher =
+PeopleEnricher enricher =
     new PeopleEnricher(
         peopleClient,
         locationClient,

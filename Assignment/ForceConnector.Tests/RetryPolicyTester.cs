@@ -44,7 +44,7 @@ public class RetryPolicyTester
         Assert.AreEqual(99, result);
     }
     [TestMethod]
-    public async Task ExecuteAsync_ThrowsAfterMaxAttempts()
+    public async Task ExecuteAsyncThrowsAfterMaxAttempts()
     {
         RetryPolicy retry = new();
 
