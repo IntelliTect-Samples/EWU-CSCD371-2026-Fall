@@ -2,7 +2,7 @@
 using ForceConnector.Core.Models;
 using System.Text.RegularExpressions;
 
-namespace ForceConnector.Core.Validation;
+namespace ForceConnector.Core.Services;
 
 public sealed class PersonValidator : IValidator<Person>
 {

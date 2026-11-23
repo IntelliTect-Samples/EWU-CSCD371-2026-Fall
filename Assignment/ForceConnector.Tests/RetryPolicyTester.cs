@@ -1,5 +1,5 @@
 using ForceConnector.Core.Services;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ForceConnector.Tests;
 
 [TestClass]
@@ -50,7 +50,7 @@ public class RetryPolicyTester
     {
         RetryPolicy retry = new();
 
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(
+        object value = await Assert.ThrowsAsync<HttpRequestException>(
                 () => retry.ExecuteAsync<int>(() =>
                 {
                     throw new HttpRequestException();
