@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="ForceConnector.Console/ForceConnector.Console.csproj" />
-  <Project Path="ForceConnector.Core/ForceConnector.Core.csproj" />
-  <Project Path="ForceConnector.Tests/ForceConnector.Tests.csproj" />
-</Solution>
