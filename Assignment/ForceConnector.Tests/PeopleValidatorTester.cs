@@ -50,4 +50,18 @@ public class PeopleValidatorTester
         Assert.IsFalse(
             _validator.IsValid(person));
     }
+    [TestMethod]
+    public void IsValidReturnsTrueWhenPersonValid()
+    {
+        Person person = new()
+        {
+            FirstName = "Mateo",
+            LastName = "Edwards",
+            EmailAddress = "mateo@test.com",
+            ZipCode = "99201"
+        };
+
+        Assert.IsTrue(
+            _validator.IsValid(person));
+    }
 }

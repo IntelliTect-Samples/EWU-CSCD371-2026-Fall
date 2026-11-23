@@ -23,7 +23,6 @@ public class RetryPolicyTester
     [TestMethod]
     public async Task ExecuteAsyncRetriesBeforeSuccess()
     {
-        RetryPolicy retry = new();
 
         int calls = 0;
 
@@ -46,7 +45,6 @@ public class RetryPolicyTester
     [TestMethod]
     public async Task ExecuteAsyncThrowsAfterMaxAttempts()
     {
-        RetryPolicy retry = new();
 
         object value = await Assert.ThrowsAsync<HttpRequestException>(
                 () => RetryPolicy.ExecuteAsync<int>(() =>
