@@ -6,7 +6,7 @@ internal static class TestData
         string firstName = "defaultFirstName",
         string lastName = "defaultLastName",
         string emailAddress = "defaultEmailAddress",
-        string zipCode = "defaultZipCode")
+        string zipCode = "12345")
     {
         return new Person(
             firstName,
