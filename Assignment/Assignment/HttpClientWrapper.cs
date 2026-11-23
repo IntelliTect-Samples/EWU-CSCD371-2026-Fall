@@ -1,29 +1,40 @@
 ﻿namespace Assignment;
 
-public sealed class HttpClientWrapper
+public sealed class HttpClientWrapper(IHttpClientFactory httpClientFactory)
 {
-    private static readonly Lazy<HttpClient> _httpClient = new(
-        () =>
-        {
-            var handler = new SocketsHttpHandler
-            {
-                PooledConnectionLifetime = TimeSpan.FromMinutes(2)
-            };
+    public const string ClientName = "MayhemMarmotApi";
 
-            return new HttpClient(handler, true)
-            {
-                BaseAddress = new Uri("https://mayhem-marmot-api.livelystone-63fe914c.westus.azurecontainerapps.io")
-            };
-        });
+    // GET /people/{user} -> CSV of 100 people
+    public Task<DownloadResult> DownloadPeopleCsvAsync(string user, CancellationToken cancellationToken = default)
+        => GetAsync($"/people/{Uri.EscapeDataString(user)}", cancellationToken);
 
-    public static HttpClient Client => _httpClient.Value;
+    // GET /people/zip/{zip} -> one line like "Spokane","WA"
+    public Task<DownloadResult> DownloadZipAsync(string zip, CancellationToken cancellationToken = default)
+        => GetAsync($"/people/zip/{Uri.EscapeDataString(zip)}", cancellationToken);
 
-    public static async Task<string> DownloadCsvAsync(CancellationToken cancellationToken = default)
+    private async Task<DownloadResult> GetAsync(string path, CancellationToken cancellationToken)
     {
-        string rows = await Client.GetStringAsync("/people/user", cancellationToken);
+        try
+        {
+            var client = httpClientFactory.CreateClient(ClientName);
 
-        cancellationToken.ThrowIfCancellationRequested();
+            string body = await client.GetStringAsync(path, cancellationToken);
 
-        return rows;
+            return string.IsNullOrWhiteSpace(body)
+                ? new DownloadResult(DownloadStatus.InvalidData)
+                : new DownloadResult(DownloadStatus.Success, Csv: body);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) // cancellation requested
+        {
+            return new DownloadResult(DownloadStatus.Cancelled);
+        }
+        catch (OperationCanceledException ex) // timeout
+        {
+            return new DownloadResult(DownloadStatus.Timeout, Error: ex);
+        }
+        catch (Exception ex)
+        {
+            return new DownloadResult(DownloadStatus.Exception, Error: ex);
+        }
     }
 }

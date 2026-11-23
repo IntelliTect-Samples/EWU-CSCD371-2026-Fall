@@ -10,5 +10,6 @@
   <ItemGroup>
 	<ProjectReference Include="..\Assignment.Interfaces\Assignment.Interfaces.csproj" />
   </ItemGroup>
+  	
 
 </Project>
