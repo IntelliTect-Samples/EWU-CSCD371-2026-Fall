@@ -3,20 +3,25 @@
 [TestClass]
 public class PersonTests
 {
-    #region Id Tests
-
     [TestMethod]
-    [DataRow(0)]
-    [DataRow(-1)]
-    public void Person_WhenIdIsNegativeOrZero_ThrowsArgumentOutOfRangeException(int id)
+    public void Person_WithValidData_ContainsExpectedValues()
     {
-        ArgumentOutOfRangeException exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
-            TestData.CreatePerson(id: id));
+        const string firstName = "validFirstName";
+        const string lastName = "validLastName";
+        const string emailAddress = "validEmailAddress";
+        const string zipCode = "validZipCode";
         
-        Assert.AreEqual("id", exception.ParamName);
+        Person person = TestData.CreatePerson(
+            firstName: firstName,
+            lastName: lastName,
+            emailAddress: emailAddress,
+            zipCode: zipCode);
+        
+        Assert.AreEqual(firstName, person.FirstName);
+        Assert.AreEqual(lastName, person.LastName);
+        Assert.AreEqual(emailAddress, person.EmailAddress);
+        Assert.AreEqual(zipCode, person.ZipCode);
     }
-
-    #endregion
 
     #region FirstName Tests
 
@@ -32,10 +37,10 @@ public class PersonTests
     [TestMethod]
     [DataRow("")]
     [DataRow(" ")]
-    public void Person_WhenFirstNameIsWhiteSpace_ThrowsArgumentException(string? firstName)
+    public void Person_WhenFirstNameIsWhiteSpace_ThrowsArgumentException(string firstName)
     {
         ArgumentException exception = Assert.ThrowsExactly<ArgumentException>(() =>
-            TestData.CreatePerson(firstName: firstName!));
+            TestData.CreatePerson(firstName: firstName));
         
         Assert.AreEqual("firstName", exception.ParamName);
     }
@@ -56,10 +61,10 @@ public class PersonTests
     [TestMethod]
     [DataRow("")]
     [DataRow(" ")]
-    public void Person_WhenLastNameIsWhiteSpace_ThrowsArgumentException(string? lastName)
+    public void Person_WhenLastNameIsWhiteSpace_ThrowsArgumentException(string lastName)
     {
         ArgumentException exception = Assert.ThrowsExactly<ArgumentException>(() =>
-            TestData.CreatePerson(lastName: lastName!));
+            TestData.CreatePerson(lastName: lastName));
         
         Assert.AreEqual("lastName", exception.ParamName);
     }
@@ -80,30 +85,36 @@ public class PersonTests
     [TestMethod]
     [DataRow("")]
     [DataRow(" ")]
-    public void Person_WhenEmailAddressIsWhiteSpace_ThrowsArgumentException(string? emailAddress)
+    public void Person_WhenEmailAddressIsWhiteSpace_ThrowsArgumentException(string emailAddress)
     {
         ArgumentException exception = Assert.ThrowsExactly<ArgumentException>(() =>
-            TestData.CreatePerson(emailAddress: emailAddress!));
+            TestData.CreatePerson(emailAddress: emailAddress));
         
         Assert.AreEqual("emailAddress", exception.ParamName);
     }
 
     #endregion
 
-    #region Address Tests
+    #region ZipCode Tests
 
     [TestMethod]
-    public void Person_WhenAddressIsNull_ThrowsArgumentNullException()
+    public void Person_WhenZipCodeIsNull_ThrowsArgumentNullException()
     {
         ArgumentNullException exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
-            new Person(
-                id: 1,
-                firstName: "firstName",
-                lastName: "lastName",
-                emailAddress: "emailAddress",
-                address: null!));
+            TestData.CreatePerson(zipCode: null!));
         
-        Assert.AreEqual("address", exception.ParamName);
+        Assert.AreEqual("zipCode", exception.ParamName);
+    }
+    
+    [TestMethod]
+    [DataRow("")]
+    [DataRow(" ")]
+    public void Person_WhenZipCodeIsWhiteSpace_ThrowsArgumentException(string zipCode)
+    {
+        ArgumentException exception = Assert.ThrowsExactly<ArgumentException>(() =>
+            TestData.CreatePerson(zipCode: zipCode));
+        
+        Assert.AreEqual("zipCode", exception.ParamName);
     }
 
     #endregion
