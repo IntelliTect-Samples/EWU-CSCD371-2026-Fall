@@ -7,7 +7,7 @@ public sealed class RetryPolicy
 {
     private const int MaxAttempts = 3;
 
-    public async Task<T> ExecuteAsync<T>(
+    public static async Task<T> ExecuteAsync<T>(
         Func<Task<T>> operation)
     {
         ArgumentNullException.ThrowIfNull(operation);

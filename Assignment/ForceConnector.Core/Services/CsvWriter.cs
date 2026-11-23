@@ -8,7 +8,7 @@ public sealed class CsvWriter
     private const string Header =
         "FirstName,LastName,EmailAddress,ZipCode,City,State";
 
-    public async Task WriteAsync(
+    public static async Task WriteAsync(
         string outputFile,
         IEnumerable<EnrichedPerson> people,
         CancellationToken cancellationToken)

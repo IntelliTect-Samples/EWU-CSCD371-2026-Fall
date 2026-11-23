@@ -3,6 +3,7 @@ using ForceConnector.Core.Interfaces;
 
 using ForceConnector.Core.Models;
 
+namespace ForceConnector.Core.Services;
 /// <summary>
 /// Retrieves city and state information.
 /// </summary>
