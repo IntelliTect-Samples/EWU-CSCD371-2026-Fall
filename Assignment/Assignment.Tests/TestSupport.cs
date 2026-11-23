@@ -40,14 +40,14 @@ internal sealed class TrackingContent(string body) : HttpContent
         return true;
     }
 
-    protected override Task<Stream> CreateContentReadStreamAsync() => Task.FromResult(OpenStream());
+    protected override Task<Stream> CreateContentReadStreamAsync() => Task.FromResult<Stream>(OpenStream());
 
     protected override Task<Stream> CreateContentReadStreamAsync(CancellationToken cancellationToken) =>
-        Task.FromResult(OpenStream());
+        Task.FromResult<Stream>(OpenStream());
 
     protected override Stream CreateContentReadStream(CancellationToken cancellationToken) => OpenStream();
 
-    private Stream OpenStream()
+    private TrackingStream OpenStream()
     {
         var stream = new TrackingStream(bytes);
         streams.Enqueue(stream);

@@ -5,18 +5,21 @@ namespace Assignment9.Tests;
 [TestClass]
 public sealed class CsvLineTests
 {
+    private static readonly string[] expectedUnquoted = ["a", "b", "", "d"];
+    private static readonly string[] expectedQuoted = ["Spokane, WA", "say \"hi\""];
+
     [TestMethod]
     public void TryParse_UnquotedFields_SplitsOnCommas()
     {
         Assert.IsTrue(CsvLine.TryParse("a,b,,d", out IReadOnlyList<string> fields));
-        CollectionAssert.AreEqual(new[] { "a", "b", "", "d" }, fields.ToArray());
+        CollectionAssert.AreEqual(expectedUnquoted, fields.ToArray());
     }
 
     [TestMethod]
     public void TryParse_QuotedFields_RemovesQuotesAndUnescapesDoubledQuotes()
     {
         Assert.IsTrue(CsvLine.TryParse("\"Spokane, WA\",\"say \"\"hi\"\"\"", out IReadOnlyList<string> fields));
-        CollectionAssert.AreEqual(new[] { "Spokane, WA", "say \"hi\"" }, fields.ToArray());
+        CollectionAssert.AreEqual(expectedQuoted, fields.ToArray());
     }
 
     [TestMethod]

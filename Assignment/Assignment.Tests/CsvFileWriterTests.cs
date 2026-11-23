@@ -5,6 +5,9 @@ namespace Assignment9.Tests;
 [TestClass]
 public sealed class CsvFileWriterTests(TestContext testContext)
 {
+    private static readonly string[] twoLines = ["a,b", "c,d"];
+    private static readonly string[] newLineOnly = ["new"];
+
     [TestMethod]
     public async Task WriteAtomicallyAsync_WritesAllLines_AndLeavesNoTempFile()
     {
@@ -13,7 +16,7 @@ public sealed class CsvFileWriterTests(TestContext testContext)
 
         await CsvFileWriter.WriteAtomicallyAsync(path, ["a,b", "c,d"], testContext.CancellationToken);
 
-        CollectionAssert.AreEqual(new[] { "a,b", "c,d" }, await File.ReadAllLinesAsync(path, testContext.CancellationToken));
+        CollectionAssert.AreEqual(twoLines, await File.ReadAllLinesAsync(path, testContext.CancellationToken));
         CollectionAssert.AreEqual(new[] { path }, temp.Files());
     }
 
@@ -26,7 +29,7 @@ public sealed class CsvFileWriterTests(TestContext testContext)
 
         await CsvFileWriter.WriteAtomicallyAsync(path, ["new"], testContext.CancellationToken);
 
-        CollectionAssert.AreEqual(new[] { "new" }, await File.ReadAllLinesAsync(path, testContext.CancellationToken));
+        CollectionAssert.AreEqual(newLineOnly, await File.ReadAllLinesAsync(path, testContext.CancellationToken));
     }
 
     [TestMethod]

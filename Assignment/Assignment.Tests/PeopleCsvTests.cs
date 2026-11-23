@@ -5,6 +5,9 @@ namespace Assignment9.Tests;
 [TestClass]
 public sealed class PeopleCsvTests
 {
+    private static readonly string[] expectedFirstNames = ["Ada", "Grace"];
+    private static readonly string[] expectedReasons = [RejectionReasons.InvalidEmail, RejectionReasons.InvalidZipCode];
+
     [TestMethod]
     public void Parse_ValidCsv_ReturnsEveryPerson()
     {
@@ -36,9 +39,9 @@ public sealed class PeopleCsvTests
 
         PeopleParseResult result = PeopleCsv.Parse(csv);
 
-        CollectionAssert.AreEqual(new[] { "Ada", "Grace" }, result.People.Select(p => p.FirstName).ToArray());
+        CollectionAssert.AreEqual(expectedFirstNames, result.People.Select(p => p.FirstName).ToArray());
         CollectionAssert.AreEqual(
-            new[] { RejectionReasons.InvalidEmail, RejectionReasons.InvalidZipCode },
+            expectedReasons,
             result.Rejections.Select(r => r.Reason).ToArray());
         Assert.Contains("Row 3", result.Rejections[0].Subject);
     }

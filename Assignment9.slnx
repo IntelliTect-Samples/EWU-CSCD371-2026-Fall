@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="Assignment/Assignment9.csproj" />
-  <Project Path="Assignment.Cli/Assignment.Cli.csproj" />
-  <Project Path="Tests/Assignment9.Tests.csproj" />
-</Solution>
