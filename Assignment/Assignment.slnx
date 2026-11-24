@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Assignment.Interfaces/Assignment.Interfaces.csproj" />
+  <Project Path="Assignment.Tests/Assignment.Tests.csproj" />
+  <Project Path="Assignment/Assignment.csproj" />
+</Solution>

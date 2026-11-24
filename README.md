@@ -45,6 +45,14 @@ Your final CSV adds the two looked-up columns, in this order:
 FirstName,LastName,EmailAddress,ZipCode,City,State
 ```
 
+### Validation rules
+
+- A person is valid only when the first and last names are non-empty.
+- The email address must contain exactly one `@`, with non-empty local and domain parts, a domain containing a dot, and no whitespace.
+- A ZIP code must contain exactly five ASCII digits.
+- A city must be non-empty.
+- A state must contain exactly two ASCII letters and use uppercase characters.
+
 ### What can go wrong
 
 By default each request picks a failure mode at random. Most requests succeed, but either endpoint may fail with:
@@ -61,63 +69,63 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 
 ### Project setup
 
-- Create a `.slnx` solution containing a class library and a unit test project that references it. ❌✔
-- Add a small console (or other) entry point so the program can run against the live endpoints. The unit tests must **not** call the live endpoints. ❌✔
-- Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request. ❌✔
+- [x] Create a `.slnx` solution containing a class library and a unit test project that references it.
+- [x] Add a small console (or other) entry point so the program can run against the live endpoints. The unit tests must **not** call the live endpoints.
+- [x] Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request.
 
 ### Download and parse
 
-- Download the people CSV asynchronously and parse each row into a person model. ❌✔
-- Validate the data you receive from **both** endpoints. Decide, and document, what makes a person's data invalid. ❌✔
-- A person with bad data is **removed**, wherever in the process the problem is discovered. Do not attempt to repair it, and do not stop the whole run because of one bad person. ❌✔
-- Report what was removed and why (for example, a summary of rejected rows and their reasons). Do not silently discard people. ❌✔
+- [x] Download the people CSV asynchronously and parse each row into a person model.
+- [x] Validate the data you receive from **both** endpoints. Decide, and document, what makes a person's data invalid.
+- [x] A person with bad data is **removed**, wherever in the process the problem is discovered. Do not attempt to repair it, and do not stop the whole run because of one bad person.
+- [x] Report what was removed and why (for example, a summary of rejected rows and their reasons). Do not silently discard people.
 
 ### Enrich with city and state
 
-- For each valid person, call the location endpoint and attach the `City` and `State`. ❌✔
-- Look up people **concurrently** (not one after another), but limit how many requests are in flight at once. ❌✔
-- If a person's lookup fails for good, or returns bad data, remove that person from the final CSV. ❌✔
+- [x] For each valid person, call the location endpoint and attach the `City` and `State`.
+- [x] Look up people **concurrently** (not one after another), but limit how many requests are in flight at once.
+- [x] If a person's lookup fails for good, or returns bad data, remove that person from the final CSV.
 
 ### Exception handling and resilience
 
-- Honor a caller-supplied `CancellationToken`. ❌✔
-- Catch only failures you can recover from. Let unexpected exceptions propagate with their original stack traces. ❌✔
-- If the **people CSV itself** cannot be downloaded, fail the run with an exception. Do not write a partial or empty file as though it succeeded. ❌✔
+- [x] Honor a caller-supplied `CancellationToken`.
+- [x] Catch only failures you can recover from. Let unexpected exceptions propagate with their original stack traces.
+- [x] If the **people CSV itself** cannot be downloaded, fail the run with an exception. Do not write a partial or empty file as though it succeeded.
 
 ### Async/await
 
-- Use `async`/`await` end to end. Do not block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. ❌✔
-- Async methods accept a `CancellationToken` and pass it down to the calls they make. ❌✔
+- [x] Use `async`/`await` end to end. Do not block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`.
+- [x] Async methods accept a `CancellationToken` and pass it down to the calls they make.
 
 ### LINQ
 
-- Use LINQ for the data shaping: filtering out invalid rows, projecting each person into its enriched form, grouping or counting rejection reasons, and producing the final CSV lines. ❌✔
-- Keep side effects (HTTP calls, file writes) out of your LINQ queries. ❌✔
+- [x] Use LINQ for the data shaping: filtering out invalid rows, projecting each person into its enriched form, grouping or counting rejection reasons, and producing the final CSV lines.
+- [x] Keep side effects (HTTP calls, file writes) out of your LINQ queries.
 
 ### Resource management (`IDisposable`)
 
 We expect every disposable resource you create or are handed to be cleaned up deterministically, on the success path **and** on every failure, retry, timeout, and cancellation path.
 
-- Make sure to Dispose what you own. ❌✔
-- A failed run must not leave partial or temporary files behind. ❌✔
+- [x] Make sure to Dispose what you own.
+- [x] A failed run must not leave partial or temporary files behind.
 
 ### Output
 
-- Write the final CSV with the header above, containing only fully enriched, valid people. ❌✔
+- [x] Write the final CSV with the header above, containing only fully enriched, valid people.
 
 ### Tests
 
-- Write tests that cover **all** of the required conditions above, including every failure mode on both endpoints, retries, cancellation, bad data, and resource cleanup. ❌✔
+- [x] Write tests that cover **all** of the required conditions above, including every failure mode on both endpoints, retries, cancellation, bad data, and resource cleanup.
 
 ## Extra Credit
 
-- Add a circuit-breaker or backoff with jitter, and test it. ❌✔
-- Use a tool to generate an HttpClient wrapper from the OpenAPI specification (Kiota, NSwag, and Swagger are things you want to research). Use only the generated wrapper in your application. The OpenAPI spec can be found at `https://mayhem-marmot-api.livelystone-63fe914c.westus.azurecontainerapps.io/openapi/v1.json`. ❌✔
+- [ ] Add a circuit-breaker or backoff with jitter, and test it.
+- [ ] Use a tool to generate an HttpClient wrapper from the OpenAPI specification (Kiota, NSwag, and Swagger are things you want to research). Use only the generated wrapper in your application. The OpenAPI spec can be found at `https://mayhem-marmot-api.livelystone-63fe914c.westus.azurecontainerapps.io/openapi/v1.json`.
 
 ## Fundamentals
 
-- Target all projects at .NET 10 (`net10.0`) or .NET 11 (`net11.0`; you will need to fix the `global.json` if you go this route) and use the latest `LangVersion`. ❌✔
-- Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ❌✔
-- Ensure there are no build errors or warnings, including analyzer warnings. ❌✔
-- All of the above should be unit tested. ❌✔
-- Choose simplicity over complexity.
+- [x] Target all projects at .NET 10 (`net10.0`) or .NET 11 (`net11.0`; you will need to fix the `global.json` if you go this route) and use the latest `LangVersion`.
+- [x] Enable nullable reference types, .NET analyzers, and code style enforcement for all projects.
+- [x] Ensure there are no build errors or warnings, including analyzer warnings.
+- [x] All of the above should be unit tested.
+- [x] Choose simplicity over complexity.
