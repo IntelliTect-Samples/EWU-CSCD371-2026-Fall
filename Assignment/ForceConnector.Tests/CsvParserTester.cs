@@ -54,7 +54,7 @@ public sealed class CsvParserTests
         Assert.HasCount(1, result.Rejections);
         StringAssert.Contains(
             result.Rejections[0].Reason,
-            "expected 4 columns");
+            "Expected 4 columns");
     }
 
     [TestMethod]
