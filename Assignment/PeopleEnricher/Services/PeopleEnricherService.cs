@@ -256,14 +256,6 @@ public sealed class PeopleEnricherService
         return new Location(fields[0], fields[1]);
     }
 
-    private Task<string> GetTextWithRetryAsync(
-    string url,
-    CancellationToken cancellationToken)
-    {
-        return GetWithRetryAsync(
-            url, static text => text, cancellationToken);
-    }
-
     private async Task<T> GetWithRetryAsync<T>(
         string url,
         Func<string, T> parseResponse,
