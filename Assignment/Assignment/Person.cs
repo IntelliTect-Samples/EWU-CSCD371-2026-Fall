@@ -27,6 +27,6 @@ public sealed class Person : IPerson
 
     public override string ToString()
     {
-        return $"{FirstName}, {LastName}, {EmailAddress}, {ZipCode}";
+        return $"{FirstName},{LastName},{EmailAddress},{ZipCode}";
     }
 }
