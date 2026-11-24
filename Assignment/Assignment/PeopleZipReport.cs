@@ -32,14 +32,28 @@ public static class PeopleZipReport
 
             if (!cityStateByZip.ContainsKey(zip))
             {
-                DownloadResult place = await wrapper.DownloadZipAsync(zip, cancellationToken);
+                try
+                {
+                    DownloadResult place = await wrapper.DownloadZipAsync(zip, cancellationToken);
 
-                cityStateByZip[zip] = place.Status == DownloadStatus.Success
-                    ? place.Csv!.Trim().Replace("\"", "")
-                    : ",";   // blank City,State if the lookup failed
+                    cityStateByZip[zip] = place.Status == DownloadStatus.Success
+                        ? place.Csv!.Trim().Replace("\"", "")
+                        : ","; // blank City,State if the lookup returned Timeout/Cancelled/InvalidData
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    // Let caller-initiated cancellation bubble up instead of caching a blank row
+                    throw;
+                }
+                catch (Exception)
+                {
+                    // Fallback to blank City,State if DownloadZipAsync throws
+                    cityStateByZip[zip] = ",";
+                }
             }
 
             rows.Add($"{line.Trim()},{cityStateByZip[zip]}");
+
         }
 
         return (DownloadStatus.Success, rows);

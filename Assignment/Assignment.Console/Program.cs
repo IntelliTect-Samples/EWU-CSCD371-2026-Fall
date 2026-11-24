@@ -36,7 +36,7 @@ if (people is not null)
         Console.WriteLine(enrichedCsv);
     }
 
-    enricher.PrintAndFlushErrors();
+    enricher.PrintAndFlushErrors(); // print any removed people errors encountered during enrichment
 }
 
 ////Call the DownloadCsvAsync method

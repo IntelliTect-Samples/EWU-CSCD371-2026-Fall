@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Globalization;
 
 namespace Assignment;
 
@@ -55,7 +56,7 @@ public class PeopleEnricher
 
         if (results is null)
         {
-            throw new ArgumentNullException(paramName: nameof(results));
+            throw new ArgumentNullException(paramName: nameof(cancellationToken), message: "Results is null");
         }
 
         else
@@ -88,7 +89,7 @@ public class PeopleEnricher
                     else
                     {
                         string city = tokens[0];
-                        city = char.ToUpper(city[0]) + city[1..].ToLower();
+                        city = char.ToUpper(city[0], CultureInfo.InvariantCulture) + city[1..].ToLower(CultureInfo.InvariantCulture);
                         string state = tokens[1];
 
                         enrichedPeople.Add(new EnrichedPerson(result.Person, city, state));

@@ -21,7 +21,7 @@ public sealed record ParseResult(Person? Person, IReadOnlyList<string> Errors)
 
 public static partial class PersonParser
 {
-    internal class Rule
+    internal sealed class Rule
     {
         public required string ErrorMessage { get; init; }
         public required Func<string[], bool> Predicate { get; init; }
@@ -69,7 +69,7 @@ public static partial class PersonParser
         return line.Split(',', StringSplitOptions.TrimEntries);
     }
 
-    private static IReadOnlyList<string> ValidateFields(string[] fields)
+    private static List<string> ValidateFields(string[] fields)
     {
         if (fields.Length != 4)
         {

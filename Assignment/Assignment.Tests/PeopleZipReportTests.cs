@@ -113,7 +113,7 @@ public class PeopleZipReportTests
     [TestMethod]
     public async Task BuildAsyncMalformedRowIsSkipped()
     {
-        var handler = Routed(path => path.StartsWith("/people/zip")
+        var handler = Routed(path => path.StartsWith("/people/zip", StringComparison.InvariantCulture)
             ? Http.Ok("\"Spokane\",\"WA\"")
             : Http.Ok("FirstName,LastName,EmailAddress,ZipCode\nbroken,row\nJohn,Doe,john@gmail.com,99223\n"));
 
