@@ -2,7 +2,7 @@
 
 public class Importer(HttpClientWrapper httpClient, TextWriter writer)
 {
-    private readonly List<string> _errors = [];
+    private readonly List<string> _errors = []; 
 
     public Importer(HttpClientWrapper httpClient) : this(httpClient, Console.Out)
     {
@@ -11,17 +11,15 @@ public class Importer(HttpClientWrapper httpClient, TextWriter writer)
     public async Task<IReadOnlyList<Person>> ImportPeopleAsync(
         string user, CancellationToken cancellationToken = default)
     {
-        DownloadResult download = await httpClient.DownloadPeopleCsvAsync(user, cancellationToken);
+        DownloadResult download = await httpClient.DownloadPeopleCsvAsync(user, cancellationToken).ConfigureAwait(false);
 
         if (download.Status != DownloadStatus.Success)
         {
-            _errors.Add($"Download failed: {download.Status} {download.Error?.Message}");
-            return [];
+            throw new InvalidOperationException($"Download failed with status {download.Status} and error {download.Error}");
         }
         if (download.Csv is null)
         {
-            _errors.Add("Download returned null CSV");
-            return [];
+            throw new InvalidOperationException("Download succeeded but CSV is null");
         }
 
         List<Person> people = [];
@@ -48,7 +46,8 @@ public class Importer(HttpClientWrapper httpClient, TextWriter writer)
 
     public void PrintErrorsAndFlush()
     {
+        writer.WriteLine($"{_errors.Count} invalid people removed:");
         _errors.ForEach(writer.WriteLine);
-        _errors.Clear();
+        writer.Flush();
     }
 }
