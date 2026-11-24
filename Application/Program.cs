@@ -1,7 +1,6 @@
 using PeopleEnricher;
 
-using HttpClient httpClient = new();
-PeopleEndpointClient peopleEndpointClient = new(httpClient);
+PeopleEndpointClient peopleEndpointClient = new();
 PeopleEnricher.PeopleEnricher peopleEnricher = new(peopleEndpointClient);
 using CancellationTokenSource cancellation = new();
 ConsoleCancelEventHandler cancelHandler = (_, eventArgs) =>
