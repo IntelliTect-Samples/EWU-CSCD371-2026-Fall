@@ -80,7 +80,7 @@ public class PeopleEnricher
                     //validate
                     var csv = result.DownloadResult.Csv;
                     var tokens = csv.Split(',');
-                    tokens.Trim("\"");
+                    tokens = [.. tokens.Select(i => i.Trim('"'))];
                     if (tokens == null || tokens.Length != 2)
                     {
                         _errors.Add($"Bad data: {csv}");
@@ -108,7 +108,7 @@ public class PeopleEnricher
 
         var result = enriched.Select(r => r.ToString()).Aggregate((a, b) => $"{a}\n{b}");
 
-        return result;
+        return "FirstName,LastName,EmailAddress,ZipCode,City,State" + "\n" + result;
     }
 
     public void PrintAndFlushErrors()
@@ -117,5 +117,7 @@ public class PeopleEnricher
         {
             _writer.WriteLine(error);
         }
+
+        _errors.Clear();
     }
 }
