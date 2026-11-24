@@ -1,4 +1,5 @@
 using PeopleEnricher;
+using System.Globalization;
 
 namespace PeopleEnricher.Tests;
 
@@ -157,7 +158,7 @@ public sealed class PeopleEnrichmentRunnerTests
             $"First{number}",
             $"Last{number}",
             $"person{number}@example.com",
-            number.ToString("D5"));
+            number.ToString("D5", CultureInfo.InvariantCulture));
     }
 
     private static string CreateTemporaryDirectory()
