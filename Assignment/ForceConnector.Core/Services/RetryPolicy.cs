@@ -6,13 +6,14 @@
 public sealed class RetryPolicy
 {
     private const int MaxAttempts = 3;
+    private const int BaseDelayMilliseconds = 100;
+    private const int MaxDelayMilliseconds = 2_000;
 
     public static async Task<T> ExecuteAsync<T>(
-        Func<Task<T>> operation)
+        Func<Task<T>> operation,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(operation);
-
-        Exception? lastException = null;
 
         for (int attempt = 1;
             attempt <= MaxAttempts;
@@ -22,22 +23,47 @@ public sealed class RetryPolicy
             {
                 return await operation();
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException)
+                when (attempt < MaxAttempts)
             {
-                lastException = ex;
+                await DelayBeforeRetryAsync(
+                    attempt,
+                    cancellationToken);
             }
-            catch (TaskCanceledException ex)
+            catch (InvalidDataException)
+                when (attempt < MaxAttempts)
             {
-                lastException = ex;
+                await DelayBeforeRetryAsync(
+                    attempt,
+                    cancellationToken);
             }
-            catch (InvalidDataException ex)
+            catch (OperationCanceledException)
+                when (!cancellationToken.IsCancellationRequested &&
+                      attempt < MaxAttempts)
             {
-                lastException = ex;
+                await DelayBeforeRetryAsync(
+                    attempt,
+                    cancellationToken);
             }
         }
 
-        throw lastException ??
-              new InvalidOperationException(
-                  "Retry operation failed.");
+        throw new InvalidOperationException(
+            "Retry operation failed.");
+    }
+
+    private static Task DelayBeforeRetryAsync(
+        int attempt,
+        CancellationToken cancellationToken)
+    {
+        int exponentialDelay =
+            Math.Min(
+                MaxDelayMilliseconds,
+                BaseDelayMilliseconds * (1 << (attempt - 1)));
+
+        int jitter = Random.Shared.Next(0, BaseDelayMilliseconds);
+
+        return Task.Delay(
+            TimeSpan.FromMilliseconds(exponentialDelay + jitter),
+            cancellationToken);
     }
 }

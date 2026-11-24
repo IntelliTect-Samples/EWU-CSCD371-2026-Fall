@@ -5,6 +5,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+	<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
 
 		<IsTestProject>true</IsTestProject>
 		<EnableMSTestRunner>true</EnableMSTestRunner>

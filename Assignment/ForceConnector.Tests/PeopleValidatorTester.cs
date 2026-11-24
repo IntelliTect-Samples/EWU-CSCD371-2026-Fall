@@ -22,6 +22,23 @@ public class PeopleValidatorTester
         Assert.IsFalse(
             _validator.IsValid(person));
     }
+
+    [TestMethod]
+    public void GetErrorsIdentifiesInvalidEmail()
+    {
+        Person person = new()
+        {
+            FirstName = "Mateo",
+            LastName = "Edwards",
+            EmailAddress = "test@",
+            ZipCode = "99201"
+        };
+
+        IReadOnlyList<string> errors = _validator.GetErrors(person);
+
+        Assert.HasCount(1, errors);
+        StringAssert.Contains(errors[0], "Email address is invalid");
+    }
     [TestMethod]
     public void IsValidReturnsFalseWhenEmailInvalid()
     {

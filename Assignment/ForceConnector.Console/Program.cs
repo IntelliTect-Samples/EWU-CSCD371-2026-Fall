@@ -2,9 +2,9 @@
 using ForceConnector.Core.Models;
 using ForceConnector.Core.Services;
 
-CancellationTokenSource cts = new();
+using CancellationTokenSource cts = new();
 
-HttpClient httpClient = new()
+using HttpClient httpClient = new()
 {
     BaseAddress =
         new Uri(
@@ -43,9 +43,22 @@ try
 
     Console.WriteLine(
         $"Rejected {result.Rejections.Count} people.");
+
+    foreach (Rejection rejection in result.Rejections)
+    {
+        Console.WriteLine(
+            $"Rejected {rejection.EmailAddress}: " +
+            rejection.Reason);
+    }
+}
+catch (OperationCanceledException)
+{
+    Console.Error.WriteLine("Run canceled.");
+    Environment.ExitCode = 1;
 }
 catch (Exception ex)
 {
-    Console.WriteLine(
-        $"Run failed: {ex.Message}");
+    Console.Error.WriteLine(
+        $"Run failed: {ex}");
+    Environment.ExitCode = 1;
 }

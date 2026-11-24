@@ -33,16 +33,21 @@ public sealed class PeopleEnricher : IPeopleEnricher
                 user,
                 cancellationToken);
 
-        IReadOnlyList<Person> people =
-            _csvParser.ParsePeople(csv);
+        CsvParseResult parseResult =
+            _csvParser.ParsePeopleWithRejections(csv);
+
+        IReadOnlyList<Person> people = parseResult.People;
 
         List<Person> validPeople = [];
 
-        List<Rejection> rejections = [];
+        List<Rejection> rejections = [.. parseResult.Rejections];
 
         foreach (Person person in people)
         {
-            if (_personValidator.IsValid(person))
+            IReadOnlyList<string> errors =
+                _personValidator.GetErrors(person);
+
+            if (errors.Count == 0)
             {
                 validPeople.Add(person);
             }
@@ -53,8 +58,7 @@ public sealed class PeopleEnricher : IPeopleEnricher
                     {
                         EmailAddress =
                             person.EmailAddress,
-                        Reason =
-                            "Invalid person data"
+                        Reason = string.Join(" ", errors)
                     });
             }
         }
@@ -111,9 +115,13 @@ public sealed class PeopleEnricher : IPeopleEnricher
                     () =>
                         _locationClient.LookupAsync(
                             person.ZipCode,
-                            cancellationToken));
+                            cancellationToken),
+                    cancellationToken);
 
-            if (!_locationValidator.IsValid(location))
+            IReadOnlyList<string> errors =
+                _locationValidator.GetErrors(location);
+
+            if (errors.Count > 0)
             {
                 lock (rejections)
                 {
@@ -122,8 +130,7 @@ public sealed class PeopleEnricher : IPeopleEnricher
                         {
                             EmailAddress =
                                 person.EmailAddress,
-                            Reason =
-                                "Invalid location data"
+                            Reason = string.Join(" ", errors)
                         });
                 }
 
@@ -156,7 +163,8 @@ public sealed class PeopleEnricher : IPeopleEnricher
 
             return null;
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
         {
             lock (rejections)
             {

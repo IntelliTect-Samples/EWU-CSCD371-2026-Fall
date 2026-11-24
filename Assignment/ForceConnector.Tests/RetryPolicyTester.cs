@@ -45,11 +45,35 @@ public class RetryPolicyTester
     [TestMethod]
     public async Task ExecuteAsyncThrowsAfterMaxAttempts()
     {
+        int calls = 0;
 
-        object value = await Assert.ThrowsAsync<HttpRequestException>(
+        await Assert.ThrowsAsync<HttpRequestException>(
                 () => RetryPolicy.ExecuteAsync<int>(() =>
                 {
+                    calls++;
                     throw new HttpRequestException();
                 }));
+
+        Assert.AreEqual(3, calls);
+    }
+
+    [TestMethod]
+    public async Task ExecuteAsyncPropagatesCallerCancellationWithoutRetrying()
+    {
+        int calls = 0;
+        using CancellationTokenSource cancellation = new();
+        cancellation.Cancel();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => RetryPolicy.ExecuteAsync<int>(
+                () =>
+                {
+                    calls++;
+                    throw new OperationCanceledException(
+                        cancellation.Token);
+                },
+                cancellation.Token));
+
+        Assert.AreEqual(1, calls);
     }
 }

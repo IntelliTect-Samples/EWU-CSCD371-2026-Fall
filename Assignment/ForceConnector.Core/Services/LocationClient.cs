@@ -29,11 +29,10 @@ public sealed class LocationClient : ILocationClient
                 endpoint,
                 cancellationToken);
 
-        string[] parts =
-            csv.Replace("\"", string.Empty)
-               .Split(',');
+        IReadOnlyList<IReadOnlyList<string>> records =
+            CsvRecordParser.Parse(csv);
 
-        if (parts.Length != 2)
+        if (records.Count != 1 || records[0].Count != 2)
         {
             throw new InvalidDataException(
                 "Location endpoint returned invalid data.");
@@ -41,8 +40,8 @@ public sealed class LocationClient : ILocationClient
 
         return new Location
         {
-            City = parts[0].Trim(),
-            State = parts[1].Trim()
+            City = records[0][0].Trim(),
+            State = records[0][1].Trim()
         };
     }
 }

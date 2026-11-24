@@ -13,8 +13,23 @@ public sealed class CsvWriter
         IEnumerable<EnrichedPerson> people,
         CancellationToken cancellationToken)
     {
-        string tempFile =
-            Path.GetTempFileName();
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputFile);
+        ArgumentNullException.ThrowIfNull(people);
+
+        string fullOutputPath = Path.GetFullPath(outputFile);
+        string? directory = Path.GetDirectoryName(fullOutputPath);
+
+        if (directory is null)
+        {
+            throw new InvalidOperationException(
+                "The output path does not specify a directory.");
+        }
+
+        Directory.CreateDirectory(directory);
+
+        string tempFile = Path.Combine(
+            directory,
+            $".{Path.GetFileName(fullOutputPath)}.{Guid.NewGuid():N}.tmp");
 
         try
         {
@@ -23,12 +38,15 @@ public sealed class CsvWriter
                 Header,
 
                 .. people.Select(p =>
-                    $"{p.FirstName}," +
-                    $"{p.LastName}," +
-                    $"{p.EmailAddress}," +
-                    $"{p.ZipCode}," +
-                    $"{p.City}," +
-                    $"{p.State}")
+                    string.Join(",",
+                    [
+                        Escape(p.FirstName),
+                        Escape(p.LastName),
+                        Escape(p.EmailAddress),
+                        Escape(p.ZipCode),
+                        Escape(p.City),
+                        Escape(p.State)
+                    ]))
             ];
 
             await File.WriteAllLinesAsync(
@@ -37,10 +55,7 @@ public sealed class CsvWriter
                 Encoding.UTF8,
                 cancellationToken);
 
-            File.Move(
-                tempFile,
-                outputFile,
-                true);
+            File.Move(tempFile, fullOutputPath, true);
         }
         finally
         {
@@ -49,5 +64,18 @@ public sealed class CsvWriter
                 File.Delete(tempFile);
             }
         }
+    }
+
+    private static string Escape(string value)
+    {
+        if (!value.Contains('"') &&
+            !value.Contains(',') &&
+            !value.Contains('\r') &&
+            !value.Contains('\n'))
+        {
+            return value;
+        }
+
+        return $"\"{value.Replace("\"", "\"\"")}\"";
     }
 }

@@ -19,4 +19,6 @@ public interface ICsvParser
     /// Parsed collection of people.
     /// </returns>
     IReadOnlyList<Person> ParsePeople(string csv);
+
+    CsvParseResult ParsePeopleWithRejections(string csv);
 }

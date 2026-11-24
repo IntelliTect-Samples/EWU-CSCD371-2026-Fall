@@ -6,6 +6,9 @@ namespace ForceConnector.Core.Services;
 
 public sealed class PersonValidator : IValidator<Person>
 {
+    private static readonly Regex EmailPattern =
+        new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled);
+
     public bool IsValid(Person value)
     {
         return GetErrors(value).Count == 0;
@@ -29,7 +32,7 @@ public sealed class PersonValidator : IValidator<Person>
         {
             errors.Add("Email address is required.");
         }
-        else if (!value.EmailAddress.Contains('@'))
+        else if (!EmailPattern.IsMatch(value.EmailAddress))
         {
             errors.Add("Email address is invalid.");
         }

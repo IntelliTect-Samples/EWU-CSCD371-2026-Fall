@@ -10,57 +10,72 @@ public sealed class CsvParser : ICsvParser
 {
     public IReadOnlyList<Person> ParsePeople(string csv)
     {
+        return ParsePeopleWithRejections(csv).People;
+    }
+
+    public CsvParseResult ParsePeopleWithRejections(string csv)
+    {
         ArgumentException.ThrowIfNullOrWhiteSpace(csv);
 
-        string[] lines =
-            csv.Split(
-                Environment.NewLine,
-                StringSplitOptions.RemoveEmptyEntries);
+        IReadOnlyList<IReadOnlyList<string>> records =
+            CsvRecordParser.Parse(csv);
 
-        if (lines.Length < 2)
+        if (records.Count < 2)
         {
             throw new InvalidDataException(
                 "CSV does not contain any data rows.");
         }
 
-        const string ExpectedHeader =
-            "FirstName,LastName,EmailAddress,ZipCode";
+        string[] expectedHeader =
+        [
+            "FirstName",
+            "LastName",
+            "EmailAddress",
+            "ZipCode"
+        ];
 
-        string header = lines[0].Trim();
-
-        if (!header.Equals(
-                ExpectedHeader,
-                StringComparison.OrdinalIgnoreCase))
+        if (!records[0].SequenceEqual(
+                expectedHeader,
+                StringComparer.OrdinalIgnoreCase))
         {
-            throw new InvalidDataException(
-                "CSV header is invalid.");
+            throw new InvalidDataException("CSV header is invalid.");
         }
 
         List<Person> people = [];
+        List<Rejection> rejections = [];
 
-        foreach (string line in lines.Skip(1))
+        foreach (IReadOnlyList<string> fields in records.Skip(1))
         {
-            string[] parts = line.Split(',');
-
-            if (parts.Length != 4)
+            if (fields.Count != expectedHeader.Length)
             {
+                rejections.Add(
+                    new Rejection
+                    {
+                        EmailAddress = fields.Count > 2
+                            ? fields[2].Trim()
+                            : string.Empty,
+                        Reason =
+                            $"Malformed CSV row: expected " +
+                            $"{expectedHeader.Length} columns but found " +
+                            $"{fields.Count}."
+                    });
                 continue;
             }
 
-            Person person = new()
-            {
-                FirstName = parts[0].Trim(),
-
-                LastName = parts[1].Trim(),
-
-                EmailAddress = parts[2].Trim(),
-
-                ZipCode = parts[3].Trim()
-            };
-
-            people.Add(person);
+            people.Add(
+                new Person
+                {
+                    FirstName = fields[0].Trim(),
+                    LastName = fields[1].Trim(),
+                    EmailAddress = fields[2].Trim(),
+                    ZipCode = fields[3].Trim()
+                });
         }
 
-        return people;
+        return new CsvParseResult
+        {
+            People = people,
+            Rejections = rejections
+        };
     }
 }
