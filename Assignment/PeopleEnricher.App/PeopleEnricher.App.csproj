@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\PeopleEnricher\PeopleEnricher.csproj" />
+    <ProjectReference Include="..\..\Assignment\PeopleEnricher\PeopleEnricher.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
