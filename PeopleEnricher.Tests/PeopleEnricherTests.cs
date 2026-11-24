@@ -18,9 +18,9 @@ public class PeopleEnricherTests
         
         // setup endpoint response for test
         StubPeopleEndpointClient peopleEndpointClient = new(
-            downloadPeopleCsv: async () =>
+            downloadPeopleCsvWithCancellation: async cancellationToken =>
             {
-                await Task.Delay(testTimeout * 2, TestContext.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
 
                 return "csv";
             });

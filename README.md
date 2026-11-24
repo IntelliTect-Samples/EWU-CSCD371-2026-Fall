@@ -121,3 +121,12 @@ We expect every disposable resource you create or are handed to be cleaned up de
 - Ensure there are no build errors or warnings, including analyzer warnings. ❌✔
 - All of the above should be unit tested. ❌✔
 - Choose simplicity over complexity.
+
+## Validation rules
+
+- People rows require exactly four unquoted fields, nonblank names and email,
+  no quotes or control characters, and a ZIP containing five ASCII digits.
+- Locations require exactly two fields with optional balanced boundary quotes.
+  City must be nonblank without surrounding whitespace, embedded quotes, or
+  control characters. State must contain two uppercase ASCII letters.
+  Invalid rows and locations are rejected and reported.

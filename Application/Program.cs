@@ -1,32 +1,45 @@
-﻿using PeopleEnricher;
+using PeopleEnricher;
 
 PeopleEndpointClient peopleEndpointClient = new();
-
-PeopleEnricher.PeopleEnricher peopleEnricher = 
-    new(peopleEndpointClient);
+PeopleEnricher.PeopleEnricher peopleEnricher = new(peopleEndpointClient);
+using CancellationTokenSource cancellation = new();
+ConsoleCancelEventHandler cancelHandler = (_, eventArgs) =>
+{
+    eventArgs.Cancel = true;
+    cancellation.Cancel();
+};
+Console.CancelKeyPress += cancelHandler;
 
 try
 {
-    EnrichmentResult result =
-        await peopleEnricher.EnrichAsync();
-    
-    Console.WriteLine("Success!");
-    
+    string outputPath = args.Length > 0 ? args[0] : "enriched-people.csv";
+    EnrichmentResult result = await peopleEnricher.EnrichToFileAsync(outputPath, cancellation.Token);
+    Console.WriteLine($"Success! Wrote {Path.GetFullPath(outputPath)}");
     Console.WriteLine($"Rejected Rows: {result.RejectedRows.Count}");
+
+    foreach (var group in result.RejectedRows.GroupBy(row => row.Reason))
+    {
+        Console.WriteLine($"{group.Key}: {group.Count()}");
+    }
 
     foreach (RejectedRow rejectedRow in result.RejectedRows)
     {
         Console.WriteLine();
-        
-        Console.WriteLine(
-            $"Line {rejectedRow.LineNumber}: {rejectedRow.RawData}");
-        
-        Console.WriteLine(
-            $"    - {rejectedRow.Reason}");
+        Console.WriteLine($"Line {rejectedRow.LineNumber}: {rejectedRow.RawData}");
+        Console.WriteLine($"    - {rejectedRow.Reason}");
     }
 }
-catch (Exception exception) when (exception is EnrichmentException)
+catch (EnrichmentException exception)
 {
-    Console.WriteLine(
-        $"Enrichment Failed: {exception.Message}");
+    Console.Error.WriteLine($"Enrichment Failed: {exception.Message}");
+    Environment.ExitCode = 1;
+}
+catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+{
+    Console.Error.WriteLine("Enrichment cancelled.");
+    Environment.ExitCode = 1;
+}
+finally
+{
+    Console.CancelKeyPress -= cancelHandler;
 }
