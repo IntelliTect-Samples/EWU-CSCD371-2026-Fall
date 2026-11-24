@@ -54,7 +54,6 @@ public class PeopleEnricher
                 new Person(parts[0], parts[1], parts[2], parts[3])));
         }
 
-        // These resources and the cache belong to this run, including cancellation/failure paths.
         using SemaphoreSlim lookupSlots = new(_maxConcurrency);
         Dictionary<string, Task<ZipLookupResult>> zipLookupCache = [];
         List<Task<RowEnrichmentResult>> lookupTasks = [];
@@ -63,7 +62,6 @@ public class PeopleEnricher
             lookupTasks.Add(EnrichDataRowAsync(row, zipLookupCache, lookupSlots, cancellationToken));
         }
 
-        // WhenAll observes every lookup before the semaphore is disposed, even if one fails.
         RowEnrichmentResult[] lookupResults = await Task.WhenAll(lookupTasks);
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -81,7 +79,6 @@ public class PeopleEnricher
             RejectedRows: rejectedRows.OrderBy(row => row.LineNumber).ToArray());
     }
 
-    /// <summary>Publishes the file only after enrichment and writing both succeed.</summary>
     public async Task<EnrichmentResult> EnrichToFileAsync(string outputPath,
         CancellationToken cancellationToken = default)
     {
@@ -193,12 +190,10 @@ public class PeopleEnricher
             }
             catch (TimeoutException) when (attempt < _maxAttempts)
             {
-                // Retry a recoverable timeout, without changing invalid data.
             }
             catch (HttpRequestException exception) when (
                 attempt < _maxAttempts && exception.StatusCode != HttpStatusCode.NotFound)
             {
-                // A missing ZIP is a permanent failure; other request failures get bounded retries.
             }
         }
     }
@@ -229,7 +224,6 @@ public class PeopleEnricher
             throw new InvalidDataException();
         }
 
-        // Preserve the original display formatting, after rejecting invalid location data.
         city = string.Join(' ', city.Split(' ', StringSplitOptions.RemoveEmptyEntries)
             .Select(word => char.ToUpperInvariant(word[0]) + word[1..].ToLowerInvariant()));
         return $"{city},{state}";
