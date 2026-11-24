@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-
-namespace Assignment;
+﻿namespace Assignment;
 
 public class Importer(HttpClientWrapper httpClient, TextWriter writer)
 {
@@ -30,7 +28,7 @@ public class Importer(HttpClientWrapper httpClient, TextWriter writer)
 
         // Skip(1) skips the header row
         foreach (string line in download.Csv
-            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .Split('\n', StringSplitOptions.TrimEntries)
             .Skip(1))
         {
             ParseResult result = PersonParser.Parse(line);

@@ -22,21 +22,38 @@ CancellationToken token = cts.Token;
 //hard-coding the user 
 var user = "JohnM";
 
-//Call the DownloadCsvAsync method
-//Build the report: download people, look up each ZIP, combine
-var (status, rows) = await PeopleZipReport.BuildAsync(httpClientWrapper, user, token);
+Importer importer = new(httpClientWrapper);
+PeopleEnricher enricher = new(httpClientWrapper);
+var people = await importer.ImportPeopleAsync(user);
 
-//utilize the result
-if (status == DownloadStatus.Success)
+
+if (people is not null)
 {
-    Console.WriteLine("Download successful!");
-    foreach (string row in rows)
+    string? enrichedCsv = await enricher.BuildEnrichedCsvAsync(people!, default);
+
+    if (enrichedCsv is not null)
     {
-        Console.WriteLine(row);
+        Console.WriteLine(enrichedCsv);
     }
+
+    enricher.PrintAndFlushErrors();
 }
-else
-{
-    Console.WriteLine($"Download failed with status: {status}");
-}
+
+////Call the DownloadCsvAsync method
+////Build the report: download people, look up each ZIP, combine
+//var (status, rows) = await PeopleZipReport.BuildAsync(httpClientWrapper, user, token);
+
+////utilize the result
+//if (status == DownloadStatus.Success)
+//{
+//    Console.WriteLine("Download successful!");
+//    foreach (string row in rows)
+//    {
+//        Console.WriteLine(row);
+//    }
+//}
+//else
+//{
+//    Console.WriteLine($"Download failed with status: {status}");
+//}
 

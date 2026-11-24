@@ -6,11 +6,11 @@ public sealed class HttpClientWrapper(IHttpClientFactory httpClientFactory)
 
     // GET /people/{user} -> CSV of 100 people
     public Task<DownloadResult> DownloadPeopleCsvAsync(string user, CancellationToken cancellationToken = default)
-        => GetAsync($"/people/{Uri.EscapeDataString(user)}", cancellationToken);
+        => GetAsync($"/people/{Uri.EscapeDataString(user)}?code=None", cancellationToken);
 
     // GET /people/zip/{zip} -> one line like "Spokane","WA"
     public Task<DownloadResult> DownloadZipAsync(string zip, CancellationToken cancellationToken = default)
-        => GetAsync($"/people/zip/{Uri.EscapeDataString(zip)}", cancellationToken);
+        => GetAsync($"/people/zip/{Uri.EscapeDataString(zip)}?code=None", cancellationToken);
 
     private async Task<DownloadResult> GetAsync(string path, CancellationToken cancellationToken)
     {
