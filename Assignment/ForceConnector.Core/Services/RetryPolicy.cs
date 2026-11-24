@@ -15,6 +15,8 @@ public sealed class RetryPolicy
     {
         ArgumentNullException.ThrowIfNull(operation);
 
+        Exception? lastException = null;
+
         for (int attempt = 1;
             attempt <= MaxAttempts;
             attempt++)
@@ -23,32 +25,47 @@ public sealed class RetryPolicy
             {
                 return await operation();
             }
-            catch (HttpRequestException)
-                when (attempt < MaxAttempts)
+            catch (HttpRequestException ex)
             {
+                lastException = ex;
+
+                if (attempt == MaxAttempts)
+                {
+                    throw;
+                }
+
                 await DelayBeforeRetryAsync(
                     attempt,
                     cancellationToken);
             }
-            catch (InvalidDataException)
-                when (attempt < MaxAttempts)
+            catch (InvalidDataException ex)
             {
+                lastException = ex;
+
+                if (attempt == MaxAttempts)
+                {
+                    throw;
+                }
+
                 await DelayBeforeRetryAsync(
                     attempt,
                     cancellationToken);
             }
             catch (OperationCanceledException)
-                when (!cancellationToken.IsCancellationRequested &&
-                      attempt < MaxAttempts)
+                when (!cancellationToken.IsCancellationRequested)
             {
+                if (attempt == MaxAttempts)
+                {
+                    throw;
+                }
+
                 await DelayBeforeRetryAsync(
                     attempt,
                     cancellationToken);
             }
         }
 
-        throw new InvalidOperationException(
-            "Retry operation failed.");
+        throw lastException!;
     }
 
     private static Task DelayBeforeRetryAsync(

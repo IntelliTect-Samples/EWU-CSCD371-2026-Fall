@@ -76,4 +76,20 @@ public class RetryPolicyTester
 
         Assert.AreEqual(1, calls);
     }
+    [TestMethod]
+    public async Task ExecuteAsyncRetriesInvalidDataException()
+    {
+        int calls = 0;
+
+        await Assert.ThrowsAsync<InvalidDataException>(
+            () => RetryPolicy.ExecuteAsync<int>(() =>
+            {
+                calls++;
+
+                throw new InvalidDataException(
+                    "Bad location CSV.");
+            }));
+
+        Assert.AreEqual(3, calls);
+    }
 }

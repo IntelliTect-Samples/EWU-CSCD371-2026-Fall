@@ -55,9 +55,11 @@ public sealed class CsvParser : ICsvParser
                             ? fields[2].Trim()
                             : string.Empty,
                         Reason =
-                            $"Malformed CSV row: expected " +
-                            $"{expectedHeader.Length} columns but found " +
-                            $"{fields.Count}."
+                            $"Malformed CSV row. " +
+                            $"Expected {expectedHeader.Length} columns " +
+                            $"but found {fields.Count}. " +
+                            $"Row contents: " +
+                            $"{string.Join(" | ", fields)}"
                     });
                 continue;
             }

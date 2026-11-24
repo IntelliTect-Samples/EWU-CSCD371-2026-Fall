@@ -147,7 +147,7 @@ public sealed class PeopleEnricher : IPeopleEnricher
                 State = location.State
             };
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException ex)
         {
             lock (rejections)
             {
@@ -157,7 +157,8 @@ public sealed class PeopleEnricher : IPeopleEnricher
                         EmailAddress =
                             person.EmailAddress,
                         Reason =
-                            "Location request failed"
+                            $"ZIP lookup failed for ZIP " +
+                            $"{person.ZipCode}: {ex.Message}"
                     });
             }
 
@@ -169,28 +170,31 @@ public sealed class PeopleEnricher : IPeopleEnricher
             lock (rejections)
             {
                 rejections.Add(
-                    new Rejection
-                    {
-                        EmailAddress =
-                            person.EmailAddress,
-                        Reason =
-                            "Location request timed out"
-                    });
+                new Rejection
+                {
+                EmailAddress = person.EmailAddress,
+                Reason =
+                    $"ZIP lookup timed out for ZIP " +
+                    $"{person.ZipCode}"
+                });
             }
 
             return null;
         }
-        catch (InvalidDataException)
+        catch (InvalidDataException ex)
         {
             lock (rejections)
             {
+
                 rejections.Add(
                     new Rejection
                     {
                         EmailAddress =
                             person.EmailAddress,
                         Reason =
-                            "Invalid location response"
+                            $"Location service returned invalid data " +
+                            $"for ZIP {person.ZipCode}: " +
+                            $"{ex.Message}"
                     });
             }
 
