@@ -121,3 +121,52 @@ We expect every disposable resource you create or are handed to be cleaned up de
 - Ensure there are no build errors or warnings, including analyzer warnings. ❌✔
 - All of the above should be unit tested. ❌✔
 - Choose simplicity over complexity.
+
+## Running this implementation
+
+```powershell
+dotnet build PeopleEnricher.slnx
+dotnet test --solution PeopleEnricher.slnx
+dotnet run --project Application -- enriched-people.csv
+```
+
+The console writes a real CSV file (the optional argument sets its path). Ctrl+C
+cancels the run. Unit tests use stubs or an in-memory HTTP handler, never the live
+service. Manual console runs use the random endpoints without a `code` parameter.
+
+### Validation and rejection rules
+
+- People rows must contain exactly four comma-separated fields. Names and email
+  must be nonblank, without quotes or control characters; ZIP codes must be five
+  ASCII digits. Rows that fail these rules are reported with their original line
+  number and text, and are not looked up.
+- Locations must contain exactly two fields, optionally surrounded by one pair of
+  quotes. City must be nonblank without surrounding whitespace, embedded quotes,
+  or control characters. State must contain two uppercase ASCII letters.
+  Invalid location responses are rejected without retrying or repairing them.
+- The existing title-case display formatting is retained for already valid cities.
+  Rejection reasons and the existing result records are retained.
+- ZIP lookups are shared among people with the same ZIP during one run. A new run
+  starts a fresh cache so earlier failures and cancellation are not reused.
+
+### Resilience and ownership
+
+The defaults are four concurrent ZIP lookups, up to three attempts per request,
+and a five-second timeout per attempt. Request failures and timeouts receive bounded
+retries; a missing ZIP (404) and invalid data are permanent rejections. An exhausted
+people-download request fails the run; an exhausted ZIP lookup rejects the affected
+people. Caller cancellation and unexpected exceptions propagate.
+
+Each request has a linked cancellation source, so timeouts cancel the actual HTTP
+operation. The run waits for all lookup tasks before disposing its semaphore.
+The console owns one reused `HttpClient`; the endpoint wrapper borrows it and
+disposes every response. The reader, cancellation sources, and output writer are
+also cleaned up deterministically.
+
+Output is written to a temporary file in the destination directory and moved into
+place only after enrichment and writing succeed. Failed/cancelled runs leave an
+existing output file intact; temporary files are removed on failure. A completed
+run may legitimately reject every person and contain only the CSV header.
+
+The additions stay within the required assignment behavior. Circuit breakers,
+jitter, and generated API clients are not included.
