@@ -55,6 +55,9 @@ public sealed class CsvParserTests
         StringAssert.Contains(
             result.Rejections[0].Reason,
             "Expected 4 columns");
+        StringAssert.Contains(
+            result.Rejections[0].Reason,
+            "BrokenRow");
     }
 
     [TestMethod]
