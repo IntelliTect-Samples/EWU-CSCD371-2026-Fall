@@ -14,11 +14,13 @@ public sealed class HttpClientWrapper(IHttpClientFactory httpClientFactory)
 
     private async Task<DownloadResult> GetAsync(string path, CancellationToken cancellationToken)
     {
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        linkedCts.CancelAfter(TimeSpan.FromSeconds(30)); // timeout
         try
         {
             var client = httpClientFactory.CreateClient(ClientName);
-
-            string body = await client.GetStringAsync(path, cancellationToken);
+            
+            string body = await client.GetStringAsync(path, linkedCts.Token);
 
             return string.IsNullOrWhiteSpace(body)
                 ? new DownloadResult(DownloadStatus.InvalidData)
@@ -32,7 +34,7 @@ public sealed class HttpClientWrapper(IHttpClientFactory httpClientFactory)
         {
             return new DownloadResult(DownloadStatus.Timeout, Error: ex);
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             return new DownloadResult(DownloadStatus.Exception, Error: ex);
         }
