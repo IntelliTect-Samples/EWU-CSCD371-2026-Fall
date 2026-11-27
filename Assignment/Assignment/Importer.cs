@@ -2,7 +2,7 @@
 
 public class Importer(HttpClientWrapper httpClient, TextWriter writer)
 {
-    private readonly List<string> _errors = []; 
+    private readonly List<string> _errors = [];
 
     public Importer(HttpClientWrapper httpClient) : this(httpClient, Console.Out)
     {
@@ -26,7 +26,7 @@ public class Importer(HttpClientWrapper httpClient, TextWriter writer)
 
         // Skip(1) skips the header row
         foreach (string line in download.Csv
-            .Split('\n', StringSplitOptions.TrimEntries)
+            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Skip(1))
         {
             ParseResult result = PersonParser.Parse(line);
