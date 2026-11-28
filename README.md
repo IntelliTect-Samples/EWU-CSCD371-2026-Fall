@@ -61,9 +61,9 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 
 ### Project setup
 
-- Create a `.slnx` solution containing a class library and a unit test project that references it. ❌✔
+- Create a `.slnx` solution containing a class library and a unit test project that references it. ✔
 - Add a small console (or other) entry point so the program can run against the live endpoints. The unit tests must **not** call the live endpoints. ❌✔
-- Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request. ❌✔
+- Use a single, reused `HttpClient` (or `IHttpClientFactory`). Do not create a new `HttpClient` per request. ✔
 
 ### Download and parse
 
@@ -80,19 +80,19 @@ While developing or testing, you can force a mode with `?code=None`, `?code=Inva
 
 ### Exception handling and resilience
 
-- Honor a caller-supplied `CancellationToken`. ❌✔
-- Catch only failures you can recover from. Let unexpected exceptions propagate with their original stack traces. ❌✔
-- If the **people CSV itself** cannot be downloaded, fail the run with an exception. Do not write a partial or empty file as though it succeeded. ❌✔
+- Honor a caller-supplied `CancellationToken`. ✔
+- Catch only failures you can recover from. Let unexpected exceptions propagate with their original stack traces. ✔
+- If the **people CSV itself** cannot be downloaded, fail the run with an exception. Do not write a partial or empty file as though it succeeded. ✔
 
 ### Async/await
 
-- Use `async`/`await` end to end. Do not block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. ❌✔
-- Async methods accept a `CancellationToken` and pass it down to the calls they make. ❌✔
+- Use `async`/`await` end to end. Do not block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. ✔
+- Async methods accept a `CancellationToken` and pass it down to the calls they make. ✔
 
 ### LINQ
 
 - Use LINQ for the data shaping: filtering out invalid rows, projecting each person into its enriched form, grouping or counting rejection reasons, and producing the final CSV lines. ❌✔
-- Keep side effects (HTTP calls, file writes) out of your LINQ queries. ❌✔
+- Keep side effects (HTTP calls, file writes) out of your LINQ queries. ✔
 
 ### Resource management (`IDisposable`)
 
@@ -116,8 +116,8 @@ We expect every disposable resource you create or are handed to be cleaned up de
 
 ## Fundamentals
 
-- Target all projects at .NET 10 (`net10.0`) or .NET 11 (`net11.0`; you will need to fix the `global.json` if you go this route) and use the latest `LangVersion`. ❌✔
-- Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ❌✔
-- Ensure there are no build errors or warnings, including analyzer warnings. ❌✔
-- All of the above should be unit tested. ❌✔
+- Target all projects at .NET 10 (`net10.0`) or .NET 11 (`net11.0`; you will need to fix the `global.json` if you go this route) and use the latest `LangVersion`. ✔
+- Enable nullable reference types, .NET analyzers, and code style enforcement for all projects. ✔
+- Ensure there are no build errors or warnings, including analyzer warnings. ✔
+- All of the above should be unit tested. ✔
 - Choose simplicity over complexity.
