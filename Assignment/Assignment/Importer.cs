@@ -8,7 +8,7 @@ public class Importer(HttpClientWrapper httpClient, TextWriter writer)
     {
     }
 
-    public async Task<IReadOnlyList<Person>> ImportPeopleAsync(
+    public async Task<PersonParseResultReport> ImportPeopleAsync(
         string user, CancellationToken cancellationToken = default)
     {
         DownloadResult download = await httpClient.DownloadPeopleCsvAsync(user, cancellationToken).ConfigureAwait(false);
@@ -17,31 +17,14 @@ public class Importer(HttpClientWrapper httpClient, TextWriter writer)
         {
             throw new InvalidOperationException($"Download failed with status {download.Status} and error {download.Error}");
         }
+
         if (download.Csv is null)
         {
             throw new InvalidOperationException("Download succeeded but CSV is null");
         }
 
-        List<Person> people = [];
-
-        // Skip(1) skips the header row
-        foreach (string line in download.Csv
-            .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            .Skip(1))
-        {
-            ParseResult result = PersonParser.Parse(line);
-
-            if (result.IsValid)
-            {
-                people.Add(result.Person!);
-            }
-            else
-            {
-                _errors.Add($"Error parsing line [{line}] - {string.Join(", ", result.Errors)}");
-            }
-        }
-
-        return people;
+        var parsed = PersonParser.ParseCsv(download.Csv);
+        return parsed;
     }
 
     public void PrintErrorsAndFlush()

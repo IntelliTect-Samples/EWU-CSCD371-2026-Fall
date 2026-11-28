@@ -19,7 +19,7 @@ public sealed class HttpClientWrapper(IHttpClientFactory httpClientFactory)
         linkedCts.CancelAfter(TimeSpan.FromSeconds(30)); // timeout
         var client = httpClientFactory.CreateClient(ClientName);
         const int maxAttempts = 10;
-        for (int attempt = 1; attempt < maxAttempts; attempt++)
+        for (int attempt = 1; ; attempt++)
         {
             try
             {
@@ -31,7 +31,7 @@ public sealed class HttpClientWrapper(IHttpClientFactory httpClientFactory)
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) // cancellation requested
             {
-                return new DownloadResult(DownloadStatus.Cancelled);
+                throw;
             }
             catch (OperationCanceledException ex) // timeout
             {
@@ -41,15 +41,15 @@ public sealed class HttpClientWrapper(IHttpClientFactory httpClientFactory)
             {
                 try
                 {
-                    var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt)) + TimeSpan.FromMicroseconds(_jitterer.Next(0, 1000));
-                    await Task.Delay(TimeSpan.FromMilliseconds(5), cancellationToken);
+                    var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt)) + TimeSpan.FromMilliseconds(_jitterer.Next(0, 1000));
+                    await Task.Delay(delay, cancellationToken);
                 }
                 catch (TaskCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
-                    return new DownloadResult(DownloadStatus.Exception, Error: ex);
+                    return new DownloadResult(DownloadStatus.Cancelled, Error: ex);
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
                 return new DownloadResult(DownloadStatus.Exception, Error: ex);
             }

@@ -2,23 +2,17 @@
 
 namespace Assignment;
 
-public sealed record ParseResult(Person? Person, IReadOnlyList<string> Errors)
+public sealed record Rejection(int LineNumber, string Row, string Reason);
+public sealed class PersonParseResultReport
 {
-    public static ParseResult Accepted(Person person)
-    {
-        return new(person, []);
-    }
+    public required IReadOnlyList<Person> People { get; init; }
+    public required IReadOnlyList<Rejection> Rejections { get; init; }
 
-    public static ParseResult Rejected(IReadOnlyList<string> errors)
-    {
-        return new(null, errors);
-    }
+    public int RejectedRowCount => Rejections.Select(r => r.LineNumber).Distinct().Count();
 
-    public bool IsValid => Person is not null && Errors.Count == 0;
-
+    public IEnumerable<IGrouping<string, Rejection>> RejectionsByReason =>
+        Rejections.GroupBy(r => r.Reason);
 }
-
-
 public static partial class PersonParser
 {
     internal sealed class Rule
@@ -27,7 +21,7 @@ public static partial class PersonParser
         public required Func<string[], bool> Predicate { get; init; }
     }
 
-    [GeneratedRegex(@"^[^@]*@[^@]*\.[^@]*$")]
+    [GeneratedRegex(@"^[^@]+@[^@]+\.[^@]+$")]
     private static partial Regex ValidEmail();
 
     private static readonly Rule[] Rules =
@@ -76,22 +70,16 @@ public static partial class PersonParser
             return ["4 fields expected"];
         }
 
-        List<string> errors = [];
-
-        foreach (var rule in Rules)
-        {
-            if (!rule.Predicate(fields))
-            {
-                errors.Add(rule.ErrorMessage);
-            }
-        }
+        List<string> errors = Rules
+            .Where(rule => !rule.Predicate(fields))
+            .Select(rule => rule.ErrorMessage).ToList();
 
         return errors;
     }
 
-    private static Person CreatePerson(string[] fields)
+    private static Person CreatePerson(int lineNumber, string[] fields)
     {
-        return new Person(fields[0], fields[1], fields[2], fields[3]);
+        return new Person(lineNumber, fields[0], fields[1], fields[2], fields[3]);
     }
 
     /// <summary>
@@ -107,20 +95,25 @@ public static partial class PersonParser
     /// <param name="line"></param>
     /// <param name="result"></param>
     /// <returns></returns>
-    public static ParseResult Parse(string line)
+    public static PersonParseResultReport ParseCsv(string csv)
     {
-        string[] fields = SplitFields(line);
-        var errors = ValidateFields(fields);
+        var rows = csv
+            .Split('\n', StringSplitOptions.TrimEntries)
+            .Select((line, index) => (Line: line, LineNumber: index + 1))
+            .Skip(1)
+            .Where(r => !string.IsNullOrWhiteSpace(r.Line))
+            .Select(r =>
+            {
+                string[] fields = SplitFields(r.Line);
+                return (r.Line, r.LineNumber, Fields: fields, Errors: ValidateFields(fields));
+            })
+            .ToList();
 
-        if (errors.Count == 0)
-        {
-            return ParseResult.Accepted(CreatePerson(fields));
-        }
+        var people = rows.Where(row => row.Errors.Count == 0).Select(row => CreatePerson(row.LineNumber, row.Fields)).ToList();
 
-        else
-        {
-            return ParseResult.Rejected(errors);
-        }
+        var rejections = rows.Where(row => row.Errors.Count > 0).SelectMany(row => row.Errors.Select(error => new Rejection(row.LineNumber, row.Line, error))).ToList();
+
+        return new PersonParseResultReport { People = people, Rejections = rejections };
     }
 
 
